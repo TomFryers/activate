@@ -16,7 +16,7 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi("main.ui", self)
 
         self.mapWidget = pyqtlet.MapWidget()
-        self.map = pyqtlet.L.map(self.mapWidget)
+        self.map = pyqtlet.L.map(self.mapWidget, {"attributionControl": False})
         self.mapContainer.addWidget(self.mapWidget)
         self.map.setView([51, -1], 14)
         pyqtlet.L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(self.map)
