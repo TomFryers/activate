@@ -167,7 +167,7 @@
  <connections>
   <connection>
    <sender>tableWidget_2</sender>
-   <signal>itemSelectionChanged()</signal>
+   <signal>itemClicked(QTableWidgetItem*)</signal>
    <receiver>MainWindow</receiver>
    <slot>update()</slot>
    <hints>

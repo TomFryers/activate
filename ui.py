@@ -52,10 +52,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     track.list_link = widget
                 self.tableWidget_2.setItem(i, j, widget)
 
-    def update(self):
-        selected = self.tableWidget_2.selectedItems()[0]
+    def update(self, selected):
         for track in self.tracks:
-            if track.list_link is selected:
+            if track.list_link is self.tableWidget_2.item(selected.row(), 0):
                 break
         else:
             raise ValueError("Invalid selection made")
