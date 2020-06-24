@@ -16,12 +16,18 @@ FIELDS = {
 
 def load_gpx(filename):
     tree = xml.etree.ElementTree.parse(filename).getroot()
-    name = tree.find(f"./{NAMESPACE}trk/{NAMESPACE}name").text
+    try:
+        name = tree.find(f"./{NAMESPACE}trk/{NAMESPACE}name").text
+    except AttributeError:
+        name = "[No Name]"
     points = tree.findall(f"./{NAMESPACE}trk/{NAMESPACE}trkseg/{NAMESPACE}trkpt")
     fields = {}
     for point in points:
         for field in FIELDS:
-            value = FIELDS[field](point)
+            try:
+                value = FIELDS[field](point)
+            except Exception:
+                continue
             if value:
                 fields.setdefault(field, [])
                 fields[field].append(value)
@@ -30,4 +36,10 @@ def load_gpx(filename):
 
 
 def load_all(directory):
-    return [load_gpx(f) for f in glob.glob(directory + "/*.gpx")]
+    result = []
+    for filename in glob.glob(directory + "/*.gpx"):
+        try:
+            result.append(load_gpx(filename))
+        except ValueError:
+            pass
+    return result

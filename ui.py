@@ -45,25 +45,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tracks = tracks
         self.tableWidget_2.setRowCount(len(tracks))
         for i, track in enumerate(tracks):
-            self.tableWidget_2.setItem(
-                i, 0, QtWidgets.QTableWidgetItem(track.name, type=1100 + i)
-            )
-            self.tableWidget_2.setItem(
-                i, 1, QtWidgets.QTableWidgetItem(str(track.start_time))
-            )
-            self.tableWidget_2.setItem(
-                i, 2, QtWidgets.QTableWidgetItem(str(round(track.length / 1000, 2)))
-            )
+            track_elements = track.list_row
+            for j in range(len(track_elements)):
+                widget = QtWidgets.QTableWidgetItem(track_elements[j])
+                if j == 0:
+                    track.list_link = widget
+                self.tableWidget_2.setItem(i, j, widget)
 
     def update(self):
-        selected = self.tableWidget_2.selectedItems()[0].type() - 1100
-        track = self.tracks[selected]
+        selected = self.tableWidget_2.selectedItems()[0]
+        for track in self.tracks:
+            if track.list_link is selected:
+                break
+        else:
+            raise ValueError("Invalid selection made")
+
         self.show_on_map(track.lat_lon_list)
-        self.add_info(
-            {
-                "Distance": str(round(track.length / 1000, 2)),
-                "Ascent": str(round(track.ascent)),
-                "Elapsed Time": times.to_string(track.elapsed_time),
-                "Average Speed": str(round(track.average_speed * 3.6, 2)),
-            }
-        )
+        self.add_info(track.stats)
