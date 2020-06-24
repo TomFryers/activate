@@ -31,7 +31,25 @@
            <layout class="QGridLayout" name="mapContainer"/>
           </item>
           <item row="0" column="1">
-           <widget class="QTableView" name="tableView"/>
+           <widget class="QTableWidget" name="tableWidget">
+            <property name="horizontalScrollBarPolicy">
+             <enum>Qt::ScrollBarAlwaysOff</enum>
+            </property>
+            <property name="showGrid">
+             <bool>false</bool>
+            </property>
+            <property name="columnCount">
+             <number>2</number>
+            </property>
+            <attribute name="horizontalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <column/>
+            <column/>
+           </widget>
           </item>
          </layout>
         </item>
@@ -52,7 +70,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>30</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

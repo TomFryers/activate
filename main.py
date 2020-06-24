@@ -8,7 +8,9 @@ import sys
 def main():
     app = PyQt5.QtWidgets.QApplication(sys.argv)
     main_window = ui.MainWindow()
-    main_window.show_on_map(load_gpx.load_gpx("test.gpx"))
+    gpx = load_gpx.load_gpx("test.gpx")
+    main_window.show_on_map(gpx.lat_lon_list)
+    main_window.add_info({"Distance": str(round(gpx.length / 1000, 1))})
     main_window.show()
     sys.exit(app.exec_())
 

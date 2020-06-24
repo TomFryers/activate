@@ -26,3 +26,9 @@ class MainWindow(QtWidgets.QMainWindow):
         pyqtlet.L.polyline(route, {"smoothFactor": 0, "color": "#802090"}).addTo(
             self.map
         )
+
+    def add_info(self, info):
+        self.tableWidget.setRowCount(len(info))
+        for i, (k, v) in enumerate(info.items()):
+            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(k))
+            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(v))
