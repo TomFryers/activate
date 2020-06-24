@@ -46,3 +46,7 @@ class Track:
         start_time = self.fields["time"][0]
         end_time = self.fields["time"][-1]
         return end_time - start_time
+
+    @property
+    def average_speed(self):
+        return self.length / self.elapsed_time.total_seconds()

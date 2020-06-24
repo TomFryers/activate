@@ -18,6 +18,7 @@ def main():
             "Distance": str(round(gpx.length / 1000, 1)),
             "Ascent": str(round(gpx.ascent)),
             "Elapsed Time": times.to_string(gpx.elapsed_time),
+            "Average Speed": str(round(gpx.average_speed * 3.6, 2)),
         }
     )
     main_window.show()
