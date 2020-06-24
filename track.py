@@ -35,3 +35,10 @@ class Track:
         return sum(
             point_distance(points[p], points[p - 1]) for p in range(1, len(points))
         )
+
+    @property
+    def ascent(self):
+        return sum(
+            max(self.fields["ele"][p] - self.fields["ele"][p - 1], 0)
+            for p in range(1, len(self.fields["ele"]) - 1)
+        )

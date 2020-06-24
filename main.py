@@ -10,7 +10,9 @@ def main():
     main_window = ui.MainWindow()
     gpx = load_gpx.load_gpx("test.gpx")
     main_window.show_on_map(gpx.lat_lon_list)
-    main_window.add_info({"Distance": str(round(gpx.length / 1000, 1))})
+    main_window.add_info(
+        {"Distance": str(round(gpx.length / 1000, 1)), "Ascent": str(round(gpx.ascent))}
+    )
     main_window.show()
     sys.exit(app.exec_())
 
