@@ -17,13 +17,15 @@ def to_string(time):
         result += [str(time.days), " d "]
         time %= ONE_DAY
     if time >= ONE_HOUR:
-        result += [str(time // ONE_HOUR), ":"]
+        result += [f"{time // ONE_HOUR:0>2d}", ":"]
         time %= ONE_HOUR
     if time >= ONE_MINUTE:
-        result += [str(time // ONE_MINUTE), ":"]
+        result += [f"{time // ONE_MINUTE:0>2d}", ":"]
         time %= ONE_MINUTE
     secs = time.total_seconds()
     if int(secs) == secs:
         secs = int(secs)
-    result.append(str(secs))
+        result.append(f"{secs:0>2d}")
+    else:
+        result.append(f"{secs:0>.2f}")
     return "".join(result)

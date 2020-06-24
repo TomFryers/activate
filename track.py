@@ -69,12 +69,12 @@ class Track:
     @property
     def stats(self):
         return {
-            "Distance": str(round(self.length / 1000, 2)),
+            "Distance": f"{self.length / 1000:.2f}",
             "Elapsed Time": times.to_string(self.elapsed_time),
             "Ascent": self.ascent if "ele" in self.fields else "None",
-            "Average Speed": str(round(self.average_speed * 3.6, 2)),
+            "Average Speed": f"{self.average_speed * 3.6:.2f}",
         }
 
     @property
     def list_row(self):
-        return [self.name, str(self.start_time), str(round(self.length / 1000, 2))]
+        return [self.name, str(self.start_time), f"{self.length / 1000:.2f}"]
