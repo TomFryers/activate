@@ -29,9 +29,7 @@ class Track:
 
     @property
     def length(self):
-        points = list(
-            zip(self.fields["lat"][1:], self.fields["lon"][1:], self.fields["ele"][1:])
-        )
+        points = list(zip(self.fields["lat"], self.fields["lon"], self.fields["ele"]))
         return sum(
             point_distance(points[p], points[p - 1]) for p in range(1, len(points))
         )
