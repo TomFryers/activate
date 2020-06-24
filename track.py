@@ -40,3 +40,9 @@ class Track:
             max(self.fields["ele"][p] - self.fields["ele"][p - 1], 0)
             for p in range(1, len(self.fields["ele"]) - 1)
         )
+
+    @property
+    def elapsed_time(self):
+        start_time = self.fields["time"][0]
+        end_time = self.fields["time"][-1]
+        return end_time - start_time

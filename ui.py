@@ -1,5 +1,5 @@
-from PyQt5 import QtWidgets, uic
 import pyqtlet
+from PyQt5 import QtWidgets, uic
 
 
 def default_map_location(route):

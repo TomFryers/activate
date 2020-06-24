@@ -1,6 +1,7 @@
 import xml.etree.ElementTree
 
 import track
+import times
 
 NAMESPACE = "{http://www.topografix.com/GPX/1/1}"
 
@@ -8,6 +9,7 @@ FIELDS = {
     "lat": lambda p: float(p.get("lat")),
     "lon": lambda p: float(p.get("lon")),
     "ele": lambda p: float(p.find(f"./{NAMESPACE}ele").text),
+    "time": lambda p: times.from_GPX(p.find(f"./{NAMESPACE}time").text),
 }
 
 
