@@ -20,7 +20,8 @@ def point_distance(point1, point2):
 
 
 class Track:
-    def __init__(self, fields):
+    def __init__(self, name, fields):
+        self.name = name
         self.fields = fields
 
     @property
@@ -46,6 +47,10 @@ class Track:
         start_time = self.fields["time"][0]
         end_time = self.fields["time"][-1]
         return end_time - start_time
+
+    @property
+    def start_time(self):
+        return self.fields["time"][0]
 
     @property
     def average_speed(self):

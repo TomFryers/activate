@@ -1,3 +1,4 @@
+import glob
 import xml.etree.ElementTree
 
 import track
@@ -15,6 +16,7 @@ FIELDS = {
 
 def load_gpx(filename):
     tree = xml.etree.ElementTree.parse(filename).getroot()
+    name = tree.find(f"./{NAMESPACE}trk/{NAMESPACE}name").text
     points = tree.findall(f"./{NAMESPACE}trk/{NAMESPACE}trkseg/{NAMESPACE}trkpt")
     fields = {}
     for point in points:
@@ -24,4 +26,8 @@ def load_gpx(filename):
                 fields.setdefault(field, [])
                 fields[field].append(value)
 
-    return track.Track(fields)
+    return track.Track(name, fields)
+
+
+def load_all(directory):
+    return [load_gpx(f) for f in glob.glob(directory + "/*.gpx")]

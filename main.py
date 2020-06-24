@@ -11,16 +11,8 @@ import ui
 def main():
     app = PyQt5.QtWidgets.QApplication(sys.argv)
     main_window = ui.MainWindow()
-    gpx = load_gpx.load_gpx("test.gpx")
-    main_window.show_on_map(gpx.lat_lon_list)
-    main_window.add_info(
-        {
-            "Distance": str(round(gpx.length / 1000, 1)),
-            "Ascent": str(round(gpx.ascent)),
-            "Elapsed Time": times.to_string(gpx.elapsed_time),
-            "Average Speed": str(round(gpx.average_speed * 3.6, 2)),
-        }
-    )
+    tracks = load_gpx.load_all("tracks")
+    main_window.add_tracks(tracks)
     main_window.show()
     sys.exit(app.exec_())
 
