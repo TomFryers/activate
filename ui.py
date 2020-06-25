@@ -1,5 +1,3 @@
-import times
-
 import pyqtlet
 from PyQt5 import QtWidgets, uic
 
@@ -41,23 +39,23 @@ class MainWindow(QtWidgets.QMainWindow):
             self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(k))
             self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(v))
 
-    def add_tracks(self, tracks):
-        self.tracks = tracks
-        self.tableWidget_2.setRowCount(len(tracks))
-        for i, track in enumerate(tracks):
-            track_elements = track.list_row
-            for j in range(len(track_elements)):
-                widget = QtWidgets.QTableWidgetItem(track_elements[j])
+    def add_tracks(self, activities):
+        self.activities = activities
+        self.tableWidget_2.setRowCount(len(activities))
+        for i, activity in enumerate(activities):
+            activity_elements = activity.list_row
+            for j in range(len(activity_elements)):
+                widget = QtWidgets.QTableWidgetItem(activity_elements[j])
                 if j == 0:
-                    track.list_link = widget
+                    activity.list_link = widget
                 self.tableWidget_2.setItem(i, j, widget)
 
     def update(self, selected):
-        for track in self.tracks:
-            if track.list_link is self.tableWidget_2.item(selected.row(), 0):
+        for activity in self.activities:
+            if activity.list_link is self.tableWidget_2.item(selected.row(), 0):
                 break
         else:
             raise ValueError("Invalid selection made")
 
-        self.show_on_map(track.lat_lon_list)
-        self.add_info(track.stats)
+        self.show_on_map(activity.track.lat_lon_list)
+        self.add_info(activity.stats)

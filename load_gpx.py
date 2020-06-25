@@ -1,6 +1,7 @@
 import glob
 import xml.etree.ElementTree
 
+import activity
 import track
 import times
 
@@ -34,7 +35,7 @@ def load_gpx(filename):
                 fields.setdefault(field, [])
                 fields[field].append(value)
 
-    return track.Track(name, fields)
+    return activity.Activity(name, fields["time"][0], track.Track(fields))
 
 
 def load_all(directory):

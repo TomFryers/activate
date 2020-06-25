@@ -1,5 +1,5 @@
 import math
-import times
+from functools import cached_property
 
 EARTH_RADIUS = 6371008.7714
 
@@ -21,17 +21,16 @@ def point_distance(point1, point2):
 
 
 class Track:
-    def __init__(self, name, fields):
-        self.name = name
+    def __init__(self, fields):
         self.fields = fields
         if "lat" not in self.fields or "lon" not in self.fields:
             raise ValueError("Missing lat or lon in Track field")
 
-    @property
+    @cached_property
     def lat_lon_list(self):
         return [[x, y] for x, y in zip(self.fields["lat"], self.fields["lon"])]
 
-    @property
+    @cached_property
     def length(self):
         if "ele" in self.fields:
             elevation_data = self.fields["ele"]
@@ -43,7 +42,7 @@ class Track:
             point_distance(points[p], points[p - 1]) for p in range(1, len(points))
         )
 
-    @property
+    @cached_property
     def ascent(self):
         if "ele" in self.fields:
             return sum(
@@ -51,30 +50,15 @@ class Track:
                 for p in range(1, len(self.fields["ele"]) - 1)
             )
 
-    @property
+    @cached_property
     def elapsed_time(self):
         start_time = self.fields["time"][0]
         end_time = self.fields["time"][-1]
         return end_time - start_time
 
-    @property
-    def start_time(self):
-        return self.fields["time"][0]
 
-    @property
+    @cached_property
     def average_speed(self):
         duration = self.elapsed_time.total_seconds()
         return self.length / duration
 
-    @property
-    def stats(self):
-        return {
-            "Distance": f"{self.length / 1000:.2f}",
-            "Elapsed Time": times.to_string(self.elapsed_time),
-            "Ascent": self.ascent if "ele" in self.fields else "None",
-            "Average Speed": f"{self.average_speed * 3.6:.2f}",
-        }
-
-    @property
-    def list_row(self):
-        return [self.name, str(self.start_time), f"{self.length / 1000:.2f}"]
