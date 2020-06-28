@@ -14,19 +14,6 @@ def default_map_location(route):
     ]
 
 
-def get_tick_size(x):
-    x /= 10000
-    zeroes = 10 ** math.floor(math.log10(x))
-    mantissa = x / zeroes
-    if mantissa < 2:
-        mantissa = 1
-    elif mantissa < 5:
-        mantissa = 2
-    else:
-        mantissa = 5
-    return mantissa * zeroes
-
-
 class FormattableNumber(QtWidgets.QTableWidgetItem):
     def __init__(self, number, text):
         super().__init__(text)
@@ -114,11 +101,19 @@ class MainWindow(QtWidgets.QMainWindow):
             area.setUpperSeries(self.altseries)
             self.altchart.addSeries(area)
             self.altchart.createDefaultAxes()
-            x_axis = self.altchart.axes(PyQt5.QtCore.Qt.Horizontal)[0]
-            x_axis.setTickType(x_axis.TicksDynamic)
-            ticksize = get_tick_size(distance)
-            if ticksize >= 1:
-                x_axis.setLabelFormat("%i")
-
-            x_axis.setTickInterval(ticksize)
+            for i, axis in enumerate(
+                (
+                    self.altchart.axes(PyQt5.QtCore.Qt.Horizontal)[0],
+                    self.altchart.axes(PyQt5.QtCore.Qt.Vertical)[0],
+                )
+            ):
+                axis.setTickCount((12, 5)[i])
+                axis.applyNiceNumbers()
+                interval = (axis.max() - axis.min()) / (axis.tickCount() - 1)
+                if int(interval) == interval:
+                    axis.setLabelFormat("%i")
+                else:
+                    axis.setLabelFormat(
+                        f"%.{max(0, -math.floor(math.log10(interval)))}f"
+                    )
             self.graphicsView.setChart(self.altchart)
