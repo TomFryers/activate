@@ -11,6 +11,15 @@ def default_map_location(route):
     ]
 
 
+class FormattableNumber(QtWidgets.QTableWidgetItem):
+    def __init__(self, number, text):
+        super().__init__(text)
+        self.number = number
+
+    def __lt__(self, other):
+        return self.number < other.number
+
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -39,7 +48,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tableWidget.setRowCount(len(info))
         for i, (k, v) in enumerate(info.items()):
             self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(k))
-            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(v))
+            if isinstance(v, (float, int)):
+                widget = FormattableNumber(v, f"{v:.2f}")
+            else:
+                widget = QtWidgets.QTableWidgetItem(v)
+            widget.setTextAlignment(0x2 | 0x80)
+            self.tableWidget.setItem(i, 1, widget)
 
     def add_tracks(self, activities):
         self.activities = activities
@@ -47,7 +61,12 @@ class MainWindow(QtWidgets.QMainWindow):
         for i, activity in enumerate(activities):
             activity_elements = activity.list_row
             for j in range(len(activity_elements)):
-                widget = QtWidgets.QTableWidgetItem(activity_elements[j])
+                content = activity_elements[j]
+                if isinstance(content, (float, int)):
+                    widget = FormattableNumber(content, f"{content:.2f}")
+                    widget.setTextAlignment(0x2 | 0x80)
+                else:
+                    widget = QtWidgets.QTableWidgetItem(content)
                 if j == 0:
                     activity.list_link = widget
                 self.tableWidget_2.setItem(i, j, widget)

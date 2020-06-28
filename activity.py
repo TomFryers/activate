@@ -27,15 +27,15 @@ class Activity:
     @property
     def stats(self):
         return {
-            "Distance": f"{self.distance / 1000:.2f}",
+            "Distance": self.distance / 1000,
             "Elapsed Time": times.to_string(self.track.elapsed_time),
             "Ascent": self.track.ascent if "ele" in self.track.fields else "None",
-            "Average Speed": f"{self.track.average_speed * 3.6:.2f}",
+            "Average Speed": self.track.average_speed * 3.6,
         }
 
     @property
     def list_row(self):
-        return [self.name, str(self.start_time), f"{self.distance / 1000:.2f}"]
+        return [self.name, str(self.start_time), self.distance / 1000]
 
     def cache(self):
         return {self.filename: (self.name, self.start_time, self.distance)}
