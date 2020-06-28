@@ -1,5 +1,8 @@
+import math
+
+import PyQt5
 import pyqtlet
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtChart, QtWidgets, uic
 
 import times
 
@@ -9,6 +12,19 @@ def default_map_location(route):
         sum(i[0] for i in route) / len(route),
         sum(i[1] for i in route) / len(route),
     ]
+
+
+def get_tick_size(x):
+    x /= 10000
+    zeroes = 10 ** math.floor(math.log10(x))
+    mantissa = x / zeroes
+    if mantissa < 2:
+        mantissa = 1
+    elif mantissa < 5:
+        mantissa = 2
+    else:
+        mantissa = 5
+    return mantissa * zeroes
 
 
 class FormattableNumber(QtWidgets.QTableWidgetItem):
@@ -83,3 +99,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.label_3.setText(times.nice(activity.start_time))
         self.show_on_map(activity.track.lat_lon_list)
         self.add_info(activity.stats)
+
+        # Charts
+        if activity.track.has_altitude_data:
+            self.altchart = QtChart.QChart()
+            self.altchart.legend().hide()
+            self.altseries = QtChart.QLineSeries()
+            for distance, elevation in zip(
+                activity.track.fields["dist"], activity.track.fields["ele"]
+            ):
+                self.altseries.append(distance / 1000, elevation)
+
+            area = QtChart.QAreaSeries()
+            area.setUpperSeries(self.altseries)
+            self.altchart.addSeries(area)
+            self.altchart.createDefaultAxes()
+            x_axis = self.altchart.axes(PyQt5.QtCore.Qt.Horizontal)[0]
+            x_axis.setTickType(x_axis.TicksDynamic)
+            ticksize = get_tick_size(distance)
+            if ticksize >= 1:
+                x_axis.setLabelFormat("%i")
+
+            x_axis.setTickInterval(ticksize)
+            self.graphicsView.setChart(self.altchart)

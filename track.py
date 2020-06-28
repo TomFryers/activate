@@ -26,25 +26,30 @@ class Track:
         if "lat" not in self.fields or "lon" not in self.fields:
             raise ValueError("Missing lat or lon in Track field")
 
-    @cached_property
-    def lat_lon_list(self):
-        return [[x, y] for x, y in zip(self.fields["lat"], self.fields["lon"])]
-
-    @cached_property
-    def length(self):
-        if "ele" in self.fields:
+        if self.has_altitude_data:
             elevation_data = self.fields["ele"]
         else:
             elevation_data = [0 for _ in range(len(self.fields["lat"]))]
 
         points = list(zip(self.fields["lat"], self.fields["lon"], elevation_data))
-        return sum(
-            point_distance(points[p], points[p - 1]) for p in range(1, len(points))
-        )
+        total_dist = 0
+        self.fields["dist"] = [0]
+        for p in range(1, len(points)):
+            total_dist += point_distance(points[p], points[p - 1])
+            self.fields["dist"].append(total_dist)
+        self.length = total_dist
+
+    @property
+    def has_altitude_data(self):
+        return "ele" in self.fields
+
+    @cached_property
+    def lat_lon_list(self):
+        return [[x, y] for x, y in zip(self.fields["lat"], self.fields["lon"])]
 
     @cached_property
     def ascent(self):
-        if "ele" in self.fields:
+        if self.has_altitude_data:
             return sum(
                 max(self.fields["ele"][p] - self.fields["ele"][p - 1], 0)
                 for p in range(1, len(self.fields["ele"]) - 1)
