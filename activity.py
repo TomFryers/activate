@@ -1,4 +1,4 @@
-import load_gpx
+import load_activity
 import times
 
 
@@ -21,7 +21,7 @@ class Activity:
     @property
     def track(self):
         if self._track is None:
-            self._track = load_gpx.load_gpx(self.filename)[1]
+            self._track = load_activity.load(self.filename)[1]
         return self._track
 
     @property

@@ -3,7 +3,7 @@ import sys
 
 import PyQt5
 
-import load_gpx
+import load_activity
 import ui
 
 try:
@@ -20,7 +20,7 @@ def main():
             cache = pickle.load(f)
     except FileNotFoundError:
         cache = {}
-    activities = load_gpx.load_all("tracks", cache=cache)
+    activities = load_activity.load_all("tracks", cache=cache)
     cache = {}
     for track in activities:
         cache.update(track.cache())

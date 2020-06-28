@@ -1,9 +1,6 @@
-import glob
 import xml.etree.ElementTree
 
-import activity
 import times
-import track
 
 FIELDS = {
     "lat": lambda p: float(p.get("lat")),
@@ -34,18 +31,4 @@ def load_gpx(filename):
                 fields.setdefault(field, [])
                 fields[field].append(value)
 
-    return (name, track.Track(fields))
-
-
-def load_all(directory, cache={}):
-    result = []
-    for filename in glob.glob(directory + "/*.gpx"):
-        if filename in cache:
-            data = cache[filename]
-            result.append(activity.Activity(data[0], None, filename, data[1], data[2]))
-            continue
-        try:
-            result.append(activity.from_track(*load_gpx(filename), filename))
-        except ValueError:
-            pass
-    return result
+    return (name, fields)
