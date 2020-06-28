@@ -48,8 +48,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tableWidget.setRowCount(len(info))
         for i, (k, v) in enumerate(info.items()):
             self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(k))
-            if isinstance(v, (float, int)):
-                widget = FormattableNumber(v, f"{v:.2f}")
+            if isinstance(v, tuple):
+                widget = FormattableNumber(*v)
             else:
                 widget = QtWidgets.QTableWidgetItem(v)
             widget.setTextAlignment(0x2 | 0x80)
@@ -62,8 +62,8 @@ class MainWindow(QtWidgets.QMainWindow):
             activity_elements = activity.list_row
             for j in range(len(activity_elements)):
                 content = activity_elements[j]
-                if isinstance(content, (float, int)):
-                    widget = FormattableNumber(content, f"{content:.2f}")
+                if isinstance(content, tuple):
+                    widget = FormattableNumber(*content)
                     widget.setTextAlignment(0x2 | 0x80)
                 else:
                     widget = QtWidgets.QTableWidgetItem(content)
