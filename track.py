@@ -56,9 +56,7 @@ class Track:
         end_time = self.fields["time"][-1]
         return end_time - start_time
 
-
     @cached_property
     def average_speed(self):
         duration = self.elapsed_time.total_seconds()
         return self.length / duration
-
