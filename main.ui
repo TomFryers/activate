@@ -50,11 +50,11 @@
         <property name="columnCount">
          <number>3</number>
         </property>
-        <attribute name="horizontalHeaderDefaultSectionSize">
-         <number>150</number>
-        </attribute>
         <attribute name="horizontalHeaderMinimumSectionSize">
          <number>50</number>
+        </attribute>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>150</number>
         </attribute>
         <column>
          <property name="text">
@@ -87,10 +87,10 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
+          <item row="1" column="0">
            <layout class="QGridLayout" name="mapContainer"/>
           </item>
-          <item row="0" column="1">
+          <item row="1" column="1">
            <widget class="QTableWidget" name="tableWidget">
             <property name="minimumSize">
              <size>
@@ -132,6 +132,20 @@
             <column/>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="font">
+             <font>
+              <pointsize>20</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -157,7 +171,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
   </widget>

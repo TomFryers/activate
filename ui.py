@@ -57,5 +57,6 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             raise ValueError("Invalid selection made")
 
+        self.label_2.setText(activity.name)
         self.show_on_map(activity.track.lat_lon_list)
         self.add_info(activity.stats)
