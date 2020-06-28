@@ -49,10 +49,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 if j == 0:
                     activity.list_link = widget
                 self.tableWidget_2.setItem(i, j, widget)
+        self.tableWidget_2.resizeColumnsToContents()
 
     def update(self, selected):
         for activity in self.activities:
-            if activity.list_link is self.tableWidget_2.item(selected.row(), 0):
+            if activity.list_link is self.tableWidget_2.item(selected, 0):
                 break
         else:
             raise ValueError("Invalid selection made")
