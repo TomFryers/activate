@@ -29,3 +29,6 @@ def to_string(time):
     else:
         result.append(f"{secs:0>.2f}")
     return "".join(result)
+
+def nice(time):
+    return time.strftime("%A %d %B %Y\n%H:%M")

@@ -1,6 +1,8 @@
 import pyqtlet
 from PyQt5 import QtWidgets, uic
 
+import times
+
 
 def default_map_location(route):
     return [
@@ -59,5 +61,6 @@ class MainWindow(QtWidgets.QMainWindow):
             raise ValueError("Invalid selection made")
 
         self.label_2.setText(activity.name)
+        self.label_3.setText(times.nice(activity.start_time))
         self.show_on_map(activity.track.lat_lon_list)
         self.add_info(activity.stats)
