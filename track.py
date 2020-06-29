@@ -7,6 +7,7 @@ SPEED_RANGE = 2
 
 
 def to_cartesian(lat, lon, ele):
+    """Convert from geodetic to cartesian coordinates based on WGS 84."""
     lat = math.radians(lat)
     lon = math.radians(lon)
     sin_lat = math.sin(lat)
@@ -14,26 +15,30 @@ def to_cartesian(lat, lon, ele):
     sin_lon = math.sin(lon)
     cos_lon = math.cos(lon)
     partial_radius = EARTH_RADIUS / math.sqrt(1 - E_2 * sin_lat ** 2)
-    radius = ele + partial_radius
+    lat_radius = (ele + partial_radius) * cos_lat
     return (
-        radius * cos_lat * cos_lon,
-        radius * cos_lat * sin_lon,
+        lat_radius * cos_lon,
+        lat_radius * sin_lon,
         ((1 - E_2) * partial_radius + ele) * sin_lat,
     )
 
 
 def point_distance(point1, point2):
+    """Get the distance between two points, in geodetic coordinates."""
     point1 = to_cartesian(*point1)
     point2 = to_cartesian(*point2)
     return sum((point1[i] - point2[i]) ** 2 for i in range(3)) ** 0.5
 
 
 class Track:
+    """A series of GPS points at given times."""
+
     def __init__(self, fields):
         self.fields = fields
         if "lat" not in self.fields or "lon" not in self.fields:
             raise ValueError("Missing lat or lon in Track field")
 
+        # Calculate cumulative distances and speeds
         if self.has_altitude_data:
             elevation_data = self.fields["ele"]
         else:
@@ -71,8 +76,10 @@ class Track:
             )
             if time_diff:
                 self.fields["speed"].append(distance / time_diff)
-            else:
+            elif self.fields["speed"]:
                 self.fields["speed"].append(self.fields["speed"][-1])
+            else:
+                self.fields["speed"].append(0)
 
     @property
     def has_altitude_data(self):

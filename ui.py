@@ -8,6 +8,7 @@ import times
 
 
 def default_map_location(route):
+    """Calculate the mean position for centering the map."""
     return [
         sum(i[0] for i in route) / len(route),
         sum(i[1] for i in route) / len(route),
@@ -15,11 +16,14 @@ def default_map_location(route):
 
 
 class MinMax:
+    """Keeps track of the minimum and maximum of some data."""
+
     def __init__(self):
         self.minimum = None
         self.maximum = None
 
     def update(self, value):
+        """Add a new value to the MinMax."""
         if self.minimum is None:
             self.minimum = value
             self.maximum = value
@@ -41,6 +45,8 @@ class MinMax:
 
 
 class FormattableNumber(QtWidgets.QTableWidgetItem):
+    """A sortable, formatted number to place in a table."""
+
     def __init__(self, number, text):
         super().__init__(text)
         self.number = number
@@ -55,23 +61,25 @@ class MainWindow(QtWidgets.QMainWindow):
 
         uic.loadUi("main.ui", self)
 
+        # Set up map
         self.mapWidget = pyqtlet.MapWidget()
         self.map = pyqtlet.L.map(self.mapWidget, {"attributionControl": False})
         self.mapContainer.addWidget(self.mapWidget)
         self.map.setView([51, -1], 14)
         pyqtlet.L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(self.map)
 
+        # Set up charts
         self.charts = {}
-        # Series is never accessed but it prevents the area charts
+        # self.series is never accessed but it prevents the area charts
         # from having their line series garbage collected
         self.series = {}
         self.add_chart("ele", self.graphicsView, True)
         self.add_chart("speed", self.graphicsView_2, False)
 
-    def show_on_map(self, route):
+    def show_on_map(self, route: list):
+        """Display a list of points on the map."""
         self.map.setView(default_map_location(route))
         try:
-
             self.map.removeLayer(self.route_line)
         except AttributeError:
             pass
@@ -80,41 +88,59 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.route_line.addTo(self.map)
 
-    def add_info(self, info):
+    def add_info(self, info: dict):
+        """
+        Add data to the table widget on the right.
+
+        This is used for distance, climb, duration etc.
+        """
         self.tableWidget.setRowCount(len(info))
         for i, (k, v) in enumerate(info.items()):
             self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(k))
+            # Format as number
             if isinstance(v, tuple):
                 widget = FormattableNumber(*v)
+            # Format as string
             else:
                 widget = QtWidgets.QTableWidgetItem(v)
-            widget.setTextAlignment(0x2 | 0x80)
+            widget.setTextAlignment(
+                PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
+            )
             self.tableWidget.setItem(i, 1, widget)
 
     def add_tracks(self, activities):
+        """Make the activity list show this set of activities."""
         self.activities = activities
         self.tableWidget_2.setRowCount(len(activities))
         for i, activity in enumerate(activities):
             activity_elements = activity.list_row
             for j in range(len(activity_elements)):
                 content = activity_elements[j]
+                # Format as number
                 if isinstance(content, tuple):
                     widget = FormattableNumber(*content)
-                    widget.setTextAlignment(0x2 | 0x80)
+                    widget.setTextAlignment(
+                        PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
+                    )
+                # Format as string
                 else:
                     widget = QtWidgets.QTableWidgetItem(content)
+                # Link activity to the first column so we can find it
+                # when clicking
                 if j == 0:
                     activity.list_link = widget
                 self.tableWidget_2.setItem(i, j, widget)
         self.tableWidget_2.resizeColumnsToContents()
 
-    def add_chart(self, name, widget, area=False):
+    def add_chart(self, name, widget: QtChart.QChartView, area=False):
+        """Add a chart to a QChartView."""
         chart = QtChart.QChart()
         chart.legend().hide()
         series = QtChart.QLineSeries()
         if area:
             area = QtChart.QAreaSeries()
             area.setUpperSeries(series)
+            # Save series so it doesn't get garbage collected
             self.series[name] = series
             chart.addSeries(area)
         else:
@@ -124,8 +150,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.charts[name] = widget
 
     def update_chart(self, name, data):
+        """Change a chart's data."""
         chart = self.charts[name].chart()
         series = chart.series()[0]
+        # Extract 'real' series from an area chart
         if isinstance(series, QtChart.QAreaSeries):
             series = series.upperSeries()
         series.clear()
@@ -136,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
             y_range.update(y)
             series.append(x, y)
 
+        # Snap axis minima to zero
         if x_range.minimum != 0 and x_range.ratio > 3:
             x_range.minimum = 0
         if y_range.minimum != 0 and y_range.ratio > 3:
@@ -145,12 +174,15 @@ class MainWindow(QtWidgets.QMainWindow):
             (PyQt5.QtCore.Qt.Horizontal, PyQt5.QtCore.Qt.Vertical)
         ):
             axis = chart.axes(axis)[0]
+            # Set the axis ranges
             if i == 0:
                 axis.setRange(x_range.minimum, x_range.maximum)
             else:
                 axis.setRange(y_range.minimum, y_range.maximum)
             axis.setTickCount((12, 4)[i])
             axis.applyNiceNumbers()
+
+            # Set the correct axis label formatting
             interval = (axis.max() - axis.min()) / (axis.tickCount() - 1)
             if int(interval) == interval:
                 axis.setLabelFormat("%i")
@@ -158,18 +190,21 @@ class MainWindow(QtWidgets.QMainWindow):
                 axis.setLabelFormat(f"%.{max(0, -math.floor(math.log10(interval)))}f")
 
     def update(self, selected):
+        """Show a new activity on the right."""
+        # Find the correct activity
         for activity in self.activities:
             if activity.list_link is self.tableWidget_2.item(selected, 0):
                 break
         else:
             raise ValueError("Invalid selection made")
 
+        # Update labels, map and data box
         self.label_2.setText(activity.name)
         self.label_3.setText(times.nice(activity.start_time))
         self.show_on_map(activity.track.lat_lon_list)
         self.add_info(activity.stats)
 
-        # Charts
+        # Update charts
         if activity.track.has_altitude_data:
             self.update_chart(
                 "ele",
@@ -180,7 +215,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                 ),
             )
-
         self.update_chart(
             "speed",
             list(

@@ -12,6 +12,7 @@ FIELDS = {
 
 
 def load_fit(filename):
+    """Extract the fields from a FIT file."""
     fit = fitparse.FitFile(filename).messages
 
     fields = {}

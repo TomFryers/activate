@@ -5,13 +5,15 @@ ONE_HOUR = datetime.timedelta(hours=1)
 ONE_MINUTE = datetime.timedelta(minutes=1)
 
 
-def from_GPX(string):
+def from_GPX(string) -> datetime.datetime:
+    """Load a time from a string in GPX format."""
     if string is None:
         return None
     return datetime.datetime.fromisoformat(string.rstrip("Z"))
 
 
-def to_string(time):
+def to_string(time: datetime.timedelta):
+    """Convert a time to a nicely formatted string."""
     result = []
     if time.days:
         result += [str(time.days), " d "]
@@ -30,5 +32,7 @@ def to_string(time):
         result.append(f"{secs:0>.2f}")
     return "".join(result)
 
-def nice(time):
+
+def nice(time: datetime.datetime):
+    """Format a time on two lines neatly."""
     return time.strftime("%A %d %B %Y\n%H:%M")

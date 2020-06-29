@@ -11,14 +11,18 @@ FIELDS = {
 
 
 def load_gpx(filename):
+    """Extract the fields from a GPX file."""
+    # Load the tree, getting rid of namespaces
     tree = xml.etree.ElementTree.iterparse(open(filename, "r"))
     for _, element in tree:
         _, _, element.tag = element.tag.rpartition("}")
     tree = tree.root
+    # Find the activity name
     try:
         name = tree.find("./trk/name").text
     except AttributeError:
         name = "[No Name]"
+
     points = tree.findall("./trk/trkseg/trkpt")
     fields = {}
     for point in points:
