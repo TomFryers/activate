@@ -135,6 +135,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_chart(self, name, widget: QtChart.QChartView, area=False):
         """Add a chart to a QChartView."""
         chart = QtChart.QChart()
+        chart.setAnimationOptions(chart.SeriesAnimations)
         chart.legend().hide()
         series = QtChart.QLineSeries()
         if area:
