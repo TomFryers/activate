@@ -12,7 +12,7 @@ class Activity:
         self._track = track
         self.filename = filename
         if start_time is None:
-            start_time = self.track.fields["time"][0]
+            start_time = self.fields["time"][0]
         self.start_time = start_time
         if distance is None:
             distance = self.track.length
@@ -30,7 +30,7 @@ class Activity:
             "Distance": (self.distance / 1000, f"{self.distance / 1000:.2f}"),
             "Elapsed Time": times.to_string(self.track.elapsed_time),
             "Ascent": (self.track.ascent, str(round(self.track.ascent)))
-            if "ele" in self.track.fields
+            if self.track.has_altitude_data
             else "None",
             "Average Speed": (
                 self.track.average_speed * 3.6,

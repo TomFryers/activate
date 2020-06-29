@@ -217,8 +217,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 "ele",
                 list(
                     zip(
-                        [x / 1000 for x in activity.track.fields["dist"]],
-                        activity.track.fields["ele"],
+                        [x / 1000 for x in activity.track["dist"]],
+                        activity.track["ele"],
                     )
                 ),
             )
@@ -226,8 +226,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "speed",
             list(
                 zip(
-                    [x / 1000 for x in activity.track.fields["dist"]],
-                    [x * 3.6 for x in activity.track.fields["speed"]],
+                    [x / 1000 for x in activity.track["dist"]],
+                    [x * 3.6 for x in activity.track["speed"]],
                 )
             ),
         )

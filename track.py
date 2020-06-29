@@ -62,55 +62,73 @@ class Track:
     def __init__(self, fields):
         self.fields = fields
         for essential in ("lat", "lon"):
-            if essential not in self.fields or set(self.fields[essential]) == {None}:
+            if essential not in self.fields or set(self[essential]) == {None}:
                 raise ValueError("Missing lat or lon in Track field")
-            infer_nones(self.fields[essential])
+            infer_nones(self[essential])
 
         if "time" in self.fields:
-            infer_nones(self.fields["time"])
+            infer_nones(self["time"])
 
-        if self.has_altitude_data:
-            elevation_data = self.fields["ele"]
-            elevation_data = infer_nones(elevation_data)
-        else:
-            elevation_data = [0 for _ in range(len(self))]
+        if not self.has_altitude_data:
+            self["ele"] = [0 for _ in range(len(self))]
+        self["ele"] = infer_nones(self["ele"])
 
-        # Calculate cartesian coordinates for each point
+    def __getitem__(self, field):
+        try:
+            return self.fields[field]
+        except KeyError:
+            if field in {"x", "y", "z"}:
+                self.calculate_cartesian()
+            elif field == "dist_to_last":
+                self.calculate_dist_to_last()
+            elif field == "dist":
+                self.calculate_dist()
+            elif field == "speed":
+                self.calculate_speed()
+        return self.fields[field]
+
+    def __setitem__(self, field, value):
+        self.fields[field] = value
+
+    def calculate_cartesian(self):
+        """Calculate cartesian coordinates for each point"""
         self.fields["x"] = []
         self.fields["y"] = []
         self.fields["z"] = []
         for point in range(len(self)):
             x, y, z = to_cartesian(
-                self.fields["lat"][point],
-                self.fields["lon"][point],
-                elevation_data[point],
+                self["lat"][point],
+                self["lon"][point],
+                self["ele"][point],
             )
             self.fields["x"].append(x)
             self.fields["y"].append(y)
             self.fields["z"].append(z)
 
-        # Calculate distances between adjacent points
+    def calculate_dist_to_last(self):
+        """Calculate distances between adjacent points"""
         self.fields["dist_to_last"] = [None]
         for point in range(1, len(self)):
             self.fields["dist_to_last"].append(
                 math.sqrt(
                     sum(
-                        (self.fields[i][point] - self.fields[i][point - 1]) ** 2
+                        (self[i][point] - self[i][point - 1]) ** 2
                         for i in "xyz"
                     )
                 )
             )
 
-        # Calculate cumulative distances
+    def calculate_dist(self):
+        """Calculate cumulative distances"""
         total_dist = 0
         self.fields["dist"] = [0]
         for point in range(1, len(self)):
-            total_dist += self.fields["dist_to_last"][point]
+            total_dist += self["dist_to_last"][point]
             self.fields["dist"].append(total_dist)
-        self.length = total_dist
 
-        # Calculate speeds
-        self.fields["speed"] = []
+    def calculate_speed(self):
+        """Calculate speeds at each point"""
+        speeds = []
         for point_index in range(0, len(self)):
             relevant_points = [
                 point_index + i for i in range(-SPEED_RANGE, SPEED_RANGE + 1)
@@ -120,43 +138,48 @@ class Track:
             while relevant_points[-1] >= len(self):
                 relevant_points.pop(-1)
             time_diff = (
-                self.fields["time"][relevant_points[-1]]
-                - self.fields["time"][relevant_points[0]]
+                self["time"][relevant_points[-1]] - self["time"][relevant_points[0]]
             ).total_seconds()
-            distance = sum(self.fields["dist_to_last"][p] for p in relevant_points[1:])
+            distance = sum(self["dist_to_last"][p] for p in relevant_points[1:])
             if time_diff:
-                self.fields["speed"].append(distance / time_diff)
-            elif self.fields["speed"]:
-                self.fields["speed"].append(self.fields["speed"][-1])
+                speeds.append(distance / time_diff)
+            elif speeds:
+                speeds.append(speeds[-1])
             else:
-                self.fields["speed"].append(0)
+                speeds.append(0)
+        self["speed"] = speeds
 
     def __len__(self):
-        return len(self.fields["lat"])
+        return len(self["lat"])
 
-    @property
+    # Caching necessary to avoid fake elevation data
+    @cached_property
     def has_altitude_data(self):
         return "ele" in self.fields
 
     @cached_property
     def lat_lon_list(self):
-        return [[x, y] for x, y in zip(self.fields["lat"], self.fields["lon"])]
+        return [[x, y] for x, y in zip(self["lat"], self["lon"])]
 
     @cached_property
     def ascent(self):
         if self.has_altitude_data:
             return sum(
-                max(self.fields["ele"][p] - self.fields["ele"][p - 1], 0)
-                for p in range(1, len(self.fields["ele"]))
+                max(self["ele"][p] - self["ele"][p - 1], 0)
+                for p in range(1, len(self["ele"]))
             )
 
     @cached_property
     def elapsed_time(self):
-        start_time = self.fields["time"][0]
-        end_time = self.fields["time"][-1]
+        start_time = self["time"][0]
+        end_time = self["time"][-1]
         return end_time - start_time
 
     @cached_property
     def average_speed(self):
         duration = self.elapsed_time.total_seconds()
         return self.length / duration
+
+    @property
+    def length(self):
+        return self["dist"][-1]
