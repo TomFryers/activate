@@ -15,15 +15,14 @@ def load_fit(filename):
     """Extract the fields from a FIT file."""
     fit = fitparse.FitFile(filename).messages
 
-    fields = {}
+    fields = {field: [] for field in FIELDS}
     for message in fit:
         point = message.get_values()
         for field in FIELDS:
             try:
                 value = FIELDS[field](point)
             except Exception:
-                continue
-            if value:
-                fields.setdefault(field, [])
-                fields[field].append(value)
+                value = None
+            fields[field].append(value)
+    fields = {field: fields[field] for field in fields if set(fields[field]) != {None}}
     return (pathlib.Path(filename).stem, fields)

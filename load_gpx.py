@@ -24,15 +24,15 @@ def load_gpx(filename):
         name = "[No Name]"
 
     points = tree.findall("./trk/trkseg/trkpt")
-    fields = {}
+    fields = {field: [] for field in FIELDS}
     for point in points:
         for field in FIELDS:
+            value = None
             try:
                 value = FIELDS[field](point)
             except Exception:
-                continue
-            if value:
-                fields.setdefault(field, [])
-                fields[field].append(value)
+                value = None
+            fields[field].append(value)
+    fields = {field: fields[field] for field in fields if set(fields[field]) != {None}}
 
     return (name, fields)
