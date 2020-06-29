@@ -34,10 +34,13 @@ def infer_nones(data):
             none_count += 1
             continue
         if none_count:
+            # Write back interpolated values
             gap_size = none_count + 1
             for write_back in range(1, gap_size):
+                # Nones at start
                 if last_good is None:
                     data[index - write_back] = value
+                # Nones in middle
                 else:
                     data[index - write_back] = (
                         value * (gap_size - write_back) + last_good * (write_back)
@@ -47,6 +50,7 @@ def infer_nones(data):
     if none_count:
         if last_good is None:
             raise ValueError("Cannot interpolate from all Nones")
+        # Nones at end
         for write_back in range(0, none_count + 1):
             data[index - write_back] = last_good
     return data
@@ -71,6 +75,7 @@ class Track:
         else:
             elevation_data = [0 for _ in range(len(self))]
 
+        # Calculate cartesian coordinates for each point
         self.fields["x"] = []
         self.fields["y"] = []
         self.fields["z"] = []
@@ -83,6 +88,8 @@ class Track:
             self.fields["x"].append(x)
             self.fields["y"].append(y)
             self.fields["z"].append(z)
+
+        # Calculate distances between adjacent points
         self.fields["dist_to_last"] = [None]
         for point in range(1, len(self)):
             self.fields["dist_to_last"].append(
@@ -93,7 +100,8 @@ class Track:
                     )
                 )
             )
-        # Calculate cumulative distances and speeds
+
+        # Calculate cumulative distances
         total_dist = 0
         self.fields["dist"] = [0]
         for point in range(1, len(self)):
@@ -101,6 +109,7 @@ class Track:
             self.fields["dist"].append(total_dist)
         self.length = total_dist
 
+        # Calculate speeds
         self.fields["speed"] = []
         for point_index in range(0, len(self)):
             relevant_points = [
