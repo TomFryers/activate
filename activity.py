@@ -43,7 +43,7 @@ class Activity:
         return [
             self.name,
             str(self.start_time),
-            (self.distance / 1000, f"{self.distance / 1000:2f}"),
+            (self.distance / 1000, f"{self.distance / 1000:.2f}"),
         ]
 
     def cache(self):
