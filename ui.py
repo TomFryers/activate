@@ -62,14 +62,14 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi("main.ui", self)
 
         # Set up map
-        self.mapWidget = pyqtlet.MapWidget()
-        self.map = pyqtlet.L.map(self.mapWidget, {"attributionControl": False})
-        self.mapContainer.addWidget(self.mapWidget)
+        self.map_widget = pyqtlet.MapWidget()
+        self.map = pyqtlet.L.map(self.map_widget, {"attributionControl": False})
+        self.map_container.addWidget(self.map_widget)
         self.map.setView([51, -1], 14)
         pyqtlet.L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(self.map)
 
         # Set activity list heading resize modes
-        header = self.tableWidget_2.horizontalHeader()
+        header = self.activity_list_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
@@ -79,8 +79,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.series is never accessed but it prevents the area charts
         # from having their line series garbage collected
         self.series = {}
-        self.add_chart("ele", self.graphicsView, True)
-        self.add_chart("speed", self.graphicsView_2, False)
+        self.add_chart("ele", self.altitude_graph, True)
+        self.add_chart("speed", self.speed_graph, False)
 
     def show_on_map(self, route: list):
         """Display a list of points on the map."""
@@ -100,9 +100,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         This is used for distance, climb, duration etc.
         """
-        self.tableWidget.setRowCount(len(info))
+        self.info_table.setRowCount(len(info))
         for i, (k, v) in enumerate(info.items()):
-            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(k))
+            self.info_table.setItem(i, 0, QtWidgets.QTableWidgetItem(k))
             # Format as number
             if isinstance(v, tuple):
                 widget = FormattableNumber(*v)
@@ -112,12 +112,12 @@ class MainWindow(QtWidgets.QMainWindow):
             widget.setTextAlignment(
                 PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
             )
-            self.tableWidget.setItem(i, 1, widget)
+            self.info_table.setItem(i, 1, widget)
 
     def add_tracks(self, activities):
         """Make the activity list show this set of activities."""
         self.activities = activities
-        self.tableWidget_2.setRowCount(len(activities))
+        self.activity_list_table.setRowCount(len(activities))
         for i, activity in enumerate(activities):
             activity_elements = activity.list_row
             for j in range(len(activity_elements)):
@@ -135,8 +135,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 # when clicking
                 if j == 0:
                     activity.list_link = widget
-                self.tableWidget_2.setItem(i, j, widget)
-        self.tableWidget_2.resizeColumnsToContents()
+                self.activity_list_table.setItem(i, j, widget)
+        self.activity_list_table.resizeColumnsToContents()
 
     def add_chart(self, name, widget: QtChart.QChartView, area=False):
         """Add a chart to a QChartView."""
@@ -200,16 +200,16 @@ class MainWindow(QtWidgets.QMainWindow):
         """Show a new activity on the right."""
         # Find the correct activity
         for activity in self.activities:
-            if activity.list_link is self.tableWidget_2.item(selected, 0):
+            if activity.list_link is self.activity_list_table.item(selected, 0):
                 break
         else:
             raise ValueError("Invalid selection made")
 
         # Update labels, map and data box
-        self.label_2.setText(activity.name)
-        self.label_3.setText(times.nice(activity.start_time))
-        self.show_on_map(activity.track.lat_lon_list)
+        self.activity_name_label.setText(activity.name)
+        self.date_time_label.setText(times.nice(activity.start_time))
         self.add_info(activity.stats)
+        self.show_on_map(activity.track.lat_lon_list)
 
         # Update charts
         if activity.track.has_altitude_data:
