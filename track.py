@@ -97,9 +97,7 @@ class Track:
         self.fields["z"] = []
         for point in range(len(self)):
             x, y, z = to_cartesian(
-                self["lat"][point],
-                self["lon"][point],
-                self["ele"][point],
+                self["lat"][point], self["lon"][point], self["ele"][point],
             )
             self.fields["x"].append(x)
             self.fields["y"].append(y)
@@ -111,10 +109,7 @@ class Track:
         for point in range(1, len(self)):
             self.fields["dist_to_last"].append(
                 math.sqrt(
-                    sum(
-                        (self[i][point] - self[i][point - 1]) ** 2
-                        for i in "xyz"
-                    )
+                    sum((self[i][point] - self[i][point - 1]) ** 2 for i in "xyz")
                 )
             )
 
@@ -182,12 +177,12 @@ class Track:
 
     @cached_property
     def alt_graph(self):
-        return list(zip([x / 1000 for x in self["dist"]], self["ele"]))
+        return list(zip((x / 1000 for x in self["dist"]), self["ele"]))
 
     @cached_property
     def speed_graph(self):
         return list(
-            zip([x / 1000 for x in self["dist"]], [x * 3.6 for x in self["speed"]])
+            zip((x / 1000 for x in self["dist"]), (x * 3.6 for x in self["speed"]))
         )
 
     @property
