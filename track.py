@@ -1,17 +1,24 @@
 import math
 from functools import cached_property
 
-EARTH_RADIUS = 6371008.7714
+EARTH_RADIUS = 6378137
+E_2 = 0.00669437999014
 SPEED_RANGE = 2
 
-# TODO Use proper formula
+
 def to_cartesian(lat, lon, ele):
     lat = math.radians(lat)
     lon = math.radians(lon)
+    sin_lat = math.sin(lat)
+    cos_lat = math.cos(lat)
+    sin_lon = math.sin(lon)
+    cos_lon = math.cos(lon)
+    partial_radius = EARTH_RADIUS / math.sqrt(1 - E_2 * sin_lat ** 2)
+    radius = ele + partial_radius
     return (
-        (EARTH_RADIUS + ele) * math.cos(lat) * math.cos(lon),
-        (EARTH_RADIUS + ele) * math.cos(lat) * math.sin(lon),
-        (EARTH_RADIUS + ele) * math.sin(lat),
+        radius * cos_lat * cos_lon,
+        radius * cos_lat * sin_lon,
+        ((1 - E_2) * partial_radius + ele) * sin_lat,
     )
 
 
