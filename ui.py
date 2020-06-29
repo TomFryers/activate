@@ -66,6 +66,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # from having their line series garbage collected
         self.series = {}
         self.add_chart("ele", self.graphicsView, True)
+        self.add_chart("speed", self.graphicsView_2, False)
 
     def show_on_map(self, route):
         self.map.setView(default_map_location(route))
@@ -179,3 +180,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                 ),
             )
+
+        self.update_chart(
+            "speed",
+            list(
+                zip(
+                    [x / 1000 for x in activity.track.fields["dist"]],
+                    [x * 3.6 for x in activity.track.fields["speed"]],
+                )
+            ),
+        )

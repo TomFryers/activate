@@ -2,6 +2,7 @@ import math
 from functools import cached_property
 
 EARTH_RADIUS = 6371008.7714
+SPEED_RANGE = 2
 
 # TODO Use proper formula
 def to_cartesian(lat, lon, ele):
@@ -31,13 +32,40 @@ class Track:
         else:
             elevation_data = [0 for _ in range(len(self.fields["lat"]))]
 
-        points = list(zip(self.fields["lat"], self.fields["lon"], elevation_data))
+        points = list(
+            zip(
+                self.fields["lat"],
+                self.fields["lon"],
+                elevation_data,
+                self.fields["time"],
+            )
+        )
         total_dist = 0
         self.fields["dist"] = [0]
         for p in range(1, len(points)):
-            total_dist += point_distance(points[p], points[p - 1])
+            total_dist += point_distance(points[p][:3], points[p - 1][:3])
             self.fields["dist"].append(total_dist)
         self.length = total_dist
+
+        self.fields["speed"] = []
+        for point_index in range(0, len(points)):
+            relevant_points = [
+                point_index + i for i in range(-SPEED_RANGE, SPEED_RANGE + 1)
+            ]
+            while relevant_points[0] < 0:
+                relevant_points.pop(0)
+            while relevant_points[-1] >= len(points):
+                relevant_points.pop(-1)
+            relevant_points = [points[p] for p in relevant_points]
+            time_diff = (relevant_points[-1][3] - relevant_points[0][3]).total_seconds()
+            distance = sum(
+                point_distance(relevant_points[p][:3], relevant_points[p - 1][:3])
+                for p in range(1, len(relevant_points))
+            )
+            if time_diff:
+                self.fields["speed"].append(distance / time_diff)
+            else:
+                self.fields["speed"].append(self.fields["speed"][-1])
 
     @property
     def has_altitude_data(self):
