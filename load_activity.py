@@ -21,8 +21,10 @@ def load(filename):
     return (data[0], track.Track(data[1]))
 
 
-def load_all(directory, cache={}):
+def load_all(directory, cache=None):
     """Get all activities in a directory."""
+    if cache is None:
+        cache = {}
     result = []
     for filename in glob.glob(directory + "/*"):
         # Create cached activity
