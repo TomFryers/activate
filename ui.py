@@ -14,6 +14,32 @@ def default_map_location(route):
     ]
 
 
+class MinMax:
+    def __init__(self):
+        self.minimum = None
+        self.maximum = None
+
+    def update(self, value):
+        if self.minimum is None:
+            self.minimum = value
+            self.maximum = value
+
+        self.minimum = min(self.minimum, value)
+        self.maximum = max(self.maximum, value)
+
+    @property
+    def range(self):
+        if self.minimum is None:
+            return None
+        return self.maximum - self.minimum
+
+    @property
+    def ratio(self):
+        if self.minimum is None:
+            return None
+        return self.maximum / self.minimum
+
+
 class FormattableNumber(QtWidgets.QTableWidgetItem):
     def __init__(self, number, text):
         super().__init__(text)
@@ -102,29 +128,26 @@ class MainWindow(QtWidgets.QMainWindow):
         if isinstance(series, QtChart.QAreaSeries):
             series = series.upperSeries()
         series.clear()
-        min_x = data[0][0]
-        max_x = data[0][0]
-        min_y = data[0][1]
-        max_y = data[0][1]
+        x_range = MinMax()
+        y_range = MinMax()
         for x, y in data:
-            min_x = min(x, min_x)
-            max_x = max(x, max_x)
-            min_y = min(y, min_y)
-            max_y = max(y, max_y)
+            x_range.update(x)
+            y_range.update(y)
             series.append(x, y)
+
+        if x_range.minimum != 0 and x_range.ratio > 3:
+            x_range.minimum = 0
+        if y_range.minimum != 0 and y_range.ratio > 3:
+            y_range.minimum = 0
 
         for i, axis in enumerate(
             (PyQt5.QtCore.Qt.Horizontal, PyQt5.QtCore.Qt.Vertical)
         ):
             axis = chart.axes(axis)[0]
-            if min_x != 0 and max_x / min_x > 3:
-                min_x = 0
-            if min_y != 0 and max_y / min_y > 3:
-                min_y = 0
             if i == 0:
-                axis.setRange(min_x, max_x)
+                axis.setRange(x_range.minimum, x_range.maximum)
             else:
-                axis.setRange(min_y, max_y)
+                axis.setRange(y_range.minimum, y_range.maximum)
             axis.setTickCount((12, 4)[i])
             axis.applyNiceNumbers()
             interval = (axis.max() - axis.min()) / (axis.tickCount() - 1)
