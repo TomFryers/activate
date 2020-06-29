@@ -35,6 +35,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.map.setView([51, -1], 14)
         pyqtlet.L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(self.map)
 
+        self.charts = {}
+        # Series is never accessed but it prevents the area charts
+        # from having their line series garbage collected
+        self.series = {}
+        self.add_chart("ele", self.graphicsView, True)
+
     def show_on_map(self, route):
         self.map.setView(default_map_location(route))
         try:
@@ -75,6 +81,54 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.tableWidget_2.setItem(i, j, widget)
         self.tableWidget_2.resizeColumnsToContents()
 
+    def add_chart(self, name, widget, area=False):
+        chart = QtChart.QChart()
+        chart.legend().hide()
+        series = QtChart.QLineSeries()
+        if area:
+            area = QtChart.QAreaSeries()
+            area.setUpperSeries(series)
+            self.series[name] = series
+            chart.addSeries(area)
+        else:
+            chart.addSeries(series)
+        chart.createDefaultAxes()
+        widget.setChart(chart)
+        self.charts[name] = widget
+
+    def update_chart(self, name, data):
+        chart = self.charts[name].chart()
+        series = chart.series()[0]
+        if isinstance(series, QtChart.QAreaSeries):
+            series = series.upperSeries()
+        series.clear()
+        min_x = data[0][0]
+        max_x = data[0][0]
+        min_y = data[0][1]
+        max_y = data[0][1]
+        for x, y in data:
+            min_x = min(x, min_x)
+            max_x = max(x, max_x)
+            min_y = min(y, min_y)
+            max_y = max(y, max_y)
+            series.append(x, y)
+
+        for i, axis in enumerate(
+            (PyQt5.QtCore.Qt.Horizontal, PyQt5.QtCore.Qt.Vertical)
+        ):
+            axis = chart.axes(axis)[0]
+            if i == 0:
+                axis.setRange(min_x, max_x)
+            else:
+                axis.setRange(min_y, max_y)
+            axis.setTickCount((12, 4)[i])
+            axis.applyNiceNumbers()
+            interval = (axis.max() - axis.min()) / (axis.tickCount() - 1)
+            if int(interval) == interval:
+                axis.setLabelFormat("%i")
+            else:
+                axis.setLabelFormat(f"%.{max(0, -math.floor(math.log10(interval)))}f")
+
     def update(self, selected):
         for activity in self.activities:
             if activity.list_link is self.tableWidget_2.item(selected, 0):
@@ -89,31 +143,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Charts
         if activity.track.has_altitude_data:
-            self.altchart = QtChart.QChart()
-            self.altchart.legend().hide()
-            self.altseries = QtChart.QLineSeries()
-            for distance, elevation in zip(
-                activity.track.fields["dist"], activity.track.fields["ele"]
-            ):
-                self.altseries.append(distance / 1000, elevation)
-
-            area = QtChart.QAreaSeries()
-            area.setUpperSeries(self.altseries)
-            self.altchart.addSeries(area)
-            self.altchart.createDefaultAxes()
-            for i, axis in enumerate(
-                (
-                    self.altchart.axes(PyQt5.QtCore.Qt.Horizontal)[0],
-                    self.altchart.axes(PyQt5.QtCore.Qt.Vertical)[0],
-                )
-            ):
-                axis.setTickCount((12, 5)[i])
-                axis.applyNiceNumbers()
-                interval = (axis.max() - axis.min()) / (axis.tickCount() - 1)
-                if int(interval) == interval:
-                    axis.setLabelFormat("%i")
-                else:
-                    axis.setLabelFormat(
-                        f"%.{max(0, -math.floor(math.log10(interval)))}f"
+            self.update_chart(
+                "ele",
+                list(
+                    zip(
+                        [x / 1000 for x in activity.track.fields["dist"]],
+                        activity.track.fields["ele"],
                     )
-            self.graphicsView.setChart(self.altchart)
+                ),
+            )
