@@ -180,6 +180,16 @@ class Track:
         duration = self.elapsed_time.total_seconds()
         return self.length / duration
 
+    @cached_property
+    def alt_graph(self):
+        return list(zip([x / 1000 for x in self["dist"]], self["ele"]))
+
+    @cached_property
+    def speed_graph(self):
+        return list(
+            zip([x / 1000 for x in self["dist"]], [x * 3.6 for x in self["speed"]])
+        )
+
     @property
     def length(self):
         return self["dist"][-1]

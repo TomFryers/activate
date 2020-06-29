@@ -213,21 +213,5 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Update charts
         if activity.track.has_altitude_data:
-            self.update_chart(
-                "ele",
-                list(
-                    zip(
-                        [x / 1000 for x in activity.track["dist"]],
-                        activity.track["ele"],
-                    )
-                ),
-            )
-        self.update_chart(
-            "speed",
-            list(
-                zip(
-                    [x / 1000 for x in activity.track["dist"]],
-                    [x * 3.6 for x in activity.track["speed"]],
-                )
-            ),
-        )
+            self.update_chart("ele", activity.track.alt_graph)
+        self.update_chart("speed", activity.track.speed_graph)
