@@ -68,6 +68,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.map.setView([51, -1], 14)
         pyqtlet.L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(self.map)
 
+        # Set activity list heading resize modes
+        header = self.tableWidget_2.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+
         # Set up charts
         self.charts = {}
         # self.series is never accessed but it prevents the area charts

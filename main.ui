@@ -69,9 +69,6 @@
         <property name="columnCount">
          <number>3</number>
         </property>
-        <attribute name="horizontalHeaderStretchLastSection">
-         <bool>true</bool>
-        </attribute>
         <column>
          <property name="text">
           <string>Name</string>
