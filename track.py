@@ -94,7 +94,7 @@ class Track:
         if self.has_altitude_data:
             return sum(
                 max(self.fields["ele"][p] - self.fields["ele"][p - 1], 0)
-                for p in range(1, len(self.fields["ele"]) - 1)
+                for p in range(1, len(self.fields["ele"]))
             )
 
     @cached_property
