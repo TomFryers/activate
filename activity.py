@@ -12,7 +12,7 @@ class Activity:
         self._track = track
         self.filename = filename
         if start_time is None:
-            start_time = self.fields["time"][0]
+            start_time = self.track["time"][0]
         self.start_time = start_time
         if distance is None:
             distance = self.track.length
