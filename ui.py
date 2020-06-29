@@ -117,6 +117,10 @@ class MainWindow(QtWidgets.QMainWindow):
             (PyQt5.QtCore.Qt.Horizontal, PyQt5.QtCore.Qt.Vertical)
         ):
             axis = chart.axes(axis)[0]
+            if min_x != 0 and max_x / min_x > 3:
+                min_x = 0
+            if min_y != 0 and max_y / min_y > 3:
+                min_y = 0
             if i == 0:
                 axis.setRange(min_x, max_x)
             else:
