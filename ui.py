@@ -83,7 +83,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.add_chart("ele", self.altitude_graph, True)
         self.add_chart("speed", self.speed_graph, False)
 
-        self.action_import.triggered.connect(self.import_activity)
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
         self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
 

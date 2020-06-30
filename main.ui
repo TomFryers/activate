@@ -282,5 +282,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_import</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>import_activity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>import_activity()</slot>
+ </slots>
 </ui>
