@@ -85,6 +85,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.action_import.triggered.connect(self.import_activity)
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
+        self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
 
     def show_on_map(self, route: list):
         """Display a list of points on the map."""
