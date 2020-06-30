@@ -4,6 +4,7 @@ import PyQt5
 import pyqtlet
 from PyQt5 import QtChart, QtWidgets, uic
 
+import load_activity
 import times
 
 
@@ -82,6 +83,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.add_chart("ele", self.altitude_graph, True)
         self.add_chart("speed", self.speed_graph, False)
 
+        self.action_import.triggered.connect(self.import_activity)
+        self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
+
     def show_on_map(self, route: list):
         """Display a list of points on the map."""
         self.map.setView(default_map_location(route))
@@ -129,24 +133,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activities = activities
         self.activity_list_table.setRowCount(len(activities))
         for i, activity in enumerate(activities):
-            activity_elements = activity.list_row
-            for j in range(len(activity_elements)):
-                content = activity_elements[j]
-                # Format as number
-                if isinstance(content, tuple):
-                    widget = FormattableNumber(*content)
-                    widget.setTextAlignment(
-                        PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
-                    )
-                # Format as string
-                else:
-                    widget = QtWidgets.QTableWidgetItem(content)
-                # Link activity to the first column so we can find it
-                # when clicking
-                if j == 0:
-                    activity.list_link = widget
-                self.activity_list_table.setItem(i, j, widget)
+            self.add_activity(i, activity)
         self.activity_list_table.resizeColumnsToContents()
+
+    def add_activity(self, position, activity):
+        activity_elements = activity.list_row
+        for j in range(len(activity_elements)):
+            content = activity_elements[j]
+            # Format as number
+            if isinstance(content, tuple):
+                widget = FormattableNumber(*content)
+                widget.setTextAlignment(
+                    PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
+                )
+            # Format as string
+            else:
+                widget = QtWidgets.QTableWidgetItem(content)
+            # Link activity to the first column so we can find it
+            # when clicking
+            if j == 0:
+                activity.list_link = widget
+            self.activity_list_table.setItem(position, j, widget)
 
     def add_chart(self, name, widget: QtChart.QChartView, area=False):
         """Add a chart to a QChartView."""
@@ -225,3 +232,14 @@ class MainWindow(QtWidgets.QMainWindow):
         if activity.track.has_altitude_data:
             self.update_chart("ele", activity.track.alt_graph)
         self.update_chart("speed", activity.track.speed_graph)
+
+    def import_activity(self):
+        filename = QtWidgets.QFileDialog.getOpenFileName(
+            self, "Import an activity", "", "Activity Files (*.gpx *.fit)"
+        )[0]
+        if not filename:
+            return
+        activity = load_activity.import_and_load(filename)
+        self.activity_list_table.insertRow(0)
+        self.add_activity(0, activity)
+        self.activities.append(activity)

@@ -1,6 +1,7 @@
 import pathlib
 import xml.etree.ElementTree
 
+import load_activity
 import times
 
 FIELDS = {
@@ -22,7 +23,7 @@ def load_gpx(filename):
     try:
         name = tree.find("./trk/name").text
     except AttributeError:
-        name = pathlib.Path(filename).stem
+        name = load_activity.decode_name(pathlib.Path(filename).stem)
 
     points = tree.findall("./trk/trkseg/trkpt")
     fields = {field: [] for field in FIELDS}
