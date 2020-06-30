@@ -87,11 +87,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.map.setView(default_map_location(route))
         try:
             self.map.removeLayer(self.route_line)
+            self.map.removeLayer(self.start_icon)
+            self.map.removeLayer(self.finish_icon)
         except AttributeError:
             pass
         self.route_line = pyqtlet.L.polyline(
             route, {"smoothFactor": 0, "color": "#802090"}
         )
+        self.start_icon = pyqtlet.L.circleMarker(
+            route[0], {"radius": 8, "color": "#10b020"}
+        )
+        self.finish_icon = pyqtlet.L.circleMarker(
+            route[-1], {"radius": 8, "color": "#e00000"}
+        )
+        self.start_icon.addTo(self.map)
+        self.finish_icon.addTo(self.map)
         self.route_line.addTo(self.map)
 
     def add_info(self, info: dict):
