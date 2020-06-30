@@ -1,6 +1,8 @@
 import load_activity
 import times
 
+import datetime
+
 
 def from_track(name, track, filename):
     return Activity(name, track, filename)
@@ -26,6 +28,7 @@ class Activity:
 
     @property
     def stats(self):
+        pace = 1000 / self.track.average_speed
         return {
             "Distance": (self.distance / 1000, f"{self.distance / 1000:.2f}"),
             "Elapsed Time": times.to_string(self.track.elapsed_time),
@@ -35,6 +38,10 @@ class Activity:
             "Average Speed": (
                 self.track.average_speed * 3.6,
                 f"{self.track.average_speed * 3.6:.2f}",
+            ),
+            "Pace": (
+                pace,
+                times.to_string(datetime.timedelta(seconds=round(pace))).lstrip("0"),
             ),
         }
 
