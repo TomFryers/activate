@@ -35,14 +35,24 @@ class Activity:
             "Ascent": (self.track.ascent, str(round(self.track.ascent)))
             if self.track.has_altitude_data
             else "None",
+            "Descent": (self.track.descent, str(round(self.track.descent)))
+            if self.track.has_altitude_data
+            else "None",
             "Average Speed": (
                 self.track.average_speed * 3.6,
                 f"{self.track.average_speed * 3.6:.2f}",
             ),
-            "Pace": (
-                pace,
-                times.to_string(datetime.timedelta(seconds=round(pace))),
+            "Pace": (pace, times.to_string(datetime.timedelta(seconds=round(pace)))),
+            "Max. Speed": (
+                self.track.max_speed * 3.6,
+                f"{self.track.max_speed * 3.6:.1f}",
             ),
+            "Highest Point": (
+                self.track.highest_point,
+                str(round(self.track.highest_point)),
+            )
+            if self.track.has_altitude_data
+            else "None",
         }
 
     @property

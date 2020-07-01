@@ -178,6 +178,19 @@ class Track:
         if self.has_altitude_data:
             return sum(x for x in self["climb"] if x is not None)
 
+    @cached_property
+    def descent(self):
+        if self.has_altitude_data:
+            return sum(x for x in self["desc"] if x is not None)
+
+    @cached_property
+    def max_speed(self):
+        return max(self["speed"])
+
+    @cached_property
+    def highest_point(self):
+        return max(self["ele"])
+
     @property
     def start_time(self):
         return self["time"][0]
