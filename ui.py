@@ -164,14 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for j in range(len(activity_elements)):
             content = activity_elements[j]
             # Format as number
-            if isinstance(content, tuple):
-                widget = FormattableNumber(*content)
-                widget.setTextAlignment(
-                    PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
-                )
-            # Format as string
-            else:
-                widget = QtWidgets.QTableWidgetItem(content)
+            widget = create_table_item(content)
             # Link activity to the first column so we can find it
             # when clicking
             if j == 0:
