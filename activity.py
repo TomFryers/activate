@@ -1,7 +1,8 @@
-import load_activity
-import times
-
 import datetime
+
+import load_activity
+import number_formats
+import times
 
 
 def from_track(name, track, filename):
@@ -32,10 +33,10 @@ class Activity:
         return {
             "Distance": (self.distance / 1000, f"{self.distance / 1000:.2f}"),
             "Elapsed Time": times.to_string(self.track.elapsed_time),
-            "Ascent": (self.track.ascent, str(round(self.track.ascent)))
+            "Ascent": number_formats.as_int(self.track.ascent)
             if self.track.has_altitude_data
             else "None",
-            "Descent": (self.track.descent, str(round(self.track.descent)))
+            "Descent": number_formats.as_int(self.track.descent)
             if self.track.has_altitude_data
             else "None",
             "Average Speed": (
@@ -47,10 +48,7 @@ class Activity:
                 self.track.max_speed * 3.6,
                 f"{self.track.max_speed * 3.6:.1f}",
             ),
-            "Highest Point": (
-                self.track.highest_point,
-                str(round(self.track.highest_point)),
-            )
+            "Highest Point": number_formats.as_int(self.track.highest_point)
             if self.track.has_altitude_data
             else "None",
         }

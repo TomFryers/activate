@@ -45,7 +45,13 @@ class MinMax:
         return self.maximum / self.minimum
 
 
-def create_table_item(item, align=None):
+def create_table_item(item, align=None) -> QtWidgets.QTableWidgetItem:
+    """
+    Create a table item that can be a FormattableNumber.
+
+    If item is a tuple, will return a table item that looks like item[1]
+    but sorts with item[0]. Otherwise just returns a normal table item.
+    """
     if isinstance(item, tuple):
         widget = FormattableNumber(*item)
     # Format as string
@@ -59,11 +65,16 @@ def create_table_item(item, align=None):
     return widget
 
 
+def good_minus(string):
+    """Replace hyphen-minuses with real minus signs."""
+    return string.replace("-", "\u2212")
+
+
 class FormattableNumber(QtWidgets.QTableWidgetItem):
     """A sortable, formatted number to place in a table."""
 
     def __init__(self, number, text):
-        super().__init__(text.replace("-", "\u2212"))
+        super().__init__(good_minus(text))
         self.number = number
 
     def __lt__(self, other):

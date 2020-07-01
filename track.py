@@ -1,6 +1,8 @@
 import math
-import times
 from functools import cached_property
+
+import number_formats
+import times
 
 EARTH_RADIUS = 6378137
 E_2 = 0.00669437999014
@@ -238,8 +240,8 @@ class Track:
                         times.to_string(time - lasttime),
                         times.to_string(time - self.start_time),
                         (speed, f"{speed:.2f}"),
-                        (alt - lastalt, str(round(alt - lastalt))),
-                        (total_climb, str(round(total_climb))),
+                        number_formats.as_int(alt - lastalt),
+                        number_formats.as_int(total_climb),
                     ]
                 )
                 total_climb = 0
