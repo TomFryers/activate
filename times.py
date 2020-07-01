@@ -30,7 +30,7 @@ def to_string(time: datetime.timedelta):
         result.append(f"{secs:0>2d}")
     else:
         result.append(f"{secs:0>.2f}")
-    return "".join(result)
+    return "".join(result).lstrip("0")
 
 
 def nice(time: datetime.datetime):

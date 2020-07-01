@@ -1,4 +1,5 @@
 import math
+import times
 from functools import cached_property
 
 EARTH_RADIUS = 6378137
@@ -85,6 +86,8 @@ class Track:
                 self.calculate_dist()
             elif field == "speed":
                 self.calculate_speed()
+            elif field in {"climb", "desc"}:
+                self.calculate_climb_desc()
         return self.fields[field]
 
     def __setitem__(self, field, value):
@@ -112,6 +115,20 @@ class Track:
                     sum((self[i][point] - self[i][point - 1]) ** 2 for i in "xyz")
                 )
             )
+
+    def calculate_climb_desc(self):
+        self.fields["climb"] = [None]
+        self.fields["desc"] = [None]
+        current = self["ele"][0]
+        for point in range(1, len(self)):
+            last = current
+            current = self["ele"][point]
+            if current > last:
+                self.fields["climb"].append(current - last)
+                self.fields["desc"].append(0)
+            else:
+                self.fields["desc"].append(last - current)
+                self.fields["climb"].append(0)
 
     def calculate_dist(self):
         """Calculate cumulative distances"""
@@ -159,16 +176,16 @@ class Track:
     @cached_property
     def ascent(self):
         if self.has_altitude_data:
-            return sum(
-                max(self["ele"][p] - self["ele"][p - 1], 0)
-                for p in range(1, len(self["ele"]))
-            )
+            return sum(x for x in self["climb"] if x is not None)
+
+    @property
+    def start_time(self):
+        return self["time"][0]
 
     @cached_property
     def elapsed_time(self):
-        start_time = self["time"][0]
         end_time = self["time"][-1]
-        return end_time - start_time
+        return end_time - self.start_time
 
     @cached_property
     def average_speed(self):
@@ -188,3 +205,33 @@ class Track:
     @property
     def length(self):
         return self["dist"][-1]
+
+    @cached_property
+    def splits(self, splitlength=1000):
+        splits = []
+        lasttime = None
+        lastalt = None
+        total_climb = 0
+        for time, dist, alt, climb in zip(
+            self["time"], self["dist"], self["ele"], self["climb"]
+        ):
+            if lasttime is None:
+                lasttime = time
+                lastalt = alt
+            if dist // splitlength > len(splits):
+                speed = 3.6 * splitlength / (time - lasttime).total_seconds()
+                splits.append(
+                    [
+                        times.to_string(time - lasttime),
+                        times.to_string(time - self.start_time),
+                        (speed, f"{speed:.2f}"),
+                        (alt - lastalt, str(round(alt - lastalt))),
+                        (total_climb, str(round(total_climb))),
+                    ]
+                )
+                total_climb = 0
+                lasttime = None
+            if climb is not None:
+                total_climb += climb
+
+        return splits

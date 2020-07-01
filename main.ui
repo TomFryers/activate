@@ -88,7 +88,7 @@
     <item>
      <widget class="QTabWidget" name="activity_tabs">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="overview_tab">
        <attribute name="title">
@@ -200,6 +200,79 @@
            <widget class="QChartView" name="third_graph"/>
           </item>
          </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="splits_tab">
+       <attribute name="title">
+        <string>Splits</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QTableWidget" name="split_table">
+          <property name="minimumSize">
+           <size>
+            <width>210</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="columnCount">
+           <number>7</number>
+          </property>
+          <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Kilometre</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Time</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Split</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Speed</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Net Climb</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Ascent</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Relative</string>
+           </property>
+          </column>
+         </widget>
         </item>
        </layout>
       </widget>

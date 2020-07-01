@@ -45,11 +45,25 @@ class MinMax:
         return self.maximum / self.minimum
 
 
+def create_table_item(item, align=None):
+    if isinstance(item, tuple):
+        widget = FormattableNumber(*item)
+    # Format as string
+    else:
+        widget = QtWidgets.QTableWidgetItem(item)
+        widget.setTextAlignment(
+            PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
+        )
+    if align is not None:
+        widget.setTextAlignment(align)
+    return widget
+
+
 class FormattableNumber(QtWidgets.QTableWidgetItem):
     """A sortable, formatted number to place in a table."""
 
     def __init__(self, number, text):
-        super().__init__(text)
+        super().__init__(text.replace("-", "\u2212"))
         self.number = number
 
     def __lt__(self, other):
@@ -116,17 +130,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.info_table.setRowCount(len(info))
         for i, (k, v) in enumerate(info.items()):
-            self.info_table.setItem(i, 0, QtWidgets.QTableWidgetItem(k))
-            # Format as number
-            if isinstance(v, tuple):
-                widget = FormattableNumber(*v)
-            # Format as string
-            else:
-                widget = QtWidgets.QTableWidgetItem(v)
-            widget.setTextAlignment(
-                PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
+            self.info_table.setItem(i, 0, create_table_item(k))
+            self.info_table.setItem(
+                i,
+                1,
+                create_table_item(
+                    v, align=PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
+                ),
             )
-            self.info_table.setItem(i, 1, widget)
 
     def add_tracks(self, activities):
         """Make the activity list show this set of activities."""
@@ -213,6 +224,23 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 axis.setLabelFormat(f"%.{max(0, -math.floor(math.log10(interval)))}f")
 
+    def update_splits(self, data):
+        self.split_table.setRowCount(len(data))
+        mean_speed = sum(r[2][0] for r in data) / len(data)
+        for y, row in enumerate(data):
+            for x, item in enumerate([(y + 1, str(y + 1))] + row):
+                self.split_table.setItem(
+                    y,
+                    x,
+                    create_table_item(
+                        item, PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
+                    ),
+                )
+            bar = QtWidgets.QProgressBar()
+            bar.setTextVisible(False)
+            bar.setValue(50 * row[2][0] / mean_speed)
+            self.split_table.setCellWidget(y, x + 1, bar)
+
     def update(self, selected):
         """Show a new activity on the right."""
         # Find the correct activity
@@ -232,6 +260,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if activity.track.has_altitude_data:
             self.update_chart("ele", activity.track.alt_graph)
         self.update_chart("speed", activity.track.speed_graph)
+
+        self.update_splits(activity.track.splits)
 
     def import_activity(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(

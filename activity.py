@@ -14,7 +14,7 @@ class Activity:
         self._track = track
         self.filename = filename
         if start_time is None:
-            start_time = self.track["time"][0]
+            start_time = self.track.start_time
         self.start_time = start_time
         if distance is None:
             distance = self.track.length
@@ -41,7 +41,7 @@ class Activity:
             ),
             "Pace": (
                 pace,
-                times.to_string(datetime.timedelta(seconds=round(pace))).lstrip("0"),
+                times.to_string(datetime.timedelta(seconds=round(pace))),
             ),
         }
 
