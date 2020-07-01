@@ -78,7 +78,7 @@
         </column>
         <column>
          <property name="text">
-          <string>Length</string>
+          <string>Distance</string>
          </property>
         </column>
        </widget>
@@ -104,13 +104,13 @@
            <widget class="QTableWidget" name="info_table">
             <property name="minimumSize">
              <size>
-              <width>210</width>
+              <width>310</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>210</width>
+              <width>310</width>
               <height>16777215</height>
              </size>
             </property>
@@ -127,7 +127,7 @@
              <bool>false</bool>
             </property>
             <property name="columnCount">
-             <number>2</number>
+             <number>3</number>
             </property>
             <attribute name="horizontalHeaderVisible">
              <bool>false</bool>
@@ -141,6 +141,7 @@
             <attribute name="verticalHeaderVisible">
              <bool>false</bool>
             </attribute>
+            <column/>
             <column/>
             <column/>
            </widget>
@@ -239,7 +240,7 @@
           </attribute>
           <column>
            <property name="text">
-            <string>Kilometre</string>
+            <string>Number</string>
            </property>
           </column>
           <column>
@@ -284,7 +285,7 @@
      <height>30</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="file_menu">
     <property name="title">
      <string>File</string>
     </property>
@@ -292,7 +293,14 @@
     <addaction name="separator"/>
     <addaction name="action_quit"/>
    </widget>
-   <addaction name="menuFile"/>
+   <widget class="QMenu" name="settings_menu">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="action_units"/>
+   </widget>
+   <addaction name="file_menu"/>
+   <addaction name="settings_menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_import">
@@ -306,6 +314,11 @@
   <action name="action_quit">
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="action_units">
+   <property name="text">
+    <string>Units</string>
    </property>
   </action>
  </widget>
@@ -382,10 +395,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_units</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>edit_unit_settings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activity()</slot>
   <slot>update_page()</slot>
   <slot>update_activity()</slot>
+  <slot>edit_unit_settings()</slot>
  </slots>
 </ui>

@@ -1,9 +1,6 @@
 import math
 from functools import cached_property
 
-import number_formats
-import times
-
 EARTH_RADIUS = 6378137
 E_2 = 0.00669437999014
 SPEED_RANGE = 2
@@ -209,13 +206,11 @@ class Track:
 
     @cached_property
     def alt_graph(self):
-        return list(zip((x / 1000 for x in self["dist"]), self["ele"]))
+        return ((self["dist"], "distance"), (self["ele"], "altitude"))
 
     @cached_property
     def speed_graph(self):
-        return list(
-            zip((x / 1000 for x in self["dist"]), (x * 3.6 for x in self["speed"]))
-        )
+        return ((self["dist"], "distance"), (self["speed"], "speed"))
 
     @property
     def length(self):
@@ -234,14 +229,14 @@ class Track:
                 lasttime = time
                 lastalt = alt
             if dist // splitlength > len(splits):
-                speed = 3.6 * splitlength / (time - lasttime).total_seconds()
+                speed = splitlength / (time - lasttime).total_seconds()
                 splits.append(
                     [
-                        times.to_string(time - lasttime),
-                        times.to_string(time - self.start_time),
-                        (speed, f"{speed:.2f}"),
-                        number_formats.as_int(alt - lastalt),
-                        number_formats.as_int(total_climb),
+                        (time - lasttime, "time"),
+                        (time - self.start_time, "time"),
+                        (speed, "speed"),
+                        (alt - lastalt, "altitude"),
+                        (total_climb, "altitude"),
                     ]
                 )
                 total_climb = 0

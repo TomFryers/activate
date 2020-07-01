@@ -12,7 +12,7 @@ def from_GPX(string) -> datetime.datetime:
     return datetime.datetime.fromisoformat(string.rstrip("Z"))
 
 
-def to_string(time: datetime.timedelta):
+def to_string(time: datetime.timedelta, exact=False):
     """Convert a time to a nicely formatted string."""
     result = []
     if time.days:
@@ -25,7 +25,7 @@ def to_string(time: datetime.timedelta):
         result += [f"{time // ONE_MINUTE:0>2d}", ":"]
         time %= ONE_MINUTE
     secs = time.total_seconds()
-    if int(secs) == secs:
+    if int(secs) == secs or not exact:
         secs = int(secs)
         result.append(f"{secs:0>2d}")
     else:
@@ -36,3 +36,9 @@ def to_string(time: datetime.timedelta):
 def nice(time: datetime.datetime):
     """Format a time on two lines neatly."""
     return time.strftime("%A %d %B %Y\n%H:%M")
+
+
+def round_time(time: datetime.datetime):
+    return time.replace(
+        microsecond=0, second=round(time.second + time.microsecond / 1000000)
+    )

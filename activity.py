@@ -1,8 +1,6 @@
 import datetime
 
 import load_activity
-import number_formats
-import times
 
 
 def from_track(name, track, filename):
@@ -29,37 +27,26 @@ class Activity:
 
     @property
     def stats(self):
-        pace = 1000 / self.track.average_speed
         return {
-            "Distance": (self.distance / 1000, f"{self.distance / 1000:.2f}"),
-            "Elapsed Time": times.to_string(self.track.elapsed_time),
-            "Ascent": number_formats.as_int(self.track.ascent)
+            "Distance": (self.distance, "distance"),
+            "Elapsed Time": (self.track.elapsed_time, "time"),
+            "Ascent": (self.track.ascent, "altitude")
             if self.track.has_altitude_data
             else "None",
-            "Descent": number_formats.as_int(self.track.descent)
+            "Descent": (self.track.descent, "altitude")
             if self.track.has_altitude_data
             else "None",
-            "Average Speed": (
-                self.track.average_speed * 3.6,
-                f"{self.track.average_speed * 3.6:.2f}",
-            ),
-            "Pace": (pace, times.to_string(datetime.timedelta(seconds=round(pace)))),
-            "Max. Speed": (
-                self.track.max_speed * 3.6,
-                f"{self.track.max_speed * 3.6:.1f}",
-            ),
-            "Highest Point": number_formats.as_int(self.track.highest_point)
+            "Average Speed": (self.track.average_speed, "speed"),
+            "Pace": (1 / self.track.average_speed, "pace"),
+            "Max. Speed": (self.track.max_speed, "speed"),
+            "Highest Point": (self.track.highest_point, "altitude")
             if self.track.has_altitude_data
             else "None",
         }
 
     @property
     def list_row(self):
-        return [
-            self.name,
-            str(self.start_time),
-            (self.distance / 1000, f"{self.distance / 1000:.2f}"),
-        ]
+        return [self.name, self.start_time, (self.distance, "distance")]
 
     def cache(self):
         return {self.filename: (self.name, self.start_time, self.distance)}

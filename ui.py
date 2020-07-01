@@ -5,7 +5,10 @@ import pyqtlet
 from PyQt5 import QtChart, QtWidgets, uic
 
 import load_activity
+import number_formats
+import settings
 import times
+import units
 
 
 def default_map_location(route):
@@ -81,6 +84,29 @@ class FormattableNumber(QtWidgets.QTableWidgetItem):
         return self.number < other.number
 
 
+class SettingsDialog(QtWidgets.QDialog):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        uic.loadUi("settings.ui", self)
+
+    def load_from_settings(self, current_settings: settings.Settings):
+        """Load a settings object to the UI widgets."""
+        self.unit_system.setCurrentText(current_settings.unit_system)
+
+    def get_settings(self) -> settings.Settings:
+        """Get a settings object from the UIT widgets."""
+        return settings.Settings(unit_system=self.unit_system.currentText())
+
+    def exec(self, current_settings, page):
+        self.settings_tabs.setCurrentIndex(("Units",).index(page))
+        result = super().exec()
+        if not result:
+            return current_settings
+        settings = self.get_settings()
+        settings.save()
+        return settings
+
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -111,6 +137,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
         self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
+
+        self.settings = settings.load_settings()
+
+    def edit_unit_settings(self):
+        settings_window = SettingsDialog()
+        self.settings = settings_window.exec(self.settings, "Units")
 
     def show_on_map(self, route: list):
         """Display a list of points on the map."""
@@ -143,11 +175,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.info_table.setRowCount(len(info))
         for i, (k, v) in enumerate(info.items()):
             self.info_table.setItem(i, 0, create_table_item(k))
+            if isinstance(v, tuple):
+                value, unit = self.unit_system.format(*v)
+            else:
+                value = v
+                unit = None
             self.info_table.setItem(
                 i,
                 1,
                 create_table_item(
-                    v, align=PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
+                    (value, number_formats.info_format(value, k)),
+                    align=PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter,
+                ),
+            ),
+            self.info_table.setItem(
+                i,
+                2,
+                create_table_item(
+                    unit, align=PyQt5.QtCore.Qt.AlignLeft | PyQt5.QtCore.Qt.AlignVCenter
                 ),
             )
 
@@ -164,7 +209,17 @@ class MainWindow(QtWidgets.QMainWindow):
         for j in range(len(activity_elements)):
             content = activity_elements[j]
             # Format as number
-            widget = create_table_item(content)
+            needs_special_sorting = False
+            if isinstance(content, tuple):
+                needs_special_sorting = True
+                content = self.unit_system.encode(*content)
+            text = number_formats.list_format(
+                content, self.activity_list_table.horizontalHeaderItem(j).text()
+            )
+            if needs_special_sorting:
+                widget = create_table_item((content, text))
+            else:
+                widget = create_table_item(text)
             # Link activity to the first column so we can find it
             # when clicking
             if j == 0:
@@ -191,6 +246,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update_chart(self, name, data):
         """Change a chart's data."""
+        # Convert to the correct units
+        data = [
+            [self.unit_system.encode(x, unit) for x in series] for series, unit in data
+        ]
         chart = self.charts[name].chart()
         series = chart.series()[0]
         # Extract 'real' series from an area chart
@@ -199,7 +258,7 @@ class MainWindow(QtWidgets.QMainWindow):
         series.clear()
         x_range = MinMax()
         y_range = MinMax()
-        for x, y in data:
+        for x, y in zip(*data):
             x_range.update(x)
             y_range.update(y)
             series.append(x, y)
@@ -232,12 +291,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_splits(self, data):
         self.split_table.setRowCount(len(data))
         for y, row in enumerate(data):
-            for x, item in enumerate([(y + 1, str(y + 1))] + row):
+            for x, item in enumerate([(y + 1, None)] + row):
+                if isinstance(item, tuple):
+                    item = self.unit_system.encode(*item)
                 self.split_table.setItem(
                     y,
                     x,
                     create_table_item(
-                        item, PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
+                        (
+                            item,
+                            number_formats.split_format(
+                                item, self.split_table.horizontalHeaderItem(x).text()
+                            ),
+                        ),
+                        PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter,
                     ),
                 )
 
@@ -284,3 +351,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_list_table.insertRow(0)
         self.add_activity(0, activity)
         self.activities.append(activity)
+
+    @property
+    def unit_system(self):
+        return units.UNIT_SYSTEMS[self.settings.unit_system]
