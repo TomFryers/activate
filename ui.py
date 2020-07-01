@@ -75,6 +75,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         uic.loadUi("main.ui", self)
+        self.updated = set()
 
         # Set up map
         self.map_widget = pyqtlet.MapWidget()
@@ -236,7 +237,26 @@ class MainWindow(QtWidgets.QMainWindow):
                     ),
                 )
 
-    def update(self, selected):
+    def update_page(self, page):
+        """Switch to a new activity tab page."""
+        if page in self.updated:
+            return
+        if page == 0:
+            # Update labels, map and data box
+            self.activity_name_label.setText(self.activity.name)
+            self.date_time_label.setText(times.nice(self.activity.start_time))
+            self.add_info(self.activity.stats)
+            self.show_on_map(self.activity.track.lat_lon_list)
+        elif page == 1:
+            # Update charts
+            if self.activity.track.has_altitude_data:
+                self.update_chart("ele", self.activity.track.alt_graph)
+            self.update_chart("speed", self.activity.track.speed_graph)
+        elif page == 2:
+            self.update_splits(self.activity.track.splits)
+        self.updated.add(page)
+
+    def update_activity(self, selected):
         """Show a new activity on the right."""
         # Find the correct activity
         for activity in self.activities:
@@ -244,19 +264,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 break
         else:
             raise ValueError("Invalid selection made")
+        self.activity = activity
 
-        # Update labels, map and data box
-        self.activity_name_label.setText(activity.name)
-        self.date_time_label.setText(times.nice(activity.start_time))
-        self.add_info(activity.stats)
-        self.show_on_map(activity.track.lat_lon_list)
-
-        # Update charts
-        if activity.track.has_altitude_data:
-            self.update_chart("ele", activity.track.alt_graph)
-        self.update_chart("speed", activity.track.speed_graph)
-
-        self.update_splits(activity.track.splits)
+        # Previously generated pages need refreshing
+        self.updated = set()
+        self.update_page(self.activity_tabs.currentIndex())
 
     def import_activity(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(

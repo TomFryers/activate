@@ -88,7 +88,7 @@
     <item>
      <widget class="QTabWidget" name="activity_tabs">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="overview_tab">
        <attribute name="title">
@@ -322,7 +322,7 @@
    <sender>activity_list_table</sender>
    <signal>currentCellChanged(int,int,int,int)</signal>
    <receiver>main_window</receiver>
-   <slot>update()</slot>
+   <slot>update_activity()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>202</x>
@@ -366,8 +366,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>activity_tabs</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>main_window</receiver>
+   <slot>update_page()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>958</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activity()</slot>
+  <slot>update_page()</slot>
+  <slot>update_activity()</slot>
  </slots>
 </ui>
