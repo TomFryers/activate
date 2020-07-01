@@ -226,7 +226,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update_splits(self, data):
         self.split_table.setRowCount(len(data))
-        mean_speed = sum(r[2][0] for r in data) / len(data)
         for y, row in enumerate(data):
             for x, item in enumerate([(y + 1, str(y + 1))] + row):
                 self.split_table.setItem(
@@ -236,10 +235,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         item, PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
                     ),
                 )
-            bar = QtWidgets.QProgressBar()
-            bar.setTextVisible(False)
-            bar.setValue(50 * row[2][0] / mean_speed)
-            self.split_table.setCellWidget(y, x + 1, bar)
 
     def update(self, selected):
         """Show a new activity on the right."""
