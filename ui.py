@@ -348,8 +348,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if not filename:
             return
         activity = load_activity.import_and_load(filename)
+        self.activity_list_table.setSortingEnabled(False)
         self.activity_list_table.insertRow(0)
         self.add_activity(0, activity)
+        self.activity_list_table.setSortingEnabled(True)
         self.activities.append(activity)
 
     @property
