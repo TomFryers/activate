@@ -116,6 +116,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set up map
         self.map_widget = pyqtlet.MapWidget()
+        self.map_widget.setContextMenuPolicy(PyQt5.QtCore.Qt.NoContextMenu)
         self.map = pyqtlet.L.map(self.map_widget, {"attributionControl": False})
         self.map_container.addWidget(self.map_widget)
         self.map.setView([51, -1], 14)
