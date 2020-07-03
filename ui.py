@@ -107,6 +107,16 @@ class SettingsDialog(QtWidgets.QDialog):
         return settings
 
 
+def resize_to_contents(header):
+    """
+    Set a header to auto-resize its items.
+
+    This also stops the user resizing them, which is good because usually
+    resizing these things is not particularly useful.
+    """
+    header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -127,6 +137,10 @@ class MainWindow(QtWidgets.QMainWindow):
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+
+        # Disable resizing in activity list
+        resize_to_contents(self.activity_list_table.verticalHeader())
+        resize_to_contents(self.split_table.horizontalHeader())
 
         # Set up charts
         self.charts = {}
