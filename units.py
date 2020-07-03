@@ -37,6 +37,9 @@ class UnitConfig:
     def format(self, value, dimension):
         return self.units[dimension].format(value)
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.units!r})"
+
 
 class PaceUnit(Unit):
     """A unit of pace (1 / speed), such as 4:00 kilometres."""
@@ -49,6 +52,9 @@ class PaceUnit(Unit):
 
     def encode(self, value):
         return datetime.timedelta(seconds=super().encode(value))
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.distance!r})"
 
 
 KM = Unit("kilometre", "km", 1000)

@@ -38,7 +38,8 @@ def nice(time: datetime.datetime):
     return time.strftime("%A %d %B %Y\n%H:%M")
 
 
-def round_time(time: datetime.datetime):
+def round_time(time: datetime.datetime) -> datetime.datetime:
+    """Round a time to the nearest second."""
     return time.replace(
         microsecond=0, second=round(time.second + time.microsecond / 1000000)
     )

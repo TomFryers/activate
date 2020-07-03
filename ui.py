@@ -207,11 +207,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_list_table.sortItems(1, PyQt5.QtCore.Qt.DescendingOrder)
 
     def add_activity(self, position, activity):
+        """Add an activity to the activity list."""
         activity_elements = activity.list_row
-        for j in range(len(activity_elements)):
-            content = activity_elements[j]
-            # Format as number
+        for j, content in enumerate(activity_elements):
             needs_special_sorting = False
+            # Format as number
             if isinstance(content, tuple):
                 needs_special_sorting = True
                 content = self.unit_system.encode(*content)
@@ -291,6 +291,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 axis.setLabelFormat(f"%.{max(0, -math.floor(math.log10(interval)))}f")
 
     def update_splits(self, data):
+        """Update the activity splits page."""
         self.split_table.setRowCount(len(data))
         for y, row in enumerate(data):
             for x, item in enumerate([(y + 1, None)] + row):
