@@ -355,6 +355,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.add_activity(0, activity)
         self.activity_list_table.setSortingEnabled(True)
         self.activities.append(activity)
+        self.activity_list_table.setCurrentItem(activity.list_link)
 
     @property
     def unit_system(self):
