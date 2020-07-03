@@ -204,6 +204,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for i, activity in enumerate(activities):
             self.add_activity(i, activity)
         self.activity_list_table.resizeColumnsToContents()
+        self.activity_list_table.sortItems(1, PyQt5.QtCore.Qt.DescendingOrder)
 
     def add_activity(self, position, activity):
         activity_elements = activity.list_row
