@@ -22,9 +22,13 @@ def default_map_location(route):
 class MinMax:
     """Keeps track of the minimum and maximum of some data."""
 
-    def __init__(self):
-        self.minimum = None
-        self.maximum = None
+    def __init__(self, *args):
+        if args:
+            self.minimum = min(min(a) for a in args)
+            self.maximum = max(max(a) for a in args)
+        else:
+            self.minimum = None
+            self.maximum = None
 
     def update(self, value):
         """Add a new value to the MinMax."""
@@ -271,12 +275,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Extract 'real' series from an area chart
         if isinstance(series, QtChart.QAreaSeries):
             series = series.upperSeries()
-        x_range = MinMax()
-        y_range = MinMax()
-        for x in data[0]:
-            x_range.update(x)
-        for y in data[1]:
-            y_range.update(y)
+        x_range = MinMax(data[0])
+        y_range = MinMax(data[1])
         series.replace([PyQt5.QtCore.QPointF(*p) for p in zip(*data)])
 
         # Snap axis minima to zero
