@@ -43,3 +43,10 @@ def round_time(time: datetime.datetime) -> datetime.datetime:
     return time.replace(
         microsecond=0, second=round(time.second + time.microsecond / 1000000)
     )
+
+
+def to_number(value):
+    """Convert a timedelta to seconds, leaving other values untouched."""
+    if isinstance(value, datetime.timedelta):
+        return value.total_seconds()
+    return value

@@ -1,4 +1,5 @@
 import math
+import times
 from functools import cached_property
 
 EARTH_RADIUS = 6378137
@@ -54,6 +55,15 @@ def infer_nones(data):
         for write_back in range(0, none_count + 1):
             data[index - write_back] = last_good
     return data
+
+
+def get_nearby_indices(length, position, number=1) -> list:
+    relevant_points = [position + i for i in range(-number, number + 1)]
+    while relevant_points[0] < 0:
+        relevant_points.pop(0)
+    while relevant_points[-1] >= length:
+        relevant_points.pop(-1)
+    return relevant_points
 
 
 class Track:
@@ -141,13 +151,9 @@ class Track:
         """Calculate speeds at each point"""
         speeds = []
         for point_index in range(0, len(self)):
-            relevant_points = [
-                point_index + i for i in range(-SPEED_RANGE, SPEED_RANGE + 1)
-            ]
-            while relevant_points[0] < 0:
-                relevant_points.pop(0)
-            while relevant_points[-1] >= len(self):
-                relevant_points.pop(-1)
+            relevant_points = get_nearby_indices(
+                len(self), point_index, number=SPEED_RANGE
+            )
             time_diff = (
                 self["time"][relevant_points[-1]] - self["time"][relevant_points[0]]
             ).total_seconds()
@@ -244,3 +250,31 @@ class Track:
                 total_climb += climb
 
         return splits
+
+    def get_zone_durations(self, zones, field="speed", count_field="time"):
+        """
+        Get durations for the zones graph.
+
+        Between all zones values, calculate the total amount of
+        count_field at each point where field is within the range given
+        by that pair of zones values. The zones must be sorted in
+        ascending order.
+        """
+        buckets = {z: 0 for z in zones}
+        for point in range(len(self)):
+            # Work out the amount of count_field at the point
+            nearby_points = get_nearby_indices(len(self), point)
+            duration = (
+                self[count_field][nearby_points[-1]]
+                - self[count_field][nearby_points[0]]
+            ) / 2
+            duration = times.to_number(duration)
+
+            # Add it to the correct bucket
+            value = self[field][point]
+            for zone in zones[::-1]:
+                if value > zone:
+                    buckets[zone] += duration
+                    break
+
+        return buckets

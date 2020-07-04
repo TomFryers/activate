@@ -272,6 +272,16 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="zones_tab">
+       <attribute name="title">
+        <string>Zones</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QChartView" name="zones_graph"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>

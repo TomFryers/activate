@@ -1,9 +1,23 @@
+import math
+
 import times
 
 
-def as_int(value):
+def as_int(value) -> str:
     """Format a value as an integer, ready to display."""
     return str(round(value))
+
+
+def maybe_as_int(value) -> str:
+    """
+    Format a value as an integer if it is one.
+
+    Any very close value will be formatted as an integer to avoid
+    floating-point errors.
+    """
+    if math.isclose(value, round(value)):
+        return as_int(value)
+    return str(value)
 
 
 def info_format(value, entry: str) -> str:
