@@ -1,6 +1,7 @@
 import math
-import times
 from functools import cached_property
+
+import times
 
 EARTH_RADIUS = 6378137
 E_2 = 0.00669437999014

@@ -2,7 +2,6 @@ import dataclasses
 
 import units
 
-
 try:
     import cPickle as pickle
 except ImportError:

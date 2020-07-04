@@ -1,6 +1,7 @@
 import PyQt5
+import PyQt5.uic
 import pyqtlet
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtCore, QtWidgets
 
 import charts
 import load_activity
@@ -30,9 +31,7 @@ def create_table_item(item, align=None) -> QtWidgets.QTableWidgetItem:
     # Format as string
     else:
         widget = QtWidgets.QTableWidgetItem(item)
-        widget.setTextAlignment(
-            PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter
-        )
+        widget.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
     if align is not None:
         widget.setTextAlignment(align)
     return widget
@@ -57,7 +56,7 @@ class FormattableNumber(QtWidgets.QTableWidgetItem):
 class SettingsDialog(QtWidgets.QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        uic.loadUi("settings.ui", self)
+        PyQt5.uic.loadUi("settings.ui", self)
 
     def load_from_settings(self, current_settings: settings.Settings):
         """Load a settings object to the UI widgets."""
@@ -91,14 +90,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
-        uic.loadUi("main.ui", self)
+        PyQt5.uic.loadUi("main.ui", self)
         self.updated = set()
 
         self.settings = settings.load_settings()
 
         # Set up map
         self.map_widget = pyqtlet.MapWidget()
-        self.map_widget.setContextMenuPolicy(PyQt5.QtCore.Qt.NoContextMenu)
+        self.map_widget.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.map = pyqtlet.L.map(self.map_widget, {"attributionControl": False})
         self.map_container.addWidget(self.map_widget)
         self.map.setView([51, -1], 14)
@@ -176,14 +175,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 1,
                 create_table_item(
                     (value, number_formats.info_format(value, k)),
-                    align=PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter,
+                    align=QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter,
                 ),
             ),
             self.info_table.setItem(
                 i,
                 2,
                 create_table_item(
-                    unit, align=PyQt5.QtCore.Qt.AlignLeft | PyQt5.QtCore.Qt.AlignVCenter
+                    unit, align=QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter
                 ),
             )
 
@@ -194,7 +193,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for i, activity in enumerate(activities):
             self.add_activity(i, activity)
         self.activity_list_table.resizeColumnsToContents()
-        self.activity_list_table.sortItems(1, PyQt5.QtCore.Qt.DescendingOrder)
+        self.activity_list_table.sortItems(1, QtCore.Qt.DescendingOrder)
 
     def add_activity(self, position, activity):
         """Add an activity to the activity list."""
@@ -235,7 +234,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 item, self.split_table.horizontalHeaderItem(x).text()
                             ),
                         ),
-                        PyQt5.QtCore.Qt.AlignRight | PyQt5.QtCore.Qt.AlignVCenter,
+                        QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter,
                     ),
                 )
 
