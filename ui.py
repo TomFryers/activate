@@ -1,9 +1,8 @@
-import math
-
 import PyQt5
 import pyqtlet
-from PyQt5 import QtChart, QtWidgets, uic
+from PyQt5 import QtWidgets, uic
 
+import charts
 import load_activity
 import number_formats
 import settings
@@ -17,39 +16,6 @@ def default_map_location(route):
         (min(p[component] for p in route) + max(p[component] for p in route)) / 2
         for component in range(2)
     ]
-
-
-class MinMax:
-    """Keeps track of the minimum and maximum of some data."""
-
-    def __init__(self, *args):
-        if args:
-            self.minimum = min(min(a) for a in args)
-            self.maximum = max(max(a) for a in args)
-        else:
-            self.minimum = None
-            self.maximum = None
-
-    def update(self, value):
-        """Add a new value to the MinMax."""
-        if self.minimum is None:
-            self.minimum = value
-            self.maximum = value
-
-        self.minimum = min(self.minimum, value)
-        self.maximum = max(self.maximum, value)
-
-    @property
-    def range(self):
-        if self.minimum is None:
-            return None
-        return self.maximum - self.minimum
-
-    @property
-    def ratio(self):
-        if self.minimum is None:
-            return None
-        return self.maximum / self.minimum
 
 
 def create_table_item(item, align=None) -> QtWidgets.QTableWidgetItem:
@@ -75,19 +41,6 @@ def create_table_item(item, align=None) -> QtWidgets.QTableWidgetItem:
 def good_minus(string):
     """Replace hyphen-minuses with real minus signs."""
     return string.replace("-", "\u2212")
-
-
-def data_to_points(data):
-    return [PyQt5.QtCore.QPointF(*p) for p in zip(*data)]
-
-
-def axis_number_format(axis):
-    """Format axis labels with the correct number of decimal places."""
-    interval = (axis.max() - axis.min()) / (axis.tickCount() - 1)
-    if int(interval) == interval:
-        axis.setLabelFormat("%i")
-    else:
-        axis.setLabelFormat(f"%.{max(0, -math.floor(math.log10(interval)))}f")
 
 
 class FormattableNumber(QtWidgets.QTableWidgetItem):
@@ -141,6 +94,8 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi("main.ui", self)
         self.updated = set()
 
+        self.settings = settings.load_settings()
+
         # Set up map
         self.map_widget = pyqtlet.MapWidget()
         self.map_widget.setContextMenuPolicy(PyQt5.QtCore.Qt.NoContextMenu)
@@ -161,20 +116,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set up charts
         self.charts = {}
-        # self.series is never accessed but it prevents the area charts
-        # from having their line series garbage collected
-        self.series = {}
-        self.add_line_chart("ele", self.altitude_graph, True)
-        self.add_line_chart("speed", self.speed_graph, False)
+        self.charts["ele"] = charts.LineChart(
+            self.altitude_graph, self.unit_system, "Altitude", area=True
+        )
+        self.charts["speed"] = charts.LineChart(
+            self.speed_graph, self.unit_system, "Speed", area=False
+        )
+        self.zones = list(range(0, 20)) + [float("inf")]
+        self.zones = [self.unit_system.decode(x, "speed") for x in self.zones]
+        self.charts["zones"] = charts.Histogram(
+            self.zones, self.zones_graph, self.unit_system
+        )
 
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
         self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
-
-        self.settings = settings.load_settings()
-
-        self.zones = list(range(0, 20)) + [float("inf")]
-        self.zones = [self.unit_system.decode(x, "speed") for x in self.zones]
-        self.add_histogram("zones", self.zones, self.zones_graph)
 
     def edit_unit_settings(self):
         settings_window = SettingsDialog()
@@ -263,107 +218,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 activity.list_link = widget
             self.activity_list_table.setItem(position, j, widget)
 
-    def add_line_chart(self, name, widget, area=False):
-        """Add a line chart to widget."""
-        series = QtChart.QLineSeries()
-        if area:
-            area = QtChart.QAreaSeries()
-            area.setUpperSeries(series)
-            # Save series so it doesn't get garbage collected
-            self.series[name] = series
-            series = area
-        chart = self.add_chart(name, series, widget)
-        chart.setTitle({"ele": "Altitude", "speed": "Speed"}[name])
-
-    def add_histogram(self, name, zones, widget):
-        """Add a histogram to widget."""
-        series = QtChart.QBarSeries()
-        bar_set = QtChart.QBarSet("", series)
-        # One less bar than there are zones
-        for _ in zones[:-1]:
-            bar_set.append(0)
-        series.append(bar_set)
-        series.setBarWidth(1)
-        chart = self.add_chart(name, series, widget)
-        # Replace QBarCategoryAxis with QCategoryAxis because the latter
-        # allows putting values between categoreies instead of centring
-        # them.
-        cat_axis = chart.axes(PyQt5.QtCore.Qt.Horizontal)[0]
-        chart.removeAxis(cat_axis)
-        cat_axis = QtChart.QCategoryAxis(chart)
-
-        # Hide the start value because zones[0] does its job
-        cat_axis.setStartValue(float("-inf"))
-
-        # Add initial label, handling negative infinity.
-        if zones[0] == float("-inf"):
-            cat_axis.append("\u2212\u221e", -0.5)
-        else:
-            cat_axis.append(number_formats.maybe_as_int(zones[0]), -0.5)
-
-        # Add axis labels
-        for position, zone in enumerate(zones[1:-1]):
-            zone_num = self.unit_system.encode(zone, "speed")
-            cat_axis.append(number_formats.maybe_as_int(zone_num), position + 0.5)
-
-        # Add final label. This should usually be infinity.
-        if zones[-1] == float("inf"):
-            cat_axis.append("\u221e", len(zones) - 1.5)
-        else:
-            cat_axis.append(number_formats.maybe_as_int(zones[-1]), len(zones) - 1.5)
-
-        cat_axis.setLabelsPosition(QtChart.QCategoryAxis.AxisLabelsPositionOnValue)
-        chart.addAxis(cat_axis, PyQt5.QtCore.Qt.AlignBottom)
-        series.attachAxis(cat_axis)
-
-    def add_chart(self, name, series, widget):
-        """Add a chart to a QChartView."""
-        chart = QtChart.QChart()
-        chart.setAnimationOptions(chart.SeriesAnimations)
-        widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
-        chart.legend().hide()
-        chart.addSeries(series)
-        chart.createDefaultAxes()
-        widget.setChart(chart)
-        self.charts[name] = widget
-        return chart
-
-    def update_line_chart(self, name, data):
-        """Change a line chart's data."""
-        # Convert to the correct units
-        data = [
-            [self.unit_system.encode(x, unit) for x in series] for series, unit in data
-        ]
-        chart = self.charts[name].chart()
-        series = chart.series()[0]
-        # Extract 'real' series from an area chart
-        if isinstance(series, QtChart.QAreaSeries):
-            series = series.upperSeries()
-        x_range = MinMax(data[0])
-        y_range = MinMax(data[1])
-        series.replace(data_to_points(data))
-
-        # Snap axis minima to zero
-        if x_range.minimum != 0 and x_range.ratio > 3:
-            x_range.minimum = 0
-        if y_range.minimum != 0 and y_range.ratio > 3:
-            y_range.minimum = 0
-
-        for i, axis in enumerate(
-            (PyQt5.QtCore.Qt.Horizontal, PyQt5.QtCore.Qt.Vertical)
-        ):
-            axis = chart.axes(axis)[0]
-            # Set the axis ranges
-            if i == 0:
-                axis.setRange(x_range.minimum, x_range.maximum)
-            else:
-                axis.setRange(y_range.minimum, y_range.maximum)
-            axis.setTickCount((12, 4)[i])
-            axis.applyNiceNumbers()
-
-            # Set the correct axis label formatting
-            axis_number_format(axis)
-
     def update_splits(self, data):
         """Update the activity splits page."""
         self.split_table.setRowCount(len(data))
@@ -398,8 +252,8 @@ class MainWindow(QtWidgets.QMainWindow):
         elif page == 1:
             # Update charts
             if self.activity.track.has_altitude_data:
-                self.update_line_chart("ele", self.activity.track.alt_graph)
-            self.update_line_chart("speed", self.activity.track.speed_graph)
+                self.charts["ele"].update(self.activity.track.alt_graph)
+            self.charts["speed"].update(self.activity.track.speed_graph)
         elif page == 2:
             self.update_splits(
                 self.activity.track.splits(
@@ -407,7 +261,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             )
         elif page == 3:
-            self.update_zones(self.activity.track.get_zone_durations(self.zones))
+            self.charts["zones"].update(
+                self.activity.track.get_zone_durations(self.zones)
+            )
         self.updated.add(page)
 
     def update_activity(self, selected):
@@ -441,18 +297,3 @@ class MainWindow(QtWidgets.QMainWindow):
     @property
     def unit_system(self):
         return units.UNIT_SYSTEMS[self.settings.unit_system]
-
-    def update_zones(self, zone_data):
-        """Update the zones chart."""
-        chart = self.charts["zones"].chart()
-        series = chart.series()[0]
-        bar_set = series.barSets()[0]
-        for position, amount in enumerate(zone_data.values()):
-            bar_set.replace(position, units.MINUTE.encode(amount))
-
-        # Format the vertical axis
-        value_axis = chart.axes(PyQt5.QtCore.Qt.Vertical)[0]
-        value_axis.setRange(0, units.MINUTE.encode(max(zone_data.values())))
-        value_axis.setTickCount(15)
-        value_axis.applyNiceNumbers()
-        axis_number_format(value_axis)
