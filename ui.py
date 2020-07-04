@@ -250,6 +250,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """Add a chart to a QChartView."""
         chart = QtChart.QChart()
         chart.setAnimationOptions(chart.SeriesAnimations)
+        chart.setTitle({"ele": "Altitude", "speed": "Speed"}[name])
+        widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
         chart.legend().hide()
         series = QtChart.QLineSeries()
         if area:
