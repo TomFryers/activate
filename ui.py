@@ -14,8 +14,8 @@ import units
 def default_map_location(route):
     """Calculate the mean position for centering the map."""
     return [
-        sum(i[0] for i in route) / len(route),
-        sum(i[1] for i in route) / len(route),
+        (min(p[component] for p in route) + max(p[component] for p in route)) / 2
+        for component in range(2)
     ]
 
 
