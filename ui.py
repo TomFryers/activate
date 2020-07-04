@@ -343,7 +343,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.update_chart("ele", self.activity.track.alt_graph)
             self.update_chart("speed", self.activity.track.speed_graph)
         elif page == 2:
-            self.update_splits(self.activity.track.splits)
+            self.update_splits(
+                self.activity.track.splits(
+                    splitlength=self.unit_system.units["distance"].size
+                )
+            )
         self.updated.add(page)
 
     def update_activity(self, selected):

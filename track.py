@@ -216,7 +216,6 @@ class Track:
     def length(self):
         return self["dist"][-1]
 
-    @cached_property
     def splits(self, splitlength=1000):
         splits = []
         lasttime = None
