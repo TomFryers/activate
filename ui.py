@@ -271,13 +271,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # Extract 'real' series from an area chart
         if isinstance(series, QtChart.QAreaSeries):
             series = series.upperSeries()
-        series.clear()
         x_range = MinMax()
         y_range = MinMax()
-        for x, y in zip(*data):
+        for x in data[0]:
             x_range.update(x)
+        for y in data[1]:
             y_range.update(y)
-            series.append(x, y)
+        series.replace([PyQt5.QtCore.QPointF(*p) for p in zip(*data)])
 
         # Snap axis minima to zero
         if x_range.minimum != 0 and x_range.ratio > 3:
