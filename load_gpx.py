@@ -25,6 +25,12 @@ def load_gpx(filename):
     except AttributeError:
         name = load_activity.decode_name(pathlib.Path(filename).stem)
 
+    try:
+        sport = tree.find("./trk/type").text
+        print(f"{sport=} {name=}")
+    except AttributeError:
+        sport = "unknown"
+
     points = tree.findall("./trk/trkseg/trkpt")
     fields = {field: [] for field in FIELDS}
     for point in points:
@@ -37,4 +43,4 @@ def load_gpx(filename):
             fields[field].append(value)
     fields = {field: fields[field] for field in fields if set(fields[field]) != {None}}
 
-    return (name, fields)
+    return (name, sport, fields)

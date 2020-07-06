@@ -108,6 +108,7 @@ class MainWindow(QtWidgets.QMainWindow):
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
 
         # Disable resizing in activity list
         resize_to_contents(self.activity_list_table.verticalHeader())
@@ -193,7 +194,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for i, activity in enumerate(activities):
             self.add_activity(i, activity)
         self.activity_list_table.resizeColumnsToContents()
-        self.activity_list_table.sortItems(1, QtCore.Qt.DescendingOrder)
+        self.activity_list_table.sortItems(2, QtCore.Qt.DescendingOrder)
 
     def add_activity(self, position, activity):
         """Add an activity to the activity list."""
@@ -246,6 +247,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # Update labels, map and data box
             self.activity_name_label.setText(self.activity.name)
             self.date_time_label.setText(times.nice(self.activity.start_time))
+            self.activity_type_label.setText(self.activity.sport)
             self.add_info(self.activity.stats)
             self.show_on_map(self.activity.track.lat_lon_list)
         elif page == 1:

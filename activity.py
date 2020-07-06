@@ -1,13 +1,14 @@
 import load_activity
 
 
-def from_track(name, track, filename):
-    return Activity(name, track, filename)
+def from_track(name, sport, track, filename):
+    return Activity(name, sport, track, filename)
 
 
 class Activity:
-    def __init__(self, name, track, filename, start_time=None, distance=None):
+    def __init__(self, name, sport, track, filename, start_time=None, distance=None):
         self.name = name
+        self.sport = sport
         self._track = track
         self.filename = filename
         if start_time is None:
@@ -20,7 +21,7 @@ class Activity:
     @property
     def track(self):
         if self._track is None:
-            self._track = load_activity.load(self.filename)[1]
+            self._track = load_activity.load(self.filename)[2]
         return self._track
 
     @property
@@ -44,7 +45,7 @@ class Activity:
 
     @property
     def list_row(self):
-        return [self.name, self.start_time, (self.distance, "distance")]
+        return [self.name, self.sport, self.start_time, (self.distance, "distance")]
 
     def cache(self):
-        return {self.filename: (self.name, self.start_time, self.distance)}
+        return {self.filename: (self.name, self.sport, self.start_time, self.distance)}

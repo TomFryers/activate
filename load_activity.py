@@ -9,6 +9,32 @@ import track
 
 TRACK_DIR = "tracks"
 
+ACTIVITY_TYPE_NAMES = {
+    "running": "Run",
+    "cycling": "Ride",
+    "run": "Run",
+    "ride": "Ride",
+    "hiking": "Walk",
+    "alpine_skiing": "Ski",
+    "swimming": "Swim",
+    "rowing": "Row",
+    "driving": "Other",
+    "9": "Run",
+    "1": "Ride",
+    "16": "Swim",
+}
+
+
+def convert_activity_type(activity_type, name):
+    """Get the correct activity type from a raw one or by inference."""
+    if activity_type in {"unknown", "generic"}:
+        # Infer activity type from name
+        for activity_type_name in ACTIVITY_TYPE_NAMES:
+            if activity_type_name in name.casefold():
+                return ACTIVITY_TYPE_NAMES[activity_type_name]
+        return ""
+    return ACTIVITY_TYPE_NAMES[activity_type.casefold()]
+
 
 def has_extension(filename, extension) -> bool:
     """Determine if a file path has a given extension."""
@@ -16,13 +42,13 @@ def has_extension(filename, extension) -> bool:
 
 
 def load(filename):
-    """Get a (name, Track) tuple by loading from a file."""
+    """Get a (name, sport, Track) tuple by loading from a file."""
     if has_extension(filename, "gpx"):
         data = load_gpx.load_gpx(filename)
     elif has_extension(filename, "fit"):
         data = load_fit.load_fit(filename)
 
-    return (data[0], track.Track(data[1]))
+    return (data[0], convert_activity_type(data[1], data[0]), track.Track(data[2]))
 
 
 def decode_name(filename):
@@ -58,7 +84,9 @@ def load_all(directory, cache=None):
         # Create cached activity
         if filename in cache:
             data = cache[filename]
-            result.append(activity.Activity(data[0], None, filename, data[1], data[2]))
+            result.append(
+                activity.Activity(data[0], data[1], None, filename, data[2], data[3])
+            )
             continue
         # Create normal activity
         try:

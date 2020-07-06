@@ -58,7 +58,7 @@ def list_format(value, entry: str) -> str:
     """Format a value for the splits table."""
     if value == "None":
         return value
-    if entry == "Name":
+    if entry in {"Name", "Type"}:
         return value
     if entry == "Distance":
         return f"{value:.2f}"
