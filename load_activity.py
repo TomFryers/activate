@@ -28,7 +28,7 @@ def load(filename):
 def decode_name(filename):
     if filename[0] != "_":
         return filename
-    filename = filename[filename[1:].find("_") + 2 :]
+    filename = filename[filename[1:].index("_") + 2 :]
     if filename.startswith("__"):
         return filename[2:]
     return filename

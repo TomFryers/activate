@@ -10,7 +10,7 @@ import units
 def axis_number_format(axis):
     """Format axis labels with the correct number of decimal places."""
     interval = (axis.max() - axis.min()) / (axis.tickCount() - 1)
-    if int(interval) == interval:
+    if interval.is_integer():
         axis.setLabelFormat("%i")
     else:
         axis.setLabelFormat(f"%.{max(0, -math.floor(math.log10(interval)))}f")
