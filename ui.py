@@ -28,10 +28,10 @@ def create_table_item(item, align=None) -> QtWidgets.QTableWidgetItem:
     """
     if isinstance(item, tuple):
         widget = FormattableNumber(*item)
+        widget.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
     # Format as string
     else:
         widget = QtWidgets.QTableWidgetItem(item)
-        widget.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
     if align is not None:
         widget.setTextAlignment(align)
     return widget
