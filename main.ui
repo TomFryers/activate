@@ -334,7 +334,14 @@
     </property>
     <addaction name="action_units"/>
    </widget>
+   <widget class="QMenu" name="edit_menu">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="edit_activity"/>
+   </widget>
    <addaction name="file_menu"/>
+   <addaction name="edit_menu"/>
    <addaction name="settings_menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -354,6 +361,11 @@
   <action name="action_units">
    <property name="text">
     <string>Units</string>
+   </property>
+  </action>
+  <action name="edit_activity">
+   <property name="text">
+    <string>Activity</string>
    </property>
   </action>
  </widget>
@@ -446,11 +458,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>edit_activity</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>edit_activity_data()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activity()</slot>
   <slot>update_page()</slot>
   <slot>update_activity()</slot>
   <slot>edit_unit_settings()</slot>
+  <slot>edit_activity_data()</slot>
  </slots>
 </ui>

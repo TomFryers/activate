@@ -7,7 +7,7 @@ import load_fit
 import load_gpx
 import track
 
-TRACK_DIR = "tracks"
+TRACK_DIR = "originals"
 
 ACTIVITY_TYPE_NAMES = {
     "running": "Run",
@@ -82,18 +82,25 @@ def load_all(directory, cache=None):
     if cache is None:
         cache = {}
     result = []
-    for filename in glob.glob(directory + "/*"):
-        # Create cached activity
-        if filename in cache:
-            data = cache[filename]
+    if cache == {}:
+        for filename in glob.glob(directory + "/*"):
+            try:
+                result.append(activity.from_track(*load(filename), filename))
+            # Raised by files with no latitude or longitude
+            except ValueError:
+                pass
+        return result
+    else:
+        for activity_id, data in cache.items():
             result.append(
-                activity.Activity(data[0], data[1], None, filename, data[2], data[3])
+                activity.Activity(
+                    data[0],
+                    data[2],
+                    None,
+                    data[1],
+                    data[3],
+                    data[4],
+                    activity_id=activity_id,
+                )
             )
-            continue
-        # Create normal activity
-        try:
-            result.append(activity.from_track(*load(filename), filename))
-        # Raised by files with no latitude or longitude
-        except ValueError:
-            pass
     return result

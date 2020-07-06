@@ -1,4 +1,11 @@
+import random
+
 import load_activity
+
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 
 def from_track(name, sport, track, filename):
@@ -6,7 +13,17 @@ def from_track(name, sport, track, filename):
 
 
 class Activity:
-    def __init__(self, name, sport, track, filename, start_time=None, distance=None):
+    def __init__(
+        self,
+        name,
+        sport,
+        track,
+        filename,
+        start_time=None,
+        distance=None,
+        flags=None,
+        activity_id=None,
+    ):
         self.name = name
         self.sport = sport
         self._track = track
@@ -17,6 +34,10 @@ class Activity:
         if distance is None:
             distance = self.track.length
         self.distance = distance
+        if activity_id is None:
+            self.activity_id = random.getrandbits(128)
+        else:
+            self.activity_id = activity_id
 
     @property
     def track(self):
@@ -48,4 +69,20 @@ class Activity:
         return [self.name, self.sport, self.start_time, (self.distance, "distance")]
 
     def cache(self):
-        return {self.filename: (self.name, self.sport, self.start_time, self.distance)}
+        return {
+            self.activity_id: (
+                self.name,
+                self.filename,
+                self.sport,
+                self.start_time,
+                self.distance,
+            )
+        }
+
+    @property
+    def save_data(self):
+        return (self.activity_id, self.name, self.sport)
+
+    def save(self, directory):
+        with open(f"{directory}/{self.activity_id}.pickle", "wb") as f:
+            pickle.dump(self.save_data, f)

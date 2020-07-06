@@ -10,6 +10,8 @@ import settings
 import times
 import units
 
+ACTIVITY_TYPES = ("Run", "Ride", "Swim", "Walk", "Ski", "Row", "Other")
+
 
 def default_map_location(route):
     """Calculate the mean position for centering the map."""
@@ -76,6 +78,29 @@ class SettingsDialog(QtWidgets.QDialog):
         return settings
 
 
+class EditActivityDialog(QtWidgets.QDialog):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        PyQt5.uic.loadUi("edit_activity.ui", self)
+        self.type_edit.addItems(ACTIVITY_TYPES)
+
+    def load_from_activity(self, activity):
+        """Load an activity's data to the UI."""
+        self.name_edit.setText(activity.name)
+        self.type_edit.setCurrentText(activity.sport)
+
+    def apply_to_activity(self, activity):
+        """Apply the settings to an activity."""
+        activity.name = self.name_edit.text()
+        activity.sport = self.type_edit.currentText()
+
+    def exec(self, activity):
+        self.load_from_activity(activity)
+        result = super().exec()
+        if result:
+            self.apply_to_activity(activity)
+
+
 def resize_to_contents(header):
     """
     Set a header to auto-resize its items.
@@ -134,6 +159,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_unit_settings(self):
         settings_window = SettingsDialog()
         self.settings = settings_window.exec(self.settings, "Units")
+
+    def edit_activity_data(self):
+        edit_activity_dialog = EditActivityDialog()
+        edit_activity_dialog.exec(self.activity)
 
     def show_on_map(self, route: list):
         """Display a list of points on the map."""

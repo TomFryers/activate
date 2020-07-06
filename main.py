@@ -20,16 +20,19 @@ def main():
             cache = pickle.load(f)
     except FileNotFoundError:
         cache = {}
-    activities = load_activity.load_all("tracks", cache=cache)
+    activities = load_activity.load_all("originals", cache=cache)
+
+    main_window.add_tracks(activities)
+    main_window.show()
+    exit_code = app.exec_()
     cache = {}
     for track in activities:
         cache.update(track.cache())
     with open("activitycache.pickle", "wb") as f:
         pickle.dump(cache, f)
-
-    main_window.add_tracks(activities)
-    main_window.show()
-    sys.exit(app.exec_())
+    for activity in activities:
+        activity.save("activities")
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":
