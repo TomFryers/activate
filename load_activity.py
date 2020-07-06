@@ -30,6 +30,8 @@ def convert_activity_type(activity_type, name):
     if activity_type in {"unknown", "generic"}:
         # Infer activity type from name
         for activity_type_name in ACTIVITY_TYPE_NAMES:
+            if activity_type_name.isnumeric():
+                continue
             if activity_type_name in name.casefold():
                 return ACTIVITY_TYPE_NAMES[activity_type_name]
         return ""
