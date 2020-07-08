@@ -12,6 +12,12 @@ import units
 
 ACTIVITY_TYPES = ("Run", "Ride", "Swim", "Walk", "Ski", "Row", "Other")
 
+UNIVERSAL_FLAGS = ("Commute", "Indoor")
+TYPE_FLAGS = {
+    "Run": ("Race", "Long Run", "Workout", "Treadmill"),
+    "Ride": ("Race", "Workout"),
+}
+
 
 def default_map_location(route):
     """Calculate the mean position for centering the map."""
@@ -84,22 +90,42 @@ class EditActivityDialog(QtWidgets.QDialog):
         PyQt5.uic.loadUi("edit_activity.ui", self)
         self.type_edit.addItems(ACTIVITY_TYPES)
 
-    def load_from_activity(self, activity):
-        """Load an activity's data to the UI."""
-        self.name_edit.setText(activity.name)
-        self.type_edit.setCurrentText(activity.sport)
+    def update_flags(self):
+        if "activity" not in vars(self):
+            return
+        self.flags = TYPE_FLAGS[self.type_edit.currentText()] + UNIVERSAL_FLAGS
+        self.flag_list.clear()
+        self.flag_list.addItems(self.flags)
+        for i, flag in enumerate(self.flags):
+            self.flag_list.item(i).setCheckState(
+                QtCore.Qt.Checked
+                if flag in self.activity.flags and self.activity.flags[flag]
+                else QtCore.Qt.Unchecked
+            )
 
-    def apply_to_activity(self, activity):
-        """Apply the settings to an activity."""
-        activity.name = self.name_edit.text()
-        activity.sport = self.type_edit.currentText()
-        activity.save()
+    def load_from_activity(self):
+        """Load an self.activity's data to the UI."""
+        self.name_edit.setText(self.activity.name)
+        self.type_edit.setCurrentText(self.activity.sport)
+        self.update_flags()
+
+    def apply_to_activity(self):
+        """Apply the settings to an self.activity."""
+        self.activity.name = self.name_edit.text()
+        self.activity.sport = self.type_edit.currentText()
+        for i, flag in enumerate(self.flags):
+            self.activity.flags[flag] = (
+                self.flag_list.item(i).checkState() == QtCore.Qt.Checked
+            )
+
+        self.activity.save()
 
     def exec(self, activity):
-        self.load_from_activity(activity)
+        self.activity = activity
+        self.load_from_activity()
         result = super().exec()
         if result:
-            self.apply_to_activity(activity)
+            self.apply_to_activity()
         return result
 
 
@@ -178,6 +204,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activities.update(
             self.activity.activity_id, link,
         )
+        self.update_activity(row)
         self.activity_list_table.setSortingEnabled(True)
 
     def show_on_map(self, route: list):
@@ -300,6 +327,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if page == 0:
             # Update labels, map and data box
             self.activity_name_label.setText(self.activity.name)
+            self.flags_label.setText(" | ".join(self.activity.active_flags))
             self.date_time_label.setText(times.nice(self.activity.start_time))
             self.activity_type_label.setText(self.activity.sport)
             self.add_info(self.activity.stats)

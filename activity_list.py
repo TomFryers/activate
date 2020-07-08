@@ -19,9 +19,10 @@ def from_disk():
 
 
 class UnloadedActivity:
-    def __init__(self, name, sport, start_time, distance, activity_id):
+    def __init__(self, name, sport, flags, start_time, distance, activity_id):
         self.name = name
         self.sport = sport
+        self.flags = flags
         self.start_time = start_time
         self.distance = distance
         self.activity_id = activity_id

@@ -22,6 +22,7 @@ class Activity:
         sport,
         track,
         original_name,
+        flags=None,
         start_time=None,
         distance=None,
         activity_id=None,
@@ -30,6 +31,11 @@ class Activity:
         self.sport = sport
         self.track = track
         self.original_name = original_name
+        if flags is None:
+            self.flags = {}
+        else:
+            self.flags = flags
+
         if start_time is None:
             start_time = self.track.start_time
         self.start_time = start_time
@@ -60,9 +66,18 @@ class Activity:
             else "None",
         }
 
+    @property
+    def active_flags(self):
+        return [k for k, v in self.flags.items() if v]
+
     def create_unloaded(self):
         return activity_list.UnloadedActivity(
-            self.name, self.sport, self.start_time, self.distance, self.activity_id
+            self.name,
+            self.sport,
+            self.flags,
+            self.start_time,
+            self.distance,
+            self.activity_id,
         )
 
     @property
@@ -72,6 +87,7 @@ class Activity:
             self.sport,
             self.track,
             self.original_name,
+            self.flags,
             self.start_time,
             self.distance,
             self.activity_id,
