@@ -75,32 +75,3 @@ def import_and_load(filename):
         i += 1
     shutil.copy2(filename, real_out_name)
     return activity.from_track(*load(str(real_out_name)), str(real_out_name))
-
-
-def load_all(directory, cache=None):
-    """Get all activities in a directory."""
-    if cache is None:
-        cache = {}
-    result = []
-    if cache == {}:
-        for filename in glob.glob(directory + "/*"):
-            try:
-                result.append(activity.from_track(*load(filename), filename))
-            # Raised by files with no latitude or longitude
-            except ValueError:
-                pass
-        return result
-    else:
-        for activity_id, data in cache.items():
-            result.append(
-                activity.Activity(
-                    data[0],
-                    data[2],
-                    None,
-                    data[1],
-                    data[3],
-                    data[4],
-                    activity_id=activity_id,
-                )
-            )
-    return result

@@ -93,12 +93,14 @@ class EditActivityDialog(QtWidgets.QDialog):
         """Apply the settings to an activity."""
         activity.name = self.name_edit.text()
         activity.sport = self.type_edit.currentText()
+        activity.save()
 
     def exec(self, activity):
         self.load_from_activity(activity)
         result = super().exec()
         if result:
             self.apply_to_activity(activity)
+        return result
 
 
 def resize_to_contents(header):
@@ -162,7 +164,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def edit_activity_data(self):
         edit_activity_dialog = EditActivityDialog()
-        edit_activity_dialog.exec(self.activity)
+        if not edit_activity_dialog.exec(self.activity):
+            return
+        self.activity_list_table.setSortingEnabled(False)
+        for row in range(len(self.activities)):
+            if (
+                self.activities.from_link(id(self.activity_list_table.item(row, 0)))
+                == self.activity
+            ):
+                link = self.assign_activity_items(
+                    self.activity.create_unloaded().list_row, row
+                )
+        self.activities.update(
+            self.activity.activity_id, link,
+        )
+        self.activity_list_table.setSortingEnabled(True)
 
     def show_on_map(self, route: list):
         """Display a list of points on the map."""
@@ -219,15 +235,23 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_tracks(self, activities):
         """Make the activity list show this set of activities."""
         self.activities = activities
-        self.activity_list_table.setRowCount(len(activities))
+        self.activity_list_table.setRowCount(len(self.activities))
         for i, activity in enumerate(activities):
-            self.add_activity(i, activity)
+            link = self.assign_activity_items(activity.list_row, position=i)
+            self.activities.link(activity, link)
         self.activity_list_table.resizeColumnsToContents()
         self.activity_list_table.sortItems(2, QtCore.Qt.DescendingOrder)
 
-    def add_activity(self, position, activity):
-        """Add an activity to the activity list."""
-        activity_elements = activity.list_row
+    def add_activity(self, activity_elements, position=0):
+        """
+        Add an activity to list.
+
+        Returns the id of the first column of the added item for linking.
+        """
+        self.activity_list_table.insertRow(position)
+        return self.assign_activity_items(activity_elements, position)
+
+    def assign_activity_items(self, activity_elements, position=0):
         for j, content in enumerate(activity_elements):
             needs_special_sorting = False
             # Format as number
@@ -243,9 +267,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 widget = create_table_item(text)
             # Link activity to the first column so we can find it
             # when clicking
-            if j == 0:
-                activity.list_link = widget
             self.activity_list_table.setItem(position, j, widget)
+            if j == 0:
+                return_link = id(widget)
+        return return_link
 
     def update_splits(self, data):
         """Update the activity splits page."""
@@ -299,12 +324,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_activity(self, selected):
         """Show a new activity on the right."""
         # Find the correct activity
-        for activity in self.activities:
-            if activity.list_link is self.activity_list_table.item(selected, 0):
-                break
-        else:
-            raise ValueError("Invalid selection made")
-        self.activity = activity
+        self.activity = self.activities.from_link(
+            id(self.activity_list_table.item(selected, 0))
+        )
 
         # Previously generated pages need refreshing
         self.updated = set()
@@ -316,13 +338,14 @@ class MainWindow(QtWidgets.QMainWindow):
         )[0]
         if not filename:
             return
-        activity = load_activity.import_and_load(filename)
+        new_activity = load_activity.import_and_load(filename)
         self.activity_list_table.setSortingEnabled(False)
-        self.activity_list_table.insertRow(0)
-        self.add_activity(0, activity)
+
+        self.activities.add_activity(
+            new_activity, self.add_activity(new_activity.create_unloaded().list_row)
+        )
+        self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
-        self.activities.append(activity)
-        self.activity_list_table.setCurrentItem(activity.list_link)
 
     @property
     def unit_system(self):

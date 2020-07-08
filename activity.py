@@ -1,11 +1,14 @@
 import random
 
-import load_activity
+import activity_list
 
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
+
+
+DATA_DIR = "activities"
 
 
 def from_track(name, sport, track, filename):
@@ -18,16 +21,15 @@ class Activity:
         name,
         sport,
         track,
-        filename,
+        original_name,
         start_time=None,
         distance=None,
-        flags=None,
         activity_id=None,
     ):
         self.name = name
         self.sport = sport
-        self._track = track
-        self.filename = filename
+        self.track = track
+        self.original_name = original_name
         if start_time is None:
             start_time = self.track.start_time
         self.start_time = start_time
@@ -38,12 +40,6 @@ class Activity:
             self.activity_id = random.getrandbits(128)
         else:
             self.activity_id = activity_id
-
-    @property
-    def track(self):
-        if self._track is None:
-            self._track = load_activity.load(self.filename)[2]
-        return self._track
 
     @property
     def stats(self):
@@ -64,25 +60,23 @@ class Activity:
             else "None",
         }
 
-    @property
-    def list_row(self):
-        return [self.name, self.sport, self.start_time, (self.distance, "distance")]
-
-    def cache(self):
-        return {
-            self.activity_id: (
-                self.name,
-                self.filename,
-                self.sport,
-                self.start_time,
-                self.distance,
-            )
-        }
+    def create_unloaded(self):
+        return activity_list.UnloadedActivity(
+            self.name, self.sport, self.start_time, self.distance, self.activity_id
+        )
 
     @property
     def save_data(self):
-        return (self.activity_id, self.name, self.sport)
+        return (
+            self.name,
+            self.sport,
+            self.track,
+            self.original_name,
+            self.start_time,
+            self.distance,
+            self.activity_id,
+        )
 
-    def save(self, directory):
-        with open(f"{directory}/{self.activity_id}.pickle", "wb") as f:
+    def save(self):
+        with open(f"{DATA_DIR}/{self.activity_id}.pickle", "wb") as f:
             pickle.dump(self.save_data, f)
