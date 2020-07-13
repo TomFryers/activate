@@ -1,7 +1,8 @@
 import PyQt5
 import PyQt5.uic
 import pyqtlet
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
 
 import charts
 import load_activity
@@ -36,7 +37,7 @@ def create_table_item(item, align=None) -> QtWidgets.QTableWidgetItem:
     """
     if isinstance(item, tuple):
         widget = FormattableNumber(*item)
-        widget.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        widget.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
     # Format as string
     else:
         widget = QtWidgets.QTableWidgetItem(item)
@@ -99,9 +100,9 @@ class EditActivityDialog(QtWidgets.QDialog):
         self.flag_list.addItems(self.flags)
         for i, flag in enumerate(self.flags):
             self.flag_list.item(i).setCheckState(
-                QtCore.Qt.Checked
+                Qt.Checked
                 if flag in self.activity.flags and self.activity.flags[flag]
-                else QtCore.Qt.Unchecked
+                else Qt.Unchecked
             )
 
     def load_from_activity(self):
@@ -116,7 +117,7 @@ class EditActivityDialog(QtWidgets.QDialog):
         self.activity.sport = self.type_edit.currentText()
         for i, flag in enumerate(self.flags):
             self.activity.flags[flag] = (
-                self.flag_list.item(i).checkState() == QtCore.Qt.Checked
+                self.flag_list.item(i).checkState() == Qt.Checked
             )
 
         self.activity.save()
@@ -154,7 +155,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set up map
         self.map_widget = pyqtlet.MapWidget()
-        self.map_widget.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+        self.map_widget.setContextMenuPolicy(Qt.NoContextMenu)
         self.map = pyqtlet.L.map(self.map_widget, {"attributionControl": False})
         self.map_container.addWidget(self.map_widget)
         self.map.setView([51, -1], 14)
@@ -175,7 +176,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.do_not_recurse = True
         self.activity_types_list.addItems(["All"] + list(ACTIVITY_TYPES))
         for i in range(len(["All"] + list(ACTIVITY_TYPES))):
-            self.activity_types_list.item(i).setCheckState(QtCore.Qt.Checked)
+            self.activity_types_list.item(i).setCheckState(Qt.Checked)
         self.do_not_recurse = False
 
         # Set up charts
@@ -259,15 +260,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 1,
                 create_table_item(
                     (value, number_formats.info_format(value, k)),
-                    align=QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter,
+                    align=Qt.AlignRight | Qt.AlignVCenter,
                 ),
             ),
             self.info_table.setItem(
-                i,
-                2,
-                create_table_item(
-                    unit, align=QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter
-                ),
+                i, 2, create_table_item(unit, align=Qt.AlignLeft | Qt.AlignVCenter),
             )
 
     def update_activity_list(self):
@@ -277,7 +274,7 @@ class MainWindow(QtWidgets.QMainWindow):
             link = self.assign_activity_items(activity.list_row, position=i)
             self.activities.link(activity, link)
         self.activity_list_table.resizeColumnsToContents()
-        self.activity_list_table.sortItems(2, QtCore.Qt.DescendingOrder)
+        self.activity_list_table.sortItems(2, Qt.DescendingOrder)
 
     def add_activity(self, activity_elements, position=0):
         """
@@ -326,7 +323,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 item, self.split_table.horizontalHeaderItem(x).text()
                             ),
                         ),
-                        QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter,
+                        Qt.AlignRight | Qt.AlignVCenter,
                     ),
                 )
 
@@ -394,7 +391,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.do_not_recurse:
             return
         self.do_not_recurse = True
-        if item.text() == "All" and item.checkState() != QtCore.Qt.PartiallyChecked:
+        if item.text() == "All" and item.checkState() != Qt.PartiallyChecked:
             for i in range(len(ACTIVITY_TYPES)):
                 self.activity_types_list.item(i + 1).setCheckState(item.checkState())
         else:
@@ -405,7 +402,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if len(states) == 1:
                 new_state = next(iter(states))
             else:
-                new_state = QtCore.Qt.PartiallyChecked
+                new_state = Qt.PartiallyChecked
             self.activity_types_list.item(0).setCheckState(new_state)
         self.do_not_recurse = False
         self.update_summary()
@@ -415,19 +412,17 @@ class MainWindow(QtWidgets.QMainWindow):
         if item.text() == "All":
             return
         self.do_not_recurse = True
-        self.activity_types_list.item(0).setCheckState(QtCore.Qt.PartiallyChecked)
+        self.activity_types_list.item(0).setCheckState(Qt.PartiallyChecked)
         for i in range(len(ACTIVITY_TYPES)):
             this_item = self.activity_types_list.item(i + 1)
-            this_item.setCheckState(
-                QtCore.Qt.Checked if this_item is item else QtCore.Qt.Unchecked
-            )
+            this_item.setCheckState(Qt.Checked if this_item is item else Qt.Unchecked)
         self.do_not_recurse = False
         self.update_summary()
 
     def update_summary(self):
         allowed_activities = set()
         for i, a in enumerate(ACTIVITY_TYPES):
-            if self.activity_types_list.item(i + 1).checkState() == QtCore.Qt.Checked:
+            if self.activity_types_list.item(i + 1).checkState() == Qt.Checked:
                 allowed_activities.add(a)
         self.total_distance_label.setText(
             number_formats.default_as_string(
