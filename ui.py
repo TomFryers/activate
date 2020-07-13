@@ -141,13 +141,16 @@ def resize_to_contents(header):
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, activities, *args, **kwargs):
+        self.activities = activities
         super(MainWindow, self).__init__(*args, **kwargs)
 
         PyQt5.uic.loadUi("main.ui", self)
         self.updated = set()
 
         self.settings = settings.load_settings()
+
+        self.update_activity_list()
 
         # Set up map
         self.map_widget = pyqtlet.MapWidget()
@@ -167,6 +170,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # Disable resizing in activity list
         resize_to_contents(self.activity_list_table.verticalHeader())
         resize_to_contents(self.split_table.horizontalHeader())
+
+        # Set up activity types list for the summary page
+        self.do_not_recurse = True
+        self.activity_types_list.addItems(["All"] + list(ACTIVITY_TYPES))
+        for i in range(len(["All"] + list(ACTIVITY_TYPES))):
+            self.activity_types_list.item(i).setCheckState(QtCore.Qt.Checked)
+        self.do_not_recurse = False
 
         # Set up charts
         self.charts = {}
@@ -260,11 +270,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 ),
             )
 
-    def add_tracks(self, activities):
-        """Make the activity list show this set of activities."""
-        self.activities = activities
+    def update_activity_list(self):
+        """Make the activity list show the correct activities."""
         self.activity_list_table.setRowCount(len(self.activities))
-        for i, activity in enumerate(activities):
+        for i, activity in enumerate(self.activities):
             link = self.assign_activity_items(activity.list_row, position=i)
             self.activities.link(activity, link)
         self.activity_list_table.resizeColumnsToContents()
@@ -378,22 +387,56 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def main_tab_switch(self, tab):
         if self.main_tabs.tabText(tab) == "Summary":
-            self.total_distance_label.setText(
-                number_formats.default_as_string(
-                    self.unit_system.format(self.activities.total_distance, "distance")
+            self.update_summary()
+
+    def handle_summary_check(self, item):
+        """Get the right check-boxes selected."""
+        if self.do_not_recurse:
+            return
+        self.do_not_recurse = True
+        if item.text() == "All" and item.checkState() != QtCore.Qt.PartiallyChecked:
+            for i in range(len(ACTIVITY_TYPES)):
+                self.activity_types_list.item(i + 1).setCheckState(item.checkState())
+        else:
+            states = set(
+                self.activity_types_list.item(i + 1).checkState()
+                for i in range(len(ACTIVITY_TYPES))
+            )
+            if len(states) == 1:
+                new_state = next(iter(states))
+            else:
+                new_state = QtCore.Qt.PartiallyChecked
+            self.activity_types_list.item(0).setCheckState(new_state)
+        self.do_not_recurse = False
+        self.update_summary()
+
+    def update_summary(self):
+        allowed_activities = set()
+        for i, a in enumerate(ACTIVITY_TYPES):
+            if self.activity_types_list.item(i + 1).checkState() == QtCore.Qt.Checked:
+                allowed_activities.add(a)
+        self.total_distance_label.setText(
+            number_formats.default_as_string(
+                self.unit_system.format(
+                    self.activities.total_distance(allowed_activities), "distance"
                 )
             )
-            self.total_time_label.setText(
-                number_formats.default_as_string(
-                    self.unit_system.format(self.activities.total_time, "time")
+        )
+        self.total_time_label.setText(
+            number_formats.default_as_string(
+                self.unit_system.format(
+                    self.activities.total_time(allowed_activities), "time"
                 )
             )
-            self.total_activities_label.setText(str(len(self.activities)))
-            self.total_climb_label.setText(
-                number_formats.default_as_string(
-                    self.unit_system.format(self.activities.total_climb, "altitude")
+        )
+        self.total_activities_label.setText(str(len(self.activities)))
+        self.total_climb_label.setText(
+            number_formats.default_as_string(
+                self.unit_system.format(
+                    self.activities.total_climb(allowed_activities), "altitude"
                 )
             )
+        )
 
     @property
     def unit_system(self):

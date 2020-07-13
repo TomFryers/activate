@@ -9,10 +9,9 @@ import ui
 
 def main():
     app = PyQt5.QtWidgets.QApplication(sys.argv)
-    main_window = ui.MainWindow()
     activities = activity_list.from_disk()
+    main_window = ui.MainWindow(activities)
 
-    main_window.add_tracks(activities)
     main_window.show()
     exit_code = app.exec_()
     activities.save()

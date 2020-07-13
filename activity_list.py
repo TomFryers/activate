@@ -98,14 +98,19 @@ class ActivityList(list):
             (link, v) if v == activity_id else (k, v) for k, v in self._links.items()
         )
 
-    @property
-    def total_distance(self):
-        return sum(a.distance for a in self)
+    def filtered(self, activity_types):
+        return (a for a in self if a.sport in activity_types)
 
-    @property
-    def total_time(self):
-        return sum((a.duration for a in self), datetime.timedelta())
+    def total_distance(self, activity_types):
+        return sum(a.distance for a in self.filtered(activity_types))
 
-    @property
-    def total_climb(self):
-        return sum(a.climb for a in self)
+    def total_time(self, activity_types):
+        return sum(
+            (a.duration for a in self.filtered(activity_types)), datetime.timedelta()
+        )
+
+    def total_climb(self, activity_types):
+        return sum(a.climb for a in self.filtered(activity_types))
+
+    def total_activities(self, activity_types):
+        return sum(1 for _ in self.filtered(activity_types))
