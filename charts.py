@@ -50,6 +50,7 @@ class MinMax:
 
 
 def data_to_points(data):
+    """Convert a [series1, series2] of data to a list of QPointF."""
     return [PyQt5.QtCore.QPointF(*p) for p in zip(*data)]
 
 

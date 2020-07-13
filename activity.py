@@ -77,6 +77,8 @@ class Activity:
             self.flags,
             self.start_time,
             self.distance,
+            self.track.elapsed_time,
+            self.track.ascent,
             self.activity_id,
         )
 

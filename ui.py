@@ -79,9 +79,9 @@ class SettingsDialog(QtWidgets.QDialog):
         result = super().exec()
         if not result:
             return current_settings
-        settings = self.get_settings()
-        settings.save()
-        return settings
+        new_settings = self.get_settings()
+        new_settings.save()
+        return new_settings
 
 
 class EditActivityDialog(QtWidgets.QDialog):
@@ -91,6 +91,7 @@ class EditActivityDialog(QtWidgets.QDialog):
         self.type_edit.addItems(ACTIVITY_TYPES)
 
     def update_flags(self):
+        """Generate the flags in the list based on the activity."""
         if "activity" not in vars(self):
             return
         self.flags = TYPE_FLAGS[self.type_edit.currentText()] + UNIVERSAL_FLAGS
@@ -374,6 +375,25 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
+
+    def main_tab_switch(self, tab):
+        if self.main_tabs.tabText(tab) == "Summary":
+            self.total_distance_label.setText(
+                number_formats.default_as_string(
+                    self.unit_system.format(self.activities.total_distance, "distance")
+                )
+            )
+            self.total_time_label.setText(
+                number_formats.default_as_string(
+                    self.unit_system.format(self.activities.total_time, "time")
+                )
+            )
+            self.total_activities_label.setText(str(len(self.activities)))
+            self.total_climb_label.setText(
+                number_formats.default_as_string(
+                    self.unit_system.format(self.activities.total_climb, "altitude")
+                )
+            )
 
     @property
     def unit_system(self):

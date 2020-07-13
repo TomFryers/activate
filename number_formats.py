@@ -1,3 +1,4 @@
+import datetime
 import math
 
 import times
@@ -65,3 +66,25 @@ def list_format(value, entry: str) -> str:
     if entry == "Start Time":
         return str(times.round_time(value))
     raise ValueError(f"Unknown entry: {entry}")
+
+
+def default_as_string(value) -> str:
+    """
+    Round a value in a sensible way.
+
+    Always shows at least the nearest integer. Any extra precision is
+    limited to the lesser of two decimal places, or three significant
+    figures. Also formats timedeltas nicely.
+    """
+    if isinstance(value, tuple):
+        suffix = " " + value[1]
+        value = value[0]
+    else:
+        suffix = ""
+    if isinstance(value, datetime.timedelta):
+        return times.to_string(value)
+    if value >= 100:
+        return as_int(value) + suffix
+    if value >= 10:
+        return str(round(value, 1)) + suffix
+    return str(round(value, 2)) + suffix

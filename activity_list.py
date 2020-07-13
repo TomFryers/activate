@@ -1,3 +1,5 @@
+import datetime
+
 import activity
 
 try:
@@ -19,12 +21,16 @@ def from_disk():
 
 
 class UnloadedActivity:
-    def __init__(self, name, sport, flags, start_time, distance, activity_id):
+    def __init__(
+        self, name, sport, flags, start_time, distance, duration, climb, activity_id
+    ):
         self.name = name
         self.sport = sport
         self.flags = flags
         self.start_time = start_time
         self.distance = distance
+        self.duration = duration
+        self.climb = climb
         self.activity_id = activity_id
 
     def load(self) -> activity.Activity:
@@ -91,3 +97,15 @@ class ActivityList(list):
         self._links = dict(
             (link, v) if v == activity_id else (k, v) for k, v in self._links.items()
         )
+
+    @property
+    def total_distance(self):
+        return sum(a.distance for a in self)
+
+    @property
+    def total_time(self):
+        return sum((a.duration for a in self), datetime.timedelta())
+
+    @property
+    def total_climb(self):
+        return sum(a.climb for a in self)
