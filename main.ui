@@ -660,6 +660,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>activity_types_list</sender>
+   <signal>itemDoubleClicked(QListWidgetItem*)</signal>
+   <receiver>main_window</receiver>
+   <slot>handle_summary_double_click(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>745</x>
+     <y>376</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activity()</slot>
@@ -670,5 +686,6 @@
   <slot>main_tab_switch()</slot>
   <slot>update_summary()</slot>
   <slot>handle_summary_check(QListWidgetItem*)</slot>
+  <slot>handle_summary_double_click(QListWidgetItem*)</slot>
  </slots>
 </ui>

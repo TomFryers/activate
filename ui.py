@@ -410,6 +410,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.do_not_recurse = False
         self.update_summary()
 
+    def handle_summary_double_click(self, item):
+        """Select this item only."""
+        if item.text() == "All":
+            return
+        self.do_not_recurse = True
+        self.activity_types_list.item(0).setCheckState(QtCore.Qt.PartiallyChecked)
+        for i in range(len(ACTIVITY_TYPES)):
+            this_item = self.activity_types_list.item(i + 1)
+            this_item.setCheckState(
+                QtCore.Qt.Checked if this_item is item else QtCore.Qt.Unchecked
+            )
+        self.do_not_recurse = False
+        self.update_summary()
+
     def update_summary(self):
         allowed_activities = set()
         for i, a in enumerate(ACTIVITY_TYPES):
