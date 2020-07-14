@@ -18,6 +18,7 @@ TYPE_FLAGS = {
     "Run": ("Race", "Long Run", "Workout", "Treadmill"),
     "Ride": ("Race", "Workout"),
 }
+DELETE_ACTIVITY = 222  # 0xDE[lete]
 
 
 def default_map_location(route):
@@ -90,6 +91,7 @@ class EditActivityDialog(QtWidgets.QDialog):
         super().__init__(*args, **kwargs)
         PyQt5.uic.loadUi("edit_activity.ui", self)
         self.type_edit.addItems(ACTIVITY_TYPES)
+        self.delete_activity_button.setIcon(PyQt5.QtGui.QIcon.fromTheme("edit-delete"))
 
     def update_flags(self):
         """Generate the flags in the list based on the activity."""
@@ -122,11 +124,21 @@ class EditActivityDialog(QtWidgets.QDialog):
 
         self.activity.save()
 
+    def handle_delete_button(self):
+        confirm_box = QtWidgets.QMessageBox()
+        confirm_box.setText(f"Are you sure you want to delete {self.activity.name}?")
+        confirm_box.setStandardButtons(
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+        )
+        result = confirm_box.exec()
+        if result == QtWidgets.QMessageBox.Yes:
+            self.done(DELETE_ACTIVITY)
+
     def exec(self, activity):
         self.activity = activity
         self.load_from_activity()
         result = super().exec()
-        if result:
+        if result and result != DELETE_ACTIVITY:
             self.apply_to_activity()
         return result
 
@@ -202,8 +214,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def edit_activity_data(self):
         edit_activity_dialog = EditActivityDialog()
-        if not edit_activity_dialog.exec(self.activity):
+        return_value = edit_activity_dialog.exec(self.activity)
+        if not return_value:
             return
+        # Delete activity
+        if return_value == DELETE_ACTIVITY:
+            # Must be saved to another variable because self.activity
+            # changes when the row is removed
+            to_delete = self.activity
+            for row in range(len(self.activities)):
+                item = self.activity_list_table.item(row, 0)
+                if self.activities.from_link(id(item)) is to_delete:
+                    self.activity_list_table.removeRow(row)
+                    break
+            self.activities.remove(to_delete.activity_id)
+            return
+
         self.activity_list_table.setSortingEnabled(False)
         for row in range(len(self.activities)):
             if (

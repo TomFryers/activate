@@ -49,6 +49,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QPushButton" name="delete_activity_button">
+     <property name="text">
+      <string>Delete Activity</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="edit_activity_buttons">
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
@@ -107,8 +114,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>delete_activity_button</sender>
+   <signal>released()</signal>
+   <receiver>edit_activity</receiver>
+   <slot>handle_delete_button()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>236</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>update_flags()</slot>
+  <slot>handle_delete_button()</slot>
  </slots>
 </ui>

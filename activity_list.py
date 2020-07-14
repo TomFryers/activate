@@ -98,6 +98,21 @@ class ActivityList(list):
             (link, v) if v == activity_id else (k, v) for k, v in self._links.items()
         )
 
+    def remove(self, activity_id):
+        """Remove an activity from all parts of the ActivityList."""
+        # Remove from main list
+        for a in self:
+            if a.activity_id == activity_id:
+                super().remove(a)
+        # Remove from loaded activities
+        if activity_id in self._activities:
+            del self._activities[activity_id]
+        # Remove from links
+        for link, a_id in self._links.items():
+            if a_id == activity_id:
+                del self._links[link]
+                break
+
     def filtered(self, activity_types):
         return (a for a in self if a.sport in activity_types)
 
@@ -114,3 +129,6 @@ class ActivityList(list):
 
     def total_activities(self, activity_types):
         return sum(1 for _ in self.filtered(activity_types))
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {super().__repr__()} _activities={self._activities!r} _link={self._links!r}>"
