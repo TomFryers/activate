@@ -416,9 +416,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def main_tab_switch(self, tab):
         if self.main_tabs.tabText(tab) == "Summary":
-            self.summary_tab_switch(self.summary_tabs.currentIndex())
+            self.summary_tab_switch()
 
-    def summary_tab_switch(self, tab):
+    def summary_tab_switch(self):
+        tab = self.summary_tabs.currentIndex()
         if self.summary_tabs.tabText(tab) == "Totals":
             self.update_totals()
         elif self.summary_tabs.tabText(tab) == "Progression":
@@ -452,7 +453,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 new_state = Qt.PartiallyChecked
             self.activity_types_list.item(0).setCheckState(new_state)
         self.do_not_recurse = False
-        self.update_totals()
+        self.summary_tab_switch()
 
     def handle_summary_double_click(self, item):
         """Select this item only."""
@@ -464,7 +465,7 @@ class MainWindow(QtWidgets.QMainWindow):
             this_item = self.activity_types_list.item(i + 1)
             this_item.setCheckState(Qt.Checked if this_item is item else Qt.Unchecked)
         self.do_not_recurse = False
-        self.update_totals()
+        self.summary_tab_switch()
 
     def get_allowed_for_summary(self):
         allowed_activity_types = set()
