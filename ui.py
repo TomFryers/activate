@@ -400,17 +400,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_page(self.activity_tabs.currentIndex())
 
     def import_activity(self):
-        filename = QtWidgets.QFileDialog.getOpenFileName(
+        filenames = QtWidgets.QFileDialog.getOpenFileNames(
             self, "Import an activity", "", "Activity Files (*.gpx *.fit)"
         )[0]
-        if not filename:
+        if not filenames:
             return
-        new_activity = load_activity.import_and_load(filename)
         self.activity_list_table.setSortingEnabled(False)
-
-        self.activities.add_activity(
-            new_activity, self.add_activity(new_activity.create_unloaded().list_row)
-        )
+        for filename in filenames:
+            new_activity = load_activity.import_and_load(filename)
+            self.activities.add_activity(
+                new_activity, self.add_activity(new_activity.create_unloaded().list_row)
+            )
         self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
 
