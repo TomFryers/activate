@@ -579,7 +579,7 @@
    <sender>action_import</sender>
    <signal>triggered()</signal>
    <receiver>main_window</receiver>
-   <slot>import_activity()</slot>
+   <slot>import_activities()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -721,7 +721,7 @@
   </connection>
  </connections>
  <slots>
-  <slot>import_activity()</slot>
+  <slot>import_activities()</slot>
   <slot>update_page()</slot>
   <slot>update_activity()</slot>
   <slot>edit_unit_settings()</slot>

@@ -131,6 +131,12 @@ class ActivityList(list):
         return sum(1 for _ in self.filtered(activity_types))
 
     def get_progression_data(self, activity_types, key):
+        """
+        Get the activity dates, along with the total at that point.
+
+        Filter out the wrong activity_types. Evaluate key for each
+        activity, and get (dates, totals) in order.
+        """
         data = ([], [])
         total = 0
         valid_sorted = sorted(self.filtered(activity_types), key=lambda x: x.start_time)

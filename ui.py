@@ -303,7 +303,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Make the activity list show the correct activities."""
         self.activity_list_table.setRowCount(len(self.activities))
         for i, activity in enumerate(self.activities):
-            link = self.assign_activity_items(activity.list_row, position=i)
+            link = self.assign_activity_items(activity.list_row, row=i)
             self.activities.link(activity, link)
         self.activity_list_table.resizeColumnsToContents()
         self.activity_list_table.sortItems(2, Qt.DescendingOrder)
@@ -317,7 +317,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_list_table.insertRow(position)
         return self.assign_activity_items(activity_elements, position)
 
-    def assign_activity_items(self, activity_elements, position=0):
+    def assign_activity_items(self, activity_elements, row=0):
+        """
+        Set the items in the given activity list row to specific values.
+
+        Assigns values to a row, formatting (value, dimension) tuples
+        properly.
+        """
         for j, content in enumerate(activity_elements):
             needs_special_sorting = False
             # Format as number
@@ -333,7 +339,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 widget = create_table_item(text)
             # Link activity to the first column so we can find it
             # when clicking
-            self.activity_list_table.setItem(position, j, widget)
+            self.activity_list_table.setItem(row, j, widget)
             if j == 0:
                 return_link = id(widget)
         return return_link
@@ -399,7 +405,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updated = set()
         self.update_page(self.activity_tabs.currentIndex())
 
-    def import_activity(self):
+    def import_activities(self):
+        """Import some user-given activities."""
+        # [1] gives file type chosen ("Activity Files (...)",
+        # "All Files" etc.)
         filenames = QtWidgets.QFileDialog.getOpenFileNames(
             self, "Import an activity", "", "Activity Files (*.gpx *.fit)"
         )[0]
@@ -468,35 +477,36 @@ class MainWindow(QtWidgets.QMainWindow):
         self.summary_tab_switch()
 
     def get_allowed_for_summary(self):
+        """Get the allowed activity types from the checklist."""
         allowed_activity_types = set()
         for i, a in enumerate(ACTIVITY_TYPES):
             if self.activity_types_list.item(i + 1).checkState() == Qt.Checked:
                 allowed_activity_types.add(a)
         return allowed_activity_types
 
+    def set_formatted_number_label(self, label, value, dimension):
+        """Set a label to a number, formatted with the correct units."""
+        label.setText(
+            number_formats.default_as_string(self.unit_system.format(value, dimension))
+        )
+
     def update_totals(self):
         allowed_activity_types = self.get_allowed_for_summary()
-        self.total_distance_label.setText(
-            number_formats.default_as_string(
-                self.unit_system.format(
-                    self.activities.total_distance(allowed_activity_types), "distance"
-                )
-            )
+        self.set_formatted_number_label(
+            self.total_distance_label,
+            self.activities.total_distance(allowed_activity_types),
+            "distance",
         )
-        self.total_time_label.setText(
-            number_formats.default_as_string(
-                self.unit_system.format(
-                    self.activities.total_time(allowed_activity_types), "time"
-                )
-            )
+        self.set_formatted_number_label(
+            self.total_time_label,
+            self.activities.total_time(allowed_activity_types),
+            "time",
         )
         self.total_activities_label.setText(str(len(self.activities)))
-        self.total_climb_label.setText(
-            number_formats.default_as_string(
-                self.unit_system.format(
-                    self.activities.total_climb(allowed_activity_types), "altitude"
-                )
-            )
+        self.set_formatted_number_label(
+            self.total_climb_label,
+            self.activities.total_climb(allowed_activity_types),
+            "altitude",
         )
 
     @property

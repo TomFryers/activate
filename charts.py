@@ -3,6 +3,7 @@ import math
 
 import PyQt5
 from PyQt5 import QtChart
+from PyQt5.QtCore import Qt
 
 import number_formats
 import units
@@ -111,9 +112,9 @@ class LineChart(Chart):
             y_range.minimum = 0
 
         self.update_axis(
-            PyQt5.QtCore.Qt.Horizontal, 12, x_range.minimum, x_range.maximum
+            Qt.Horizontal, 12, x_range.minimum, x_range.maximum
         )
-        self.update_axis(PyQt5.QtCore.Qt.Vertical, 4, y_range.minimum, y_range.maximum)
+        self.update_axis(Qt.Vertical, 4, y_range.minimum, y_range.maximum)
 
     def update_axis(self, direction, ticks, minimum, maximum):
         axis = self.axes(direction)[0]
@@ -142,7 +143,7 @@ class Histogram(Chart):
         # Replace QBarCategoryAxis with QCategoryAxis because the latter
         # allows putting values between categoreies instead of centring
         # them.
-        cat_axis = self.axes(PyQt5.QtCore.Qt.Horizontal)[0]
+        cat_axis = self.axes(Qt.Horizontal)[0]
         self.removeAxis(cat_axis)
         cat_axis = QtChart.QCategoryAxis(self)
 
@@ -167,7 +168,7 @@ class Histogram(Chart):
             cat_axis.append(number_formats.maybe_as_int(zones[-1]), len(zones) - 1.5)
 
         cat_axis.setLabelsPosition(QtChart.QCategoryAxis.AxisLabelsPositionOnValue)
-        self.addAxis(cat_axis, PyQt5.QtCore.Qt.AlignBottom)
+        self.addAxis(cat_axis, Qt.AlignBottom)
         series.attachAxis(cat_axis)
 
     def update(self, data):
@@ -178,7 +179,7 @@ class Histogram(Chart):
             bar_set.replace(position, units.MINUTE.encode(amount))
 
         # Format the vertical axis
-        value_axis = self.axes(PyQt5.QtCore.Qt.Vertical)[0]
+        value_axis = self.axes(Qt.Vertical)[0]
         value_axis.setRange(0, units.MINUTE.encode(max(data.values())))
         value_axis.setTickCount(15)
         value_axis.applyNiceNumbers()
@@ -186,11 +187,12 @@ class Histogram(Chart):
 
 
 class DateTimeLineChart(LineChart):
+    """A line chart with datetimes on the x axis."""
     def __init__(self, *args):
         super().__init__(*args)
-        self.removeAxis(self.axes(PyQt5.QtCore.Qt.Horizontal)[0])
+        self.removeAxis(self.axes(Qt.Horizontal)[0])
         self.date_time_axis = QtChart.QDateTimeAxis()
-        self.addAxis(self.date_time_axis, PyQt5.QtCore.Qt.AlignBottom)
+        self.addAxis(self.date_time_axis, Qt.AlignBottom)
         self.series()[0].attachAxis(self.date_time_axis)
 
     def encode_data(self, data):
@@ -199,7 +201,7 @@ class DateTimeLineChart(LineChart):
         return (x_data, y_data)
 
     def update_axis(self, direction, ticks, minimum, maximum):
-        if direction == PyQt5.QtCore.Qt.Horizontal:
+        if direction == Qt.Horizontal:
             minimum = datetime.datetime.fromtimestamp(minimum / 1000)
             maximum = datetime.datetime.fromtimestamp(maximum / 1000)
             extra = (maximum - minimum) * 0.01
