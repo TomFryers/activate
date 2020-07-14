@@ -205,8 +205,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.zones, self.zones_graph, self.unit_system
         )
 
+        self.progression_chart = charts.DateTimeLineChart(
+            self.progression_graph, self.unit_system
+        )
+
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
         self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
+
+        self.main_tab_switch(0)
 
     def edit_unit_settings(self):
         settings_window = SettingsDialog()
@@ -410,7 +416,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def main_tab_switch(self, tab):
         if self.main_tabs.tabText(tab) == "Summary":
-            self.update_summary()
+            self.summary_tab_switch(self.summary_tabs.currentIndex())
+
+    def summary_tab_switch(self, tab):
+        if self.summary_tabs.tabText(tab) == "Totals":
+            self.update_totals()
+        elif self.summary_tabs.tabText(tab) == "Progression":
+            self.update_progression()
+        else:
+            raise ValueError("Invalid tab")
+
+    def update_progression(self):
+        allowed_activity_types = self.get_allowed_for_summary()
+        data = self.activities.get_progression_data(
+            allowed_activity_types, lambda a: a.distance
+        )
+        self.progression_chart.update(((data[0], "date"), (data[1], "distance")))
 
     def handle_summary_check(self, item):
         """Get the right check-boxes selected."""
@@ -431,7 +452,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 new_state = Qt.PartiallyChecked
             self.activity_types_list.item(0).setCheckState(new_state)
         self.do_not_recurse = False
-        self.update_summary()
+        self.update_totals()
 
     def handle_summary_double_click(self, item):
         """Select this item only."""
@@ -443,24 +464,28 @@ class MainWindow(QtWidgets.QMainWindow):
             this_item = self.activity_types_list.item(i + 1)
             this_item.setCheckState(Qt.Checked if this_item is item else Qt.Unchecked)
         self.do_not_recurse = False
-        self.update_summary()
+        self.update_totals()
 
-    def update_summary(self):
-        allowed_activities = set()
+    def get_allowed_for_summary(self):
+        allowed_activity_types = set()
         for i, a in enumerate(ACTIVITY_TYPES):
             if self.activity_types_list.item(i + 1).checkState() == Qt.Checked:
-                allowed_activities.add(a)
+                allowed_activity_types.add(a)
+        return allowed_activity_types
+
+    def update_totals(self):
+        allowed_activity_types = self.get_allowed_for_summary()
         self.total_distance_label.setText(
             number_formats.default_as_string(
                 self.unit_system.format(
-                    self.activities.total_distance(allowed_activities), "distance"
+                    self.activities.total_distance(allowed_activity_types), "distance"
                 )
             )
         )
         self.total_time_label.setText(
             number_formats.default_as_string(
                 self.unit_system.format(
-                    self.activities.total_time(allowed_activities), "time"
+                    self.activities.total_time(allowed_activity_types), "time"
                 )
             )
         )
@@ -468,7 +493,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.total_climb_label.setText(
             number_formats.default_as_string(
                 self.unit_system.format(
-                    self.activities.total_climb(allowed_activities), "altitude"
+                    self.activities.total_climb(allowed_activity_types), "altitude"
                 )
             )
         )

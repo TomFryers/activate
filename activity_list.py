@@ -130,5 +130,15 @@ class ActivityList(list):
     def total_activities(self, activity_types):
         return sum(1 for _ in self.filtered(activity_types))
 
+    def get_progression_data(self, activity_types, key):
+        data = ([], [])
+        total = 0
+        valid_sorted = sorted(self.filtered(activity_types), key=lambda x: x.start_time)
+        for a in valid_sorted:
+            data[0].append(a.start_time)
+            total += key(a)
+            data[1].append(total)
+        return data
+
     def __repr__(self):
         return f"<{self.__class__.__name__} {super().__repr__()} _activities={self._activities!r} _link={self._links!r}>"

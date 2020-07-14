@@ -1,3 +1,4 @@
+import datetime
 import math
 
 import PyQt5
@@ -86,12 +87,15 @@ class LineChart(Chart):
             series = area
         super().__init__(series, widget, unit_system, title)
 
-    def update(self, data):
-        """Change a line chart's data."""
-        # Convert to the correct units
-        data = [
+    def encode_data(self, data):
+        return [
             [self.unit_system.encode(x, unit) for x in series] for series, unit in data
         ]
+
+    def update(self, data):
+        """Change a line chart's data."""
+        data = self.encode_data(data)
+        # Convert to the correct units
         series = self.series()[0]
         # Extract 'real' series from an area chart
         if isinstance(series, QtChart.QAreaSeries):
@@ -106,20 +110,22 @@ class LineChart(Chart):
         if y_range.minimum != 0 and y_range.ratio > 3:
             y_range.minimum = 0
 
-        for i, axis in enumerate(
-            (PyQt5.QtCore.Qt.Horizontal, PyQt5.QtCore.Qt.Vertical)
-        ):
-            axis = self.axes(axis)[0]
-            # Set the axis ranges
-            if i == 0:
-                axis.setRange(x_range.minimum, x_range.maximum)
-            else:
-                axis.setRange(y_range.minimum, y_range.maximum)
-            axis.setTickCount((12, 4)[i])
-            axis.applyNiceNumbers()
+        self.update_axis(
+            PyQt5.QtCore.Qt.Horizontal, 12, x_range.minimum, x_range.maximum
+        )
+        self.update_axis(PyQt5.QtCore.Qt.Vertical, 4, y_range.minimum, y_range.maximum)
 
+    def update_axis(self, direction, ticks, minimum, maximum):
+        axis = self.axes(direction)[0]
+        axis.setRange(minimum, maximum)
+        axis.setTickCount(ticks)
+        try:
+            axis.applyNiceNumbers()
             # Set the correct axis label formatting
             axis_number_format(axis)
+        # For date axes in subclass
+        except AttributeError:
+            pass
 
 
 class Histogram(Chart):
@@ -177,3 +183,42 @@ class Histogram(Chart):
         value_axis.setTickCount(15)
         value_axis.applyNiceNumbers()
         axis_number_format(value_axis)
+
+
+class DateTimeLineChart(LineChart):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.removeAxis(self.axes(PyQt5.QtCore.Qt.Horizontal)[0])
+        self.date_time_axis = QtChart.QDateTimeAxis()
+        self.addAxis(self.date_time_axis, PyQt5.QtCore.Qt.AlignBottom)
+        self.series()[0].attachAxis(self.date_time_axis)
+
+    def encode_data(self, data):
+        x_data = [self.unit_system.encode(x, data[0][1]) * 1000 for x in data[0][0]]
+        y_data = [self.unit_system.encode(x, data[1][1]) for x in data[1][0]]
+        return (x_data, y_data)
+
+    def update_axis(self, direction, ticks, minimum, maximum):
+        if direction == PyQt5.QtCore.Qt.Horizontal:
+            minimum = datetime.datetime.fromtimestamp(minimum / 1000)
+            maximum = datetime.datetime.fromtimestamp(maximum / 1000)
+            extra = (maximum - minimum) * 0.01
+            minimum -= extra
+            maximum += extra
+            x_range = maximum - minimum
+            if x_range >= datetime.timedelta(days=365):
+                self.date_time_axis.setFormat("MMM yyyy")
+            elif x_range >= datetime.timedelta(days=100):
+                self.date_time_axis.setFormat("MMMM")
+            elif x_range >= datetime.timedelta(days=5):
+                self.date_time_axis.setFormat("dd MMMM")
+            elif x_range >= datetime.timedelta(days=3):
+                self.date_time_axis.setFormat("hh:00 d MMM")
+            elif x_range >= datetime.timedelta(days=1):
+                self.date_time_axis.setFormat("hh:mm d MMM")
+            elif x_range >= datetime.timedelta(hours=12):
+                self.date_time_axis.setFormat("hh:mm")
+            else:
+                self.date_time_axis.setFormat("hh:mm:ss")
+
+        super().update_axis(direction, ticks, minimum, maximum)

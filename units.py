@@ -57,6 +57,19 @@ class PaceUnit(Unit):
         return f"{self.__class__.__name__}({self.distance!r})"
 
 
+class DateUnit(Unit):
+    """A unit giving a date."""
+
+    def __init__(self):
+        super().__init__("date", "", 1)
+
+    def encode(self, value):
+        return value.timestamp()
+
+    def format(self, value):
+        return str(value)
+
+
 KM = Unit("kilometre", "km", 1000)
 MILE = Unit("mile", "mi", 1609.344)
 METRE = Unit("metre", "m", 1)
@@ -71,12 +84,15 @@ MINUTE = Unit("minute", "min", 60)
 MIN_PER_KM = PaceUnit(KM)
 MIN_PER_MILE = PaceUnit(MILE)
 UNITLESS = Unit("", "", 1)
+DATE = DateUnit()
 ALL = {
     "distance": (METRE, FOOT, YARD, KM, MILE),
     "altitude": (METRE, FOOT),
     "speed": (METRE_PER_SECOND, KM_PER_HOUR, MILE_PER_HOUR),
     "time": (TIME,),
     "pace": (MIN_PER_KM, MIN_PER_MILE),
+    "date": (DATE,),
+    None: UNITLESS,
 }
 
 METRIC = {
@@ -85,6 +101,7 @@ METRIC = {
     "speed": KM_PER_HOUR,
     "time": TIME,
     "pace": MIN_PER_KM,
+    "date": DATE,
     None: UNITLESS,
 }
 
@@ -94,6 +111,7 @@ IMPERIAL = {
     "speed": MILE_PER_HOUR,
     "time": TIME,
     "pace": MIN_PER_MILE,
+    "date": DATE,
     None: UNITLESS,
 }
 

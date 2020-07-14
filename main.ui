@@ -20,6 +20,151 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
+      <widget class="QWidget" name="summary_tab">
+       <attribute name="title">
+        <string>Summary</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QListWidget" name="activity_types_list">
+          <property name="maximumSize">
+           <size>
+            <width>500</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTabWidget" name="summary_tabs">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="totals_tab">
+           <attribute name="title">
+            <string>Totals</string>
+           </attribute>
+           <layout class="QFormLayout" name="formLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="distance_stat_label">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Distance</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="total_distance_label">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="time_stats_label">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Time</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="total_time_label">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="activities_stat_label">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Activities</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="total_activities_label">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="climb_stats_label">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Climb</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLabel" name="total_climb_label">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="progression_tab">
+           <attribute name="title">
+            <string>Progression</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QChartView" name="progression_graph"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="activities_tab">
        <attribute name="title">
         <string>Activities</string>
@@ -343,124 +488,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="summary_tab">
-       <attribute name="title">
-        <string>Summary</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item>
-         <layout class="QFormLayout" name="stats">
-          <item row="0" column="0">
-           <widget class="QLabel" name="distance_stat_label">
-            <property name="font">
-             <font>
-              <pointsize>20</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Distance</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="total_distance_label">
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="time_stats_label">
-            <property name="font">
-             <font>
-              <pointsize>20</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Time</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="total_time_label">
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="activities_stat_label">
-            <property name="font">
-             <font>
-              <pointsize>20</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Activities</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="total_activities_label">
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="climb_stats_label">
-            <property name="font">
-             <font>
-              <pointsize>20</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Climb</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLabel" name="total_climb_label">
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QListWidget" name="activity_types_list"/>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -533,22 +560,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>activity_list_table</sender>
-   <signal>currentCellChanged(int,int,int,int)</signal>
-   <receiver>main_window</receiver>
-   <slot>update_activity()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>202</x>
-     <y>312</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>action_quit</sender>
    <signal>triggered()</signal>
    <receiver>main_window</receiver>
@@ -573,22 +584,6 @@
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>639</x>
-     <y>359</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>activity_tabs</sender>
-   <signal>currentChanged(int)</signal>
-   <receiver>main_window</receiver>
-   <slot>update_page()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>958</x>
-     <y>363</y>
     </hint>
     <hint type="destinationlabel">
      <x>639</x>
@@ -645,6 +640,38 @@
    </hints>
   </connection>
   <connection>
+   <sender>activity_list_table</sender>
+   <signal>currentCellChanged(int,int,int,int)</signal>
+   <receiver>main_window</receiver>
+   <slot>update_activity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>202</x>
+     <y>312</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>activity_tabs</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>main_window</receiver>
+   <slot>update_page()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>958</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>activity_types_list</sender>
    <signal>itemChanged(QListWidgetItem*)</signal>
    <receiver>main_window</receiver>
@@ -676,6 +703,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>summary_tabs</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>main_window</receiver>
+   <slot>summary_tab_switch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>892</x>
+     <y>376</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activity()</slot>
@@ -684,8 +727,9 @@
   <slot>edit_unit_settings()</slot>
   <slot>edit_activity_data()</slot>
   <slot>main_tab_switch()</slot>
-  <slot>update_summary()</slot>
+  <slot>update_totals()</slot>
   <slot>handle_summary_check(QListWidgetItem*)</slot>
   <slot>handle_summary_double_click(QListWidgetItem*)</slot>
+  <slot>summary_tab_switch()</slot>
  </slots>
 </ui>
