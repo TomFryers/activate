@@ -408,6 +408,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def handle_summary_double_click(self, item):
         """Select this item only."""
         if item.text() == "All":
+            self.activity_types_list.item(0).setCheckState(Qt.Checked)
             return
         self.do_not_recurse = True
         self.activity_types_list.item(0).setCheckState(Qt.PartiallyChecked)
