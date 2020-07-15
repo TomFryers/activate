@@ -1,6 +1,7 @@
 import random
 
 import activity_list
+from units import DimensionValue
 
 try:
     import cPickle as pickle
@@ -50,18 +51,18 @@ class Activity:
     @property
     def stats(self):
         return {
-            "Distance": (self.distance, "distance"),
-            "Elapsed Time": (self.track.elapsed_time, "time"),
-            "Ascent": (self.track.ascent, "altitude")
+            "Distance": DimensionValue(self.distance, "distance"),
+            "Elapsed Time": DimensionValue(self.track.elapsed_time, "time"),
+            "Ascent": DimensionValue(self.track.ascent, "altitude")
             if self.track.has_altitude_data
             else "None",
-            "Descent": (self.track.descent, "altitude")
+            "Descent": DimensionValue(self.track.descent, "altitude")
             if self.track.has_altitude_data
             else "None",
-            "Average Speed": (self.track.average_speed, "speed"),
-            "Pace": (1 / self.track.average_speed, "pace"),
-            "Max. Speed": (self.track.max_speed, "speed"),
-            "Highest Point": (self.track.highest_point, "altitude")
+            "Average Speed": DimensionValue(self.track.average_speed, "speed"),
+            "Pace": DimensionValue(1 / self.track.average_speed, "pace"),
+            "Max. Speed": DimensionValue(self.track.max_speed, "speed"),
+            "Highest Point": DimensionValue(self.track.highest_point, "altitude")
             if self.track.has_altitude_data
             else "None",
         }

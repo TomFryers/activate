@@ -187,7 +187,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="activity_list_table">
+           <widget class="Table" name="activity_list_table">
             <property name="minimumSize">
              <size>
               <width>500</width>
@@ -333,7 +333,7 @@
              <layout class="QGridLayout" name="map_container"/>
             </item>
             <item row="1" column="1">
-             <widget class="QTableWidget" name="info_table">
+             <widget class="Table" name="info_table">
               <property name="minimumSize">
                <size>
                 <width>310</width>
@@ -412,7 +412,7 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="QTableWidget" name="split_table">
+             <widget class="Table" name="split_table">
               <property name="minimumSize">
                <size>
                 <width>210</width>
@@ -555,6 +555,11 @@
    <class>QChartView</class>
    <extends>QGraphicsView</extends>
    <header>PyQt5.QtChart</header>
+  </customwidget>
+  <customwidget>
+   <class>Table</class>
+   <extends>QTableWidget</extends>
+   <header>tables.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

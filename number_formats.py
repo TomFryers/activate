@@ -21,50 +21,46 @@ def maybe_as_int(value) -> str:
     return str(value)
 
 
-def info_format(value, entry: str) -> str:
+def info_format(entry: str):
     """Format an value for the info box."""
-    if value == "None":
-        return value
     if entry == "Elapsed Time":
-        return times.to_string(value)
+        return lambda value: times.to_string(value)
     if entry in {"Ascent", "Descent", "Highest Point"}:
-        return as_int(value)
+        return lambda value: as_int(value)
     if entry == "Average Speed":
-        return f"{value:.2f}"
+        return lambda value: f"{value:.2f}"
     if entry == "Distance":
-        return f"{value:.2f}"
+        return lambda value: f"{value:.2f}"
     if entry == "Max. Speed":
-        return f"{value:.1f}"
+        return lambda value: f"{value:.1f}"
     if entry == "Pace":
-        return times.to_string(value)
+        return lambda value: times.to_string(value)
+    if entry is None:
+        return lambda value: value
     raise ValueError(f"Unknown entry: {entry}")
 
 
-def split_format(value, entry: str) -> str:
+def split_format(entry: str):
     """Format a value for the splits table."""
-    if value == "None":
-        return value
     if entry == "Number":
-        return as_int(value)
+        return lambda value: as_int(value)
     if entry in {"Time", "Split"}:
-        return times.to_string(value)
+        return lambda value: times.to_string(value)
     if entry in {"Net Climb", "Ascent"}:
-        return as_int(value)
+        return lambda value: as_int(value)
     if entry == "Speed":
-        return f"{value:.2f}"
+        return lambda value: f"{value:.2f}"
     raise ValueError(f"Unknown entry: {entry}")
 
 
-def list_format(value, entry: str) -> str:
+def list_format(entry: str):
     """Format a value for the splits table."""
-    if value == "None":
-        return value
     if entry in {"Name", "Type"}:
-        return value
+        return None
     if entry == "Distance":
-        return f"{value:.2f}"
+        return lambda value: f"{value:.2f}"
     if entry == "Start Time":
-        return str(times.round_time(value))
+        return lambda value: str(times.round_time(value))
     raise ValueError(f"Unknown entry: {entry}")
 
 

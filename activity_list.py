@@ -2,6 +2,8 @@ import datetime
 
 import activity
 
+import units
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -41,7 +43,12 @@ class UnloadedActivity:
 
     @property
     def list_row(self):
-        return [self.name, self.sport, self.start_time, (self.distance, "distance")]
+        return [
+            self.name,
+            self.sport,
+            self.start_time,
+            units.DimensionValue(self.distance, "distance"),
+        ]
 
 
 class ActivityList(list):

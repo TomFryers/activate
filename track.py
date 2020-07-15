@@ -2,6 +2,7 @@ import math
 from functools import cached_property
 
 import times
+from units import DimensionValue
 
 EARTH_RADIUS = 6378137
 E_2 = 0.00669437999014
@@ -213,11 +214,17 @@ class Track:
 
     @cached_property
     def alt_graph(self):
-        return ((self["dist"], "distance"), (self["ele"], "altitude"))
+        return (
+            (self["dist"], "distance"),
+            (self["ele"], "altitude"),
+        )
 
     @cached_property
     def speed_graph(self):
-        return ((self["dist"], "distance"), (self["speed"], "speed"))
+        return (
+            (self["dist"], "distance"),
+            (self["speed"], "speed"),
+        )
 
     @property
     def length(self):
@@ -238,11 +245,11 @@ class Track:
                 speed = splitlength / (time - lasttime).total_seconds()
                 splits.append(
                     [
-                        (time - lasttime, "time"),
-                        (time - self.start_time, "time"),
-                        (speed, "speed"),
-                        (alt - lastalt, "altitude"),
-                        (total_climb, "altitude"),
+                        DimensionValue(time - lasttime, "time"),
+                        DimensionValue(time - self.start_time, "time"),
+                        DimensionValue(speed, "speed"),
+                        DimensionValue(alt - lastalt, "altitude"),
+                        DimensionValue(total_climb, "altitude"),
                     ]
                 )
                 total_climb = 0

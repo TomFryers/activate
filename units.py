@@ -1,6 +1,21 @@
 import datetime
 
 
+class DimensionValue:
+    def __init__(self, value, dimension):
+        self.value = value
+        self.dimension = dimension
+
+    def format(self, unit_system):
+        return unit_system.format(self.value, self.dimension)
+
+    def encode(self, unit_system):
+        return unit_system.encode(self.value, self.dimension)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.value!r}, {self.dimension!r})"
+
+
 class Unit:
     def __init__(self, name, symbol, size):
         self.name = name

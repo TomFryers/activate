@@ -8,6 +8,7 @@ import charts
 import load_activity
 import number_formats
 import settings
+import tables
 import times
 import units
 
@@ -27,40 +28,6 @@ def default_map_location(route):
         (min(p[component] for p in route) + max(p[component] for p in route)) / 2
         for component in range(2)
     ]
-
-
-def create_table_item(item, align=None) -> QtWidgets.QTableWidgetItem:
-    """
-    Create a table item that can be a FormattableNumber.
-
-    If item is a tuple, will return a table item that looks like item[1]
-    but sorts with item[0]. Otherwise just returns a normal table item.
-    """
-    if isinstance(item, tuple):
-        widget = FormattableNumber(*item)
-        widget.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-    # Format as string
-    else:
-        widget = QtWidgets.QTableWidgetItem(item)
-    if align is not None:
-        widget.setTextAlignment(align)
-    return widget
-
-
-def good_minus(string):
-    """Replace hyphen-minuses with real minus signs."""
-    return string.replace("-", "\u2212")
-
-
-class FormattableNumber(QtWidgets.QTableWidgetItem):
-    """A sortable, formatted number to place in a table."""
-
-    def __init__(self, number, text):
-        super().__init__(good_minus(text))
-        self.number = number
-
-    def __lt__(self, other):
-        return self.number < other.number
 
 
 class SettingsDialog(QtWidgets.QDialog):
@@ -143,16 +110,6 @@ class EditActivityDialog(QtWidgets.QDialog):
         return result
 
 
-def resize_to_contents(header):
-    """
-    Set a header to auto-resize its items.
-
-    This also stops the user resizing them, which is good because usually
-    resizing these things is not particularly useful.
-    """
-    header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-
-
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, activities, *args, **kwargs):
         self.activities = activities
@@ -162,6 +119,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updated = set()
 
         self.settings = settings.load_settings()
+
+        self.activity_list_table.unit_system = self.unit_system
+        self.split_table.unit_system = self.unit_system
+        self.info_table.unit_system = self.unit_system
 
         self.update_activity_list()
 
@@ -181,8 +142,8 @@ class MainWindow(QtWidgets.QMainWindow):
         header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
 
         # Disable resizing in activity list
-        resize_to_contents(self.activity_list_table.verticalHeader())
-        resize_to_contents(self.split_table.horizontalHeader())
+        self.activity_list_table.resize_to_contents("v")
+        self.split_table.resize_to_contents("h")
 
         # Set up activity types list for the summary page
         self.do_not_recurse = True
@@ -281,22 +242,19 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.info_table.setRowCount(len(info))
         for i, (k, v) in enumerate(info.items()):
-            self.info_table.setItem(i, 0, create_table_item(k))
-            if isinstance(v, tuple):
-                value, unit = self.unit_system.format(*v)
-            else:
-                value = v
-                unit = None
-            self.info_table.setItem(
+            self.info_table.set_item(i, 0, k)
+            self.info_table.set_item(
                 i,
                 1,
-                create_table_item(
-                    (value, number_formats.info_format(value, k)),
-                    align=Qt.AlignRight | Qt.AlignVCenter,
-                ),
-            ),
-            self.info_table.setItem(
-                i, 2, create_table_item(unit, align=Qt.AlignLeft | Qt.AlignVCenter),
+                v,
+                number_formats.info_format(k),
+                align=Qt.AlignRight | Qt.AlignVCenter,
+            )
+            self.info_table.set_item(
+                i,
+                2,
+                self.unit_system.units[v.dimension].symbol,
+                align=Qt.AlignLeft | Qt.AlignVCenter,
             )
 
     def update_activity_list(self):
@@ -325,18 +283,9 @@ class MainWindow(QtWidgets.QMainWindow):
         properly.
         """
         for j, content in enumerate(activity_elements):
-            needs_special_sorting = False
             # Format as number
-            if isinstance(content, tuple):
-                needs_special_sorting = True
-                content = self.unit_system.encode(*content)
-            text = number_formats.list_format(
-                content, self.activity_list_table.horizontalHeaderItem(j).text()
-            )
-            if needs_special_sorting:
-                widget = create_table_item((content, text))
-            else:
-                widget = create_table_item(text)
+            format = number_formats.list_format(self.activity_list_table.get_heading(j))
+            widget = tables.create_table_item(content, format, self.unit_system)
             # Link activity to the first column so we can find it
             # when clicking
             self.activity_list_table.setItem(row, j, widget)
@@ -348,22 +297,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """Update the activity splits page."""
         self.split_table.setRowCount(len(data))
         for y, row in enumerate(data):
-            for x, item in enumerate([(y + 1, None)] + row):
-                if isinstance(item, tuple):
-                    item = self.unit_system.encode(*item)
-                self.split_table.setItem(
-                    y,
-                    x,
-                    create_table_item(
-                        (
-                            item,
-                            number_formats.split_format(
-                                item, self.split_table.horizontalHeaderItem(x).text()
-                            ),
-                        ),
-                        Qt.AlignRight | Qt.AlignVCenter,
-                    ),
-                )
+            row_data = [y + 1] + row
+            formats = [
+                number_formats.split_format(self.split_table.get_heading(x))
+                for x in range(len(row_data))
+            ]
+            self.split_table.set_row(
+                row_data, y, formats, alignments=Qt.AlignRight | Qt.AlignVCenter
+            )
 
     def update_page(self, page):
         """Switch to a new activity tab page."""
