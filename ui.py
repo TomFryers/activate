@@ -266,9 +266,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_list_table.resizeColumnsToContents()
         self.activity_list_table.sortItems(2, Qt.DescendingOrder)
 
-    def add_activity(self, activity_id, activity_elements, position=0):
+    def add_activity(self, new_activity, position=0):
         """Add an activity to list."""
+        activity_id = new_activity.activity_id
+        activity_elements = new_activity.create_unloaded().list_row
         self.activity_list_table.insertRow(position)
+        self.activities.add_activity(new_activity)
         self.assign_activity_items(activity_id, activity_elements, position)
 
     def assign_activity_items(self, activity_id, activity_elements, row=0):
@@ -332,7 +335,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity = self.activities.get_activity(
             self.activity_list_table.item(selected, 0).activity_id
         )
-
         # Previously generated pages need refreshing
         self.updated = set()
         self.update_page(self.activity_tabs.currentIndex())
@@ -348,11 +350,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.activity_list_table.setSortingEnabled(False)
         for filename in filenames:
-            new_activity = load_activity.import_and_load(filename)
-            self.add_activity(
-                new_activity.activity_id, new_activity.create_unloaded().list_row
-            )
-            self.activities.add_activity(new_activity)
+            self.add_activity(load_activity.import_and_load(filename))
         self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
 
