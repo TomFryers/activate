@@ -8,7 +8,6 @@ import charts
 import load_activity
 import number_formats
 import settings
-import tables
 import times
 import units
 
@@ -191,7 +190,7 @@ class MainWindow(QtWidgets.QMainWindow):
             to_delete = self.activity
             for row in range(len(self.activities)):
                 item = self.activity_list_table.item(row, 0)
-                if self.activities.from_link(id(item)) is to_delete:
+                if self.activities.get_activity(item.activity_id) is to_delete:
                     self.activity_list_table.removeRow(row)
                     break
             self.activities.remove(to_delete.activity_id)
@@ -200,15 +199,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_list_table.setSortingEnabled(False)
         for row in range(len(self.activities)):
             if (
-                self.activities.from_link(id(self.activity_list_table.item(row, 0)))
+                self.activities.get_activity(
+                    self.activity_list_table.item(row, 0).activity_id
+                )
                 == self.activity
             ):
-                link = self.assign_activity_items(
-                    self.activity.create_unloaded().list_row, row
+                self.assign_activity_items(
+                    self.activity.activity_id,
+                    self.activity.create_unloaded().list_row,
+                    row,
                 )
-        self.activities.update(
-            self.activity.activity_id, link,
-        )
+        self.activities.update(self.activity.activity_id,)
         self.update_activity(row)
         self.activity_list_table.setSortingEnabled(True)
 
@@ -261,37 +262,27 @@ class MainWindow(QtWidgets.QMainWindow):
         """Make the activity list show the correct activities."""
         self.activity_list_table.setRowCount(len(self.activities))
         for i, activity in enumerate(self.activities):
-            link = self.assign_activity_items(activity.list_row, row=i)
-            self.activities.link(activity, link)
+            self.assign_activity_items(activity.activity_id, activity.list_row, row=i)
         self.activity_list_table.resizeColumnsToContents()
         self.activity_list_table.sortItems(2, Qt.DescendingOrder)
 
-    def add_activity(self, activity_elements, position=0):
-        """
-        Add an activity to list.
-
-        Returns the id of the first column of the added item for linking.
-        """
+    def add_activity(self, activity_id, activity_elements, position=0):
+        """Add an activity to list."""
         self.activity_list_table.insertRow(position)
-        return self.assign_activity_items(activity_elements, position)
+        self.assign_activity_items(activity_id, activity_elements, position)
 
-    def assign_activity_items(self, activity_elements, row=0):
+    def assign_activity_items(self, activity_id, activity_elements, row=0):
         """
         Set the items in the given activity list row to specific values.
 
         Assigns values to a row, formatting (value, dimension) tuples
         properly.
         """
-        for j, content in enumerate(activity_elements):
-            # Format as number
-            format = number_formats.list_format(self.activity_list_table.get_heading(j))
-            widget = tables.create_table_item(content, format, self.unit_system)
-            # Link activity to the first column so we can find it
-            # when clicking
-            self.activity_list_table.setItem(row, j, widget)
-            if j == 0:
-                return_link = id(widget)
-        return return_link
+        formats = [
+            number_formats.list_format(self.activity_list_table.get_heading(j))
+            for j in range(len(activity_elements))
+        ]
+        self.activity_list_table.set_row(activity_id, activity_elements, row, formats)
 
     def update_splits(self, data):
         """Update the activity splits page."""
@@ -338,8 +329,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_activity(self, selected):
         """Show a new activity on the right."""
         # Find the correct activity
-        self.activity = self.activities.from_link(
-            id(self.activity_list_table.item(selected, 0))
+        self.activity = self.activities.get_activity(
+            self.activity_list_table.item(selected, 0).activity_id
         )
 
         # Previously generated pages need refreshing
@@ -358,9 +349,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_list_table.setSortingEnabled(False)
         for filename in filenames:
             new_activity = load_activity.import_and_load(filename)
-            self.activities.add_activity(
-                new_activity, self.add_activity(new_activity.create_unloaded().list_row)
+            self.add_activity(
+                new_activity.activity_id, new_activity.create_unloaded().list_row
             )
+            self.activities.add_activity(new_activity)
         self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
 

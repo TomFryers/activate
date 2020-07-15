@@ -92,3 +92,16 @@ class Table(QtWidgets.QTableWidget):
 
     def get_heading(self, index) -> str:
         return self.horizontalHeaderItem(index).text()
+
+
+class ActivityListTable(Table):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @property
+    def current_activity_id(self):
+        return self.selectedItems()[0].activity_id
+
+    def set_row(self, activity_id, values, position, formats=None, alignments=None):
+        super().set_row(values, position, formats, alignments)
+        self.item(position, 0).activity_id = activity_id

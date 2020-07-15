@@ -1,7 +1,6 @@
 import datetime
 
 import activity
-
 import units
 
 try:
@@ -55,7 +54,6 @@ class ActivityList(list):
     def __init__(self, activities):
         """Create a list of unloaded activities."""
         self._activities = {}
-        self._links = {}
         super().__init__(activities)
 
     def get_activity(self, activity_id):
@@ -70,40 +68,27 @@ class ActivityList(list):
         """
         Store the activity list in a file.
 
-        This only stores the list data, not the actual activities or
-        links.
+        This only stores the list data, not the actual activities.
         """
         with open(SAVE_FILE, "wb") as f:
             pickle.dump(self[:], f)
 
-    def add_activity(self, new_activity, link):
+    def add_activity(self, new_activity):
         """
-        Add a new activity with a link to it.
+        Add a new activity.
 
         Also saves the activity to disk.
         """
-        self._links[link] = new_activity.activity_id
         self._activities[new_activity.activity_id] = new_activity
         self.append(new_activity.create_unloaded())
         new_activity.save()
 
-    def from_link(self, link):
-        """Retrieve an activity from a link."""
-        return self.get_activity(self._links[link])
-
-    def link(self, activity_, link):
-        """Store a link to an activity."""
-        self._links[link] = activity_.activity_id
-
-    def update(self, activity_id, link):
+    def update(self, activity_id):
         """Regenerate an unloaded activity from its loaded version."""
         for i, unloaded_activity in enumerate(self):
             if unloaded_activity.activity_id == activity_id:
                 self[i] = self._activities[activity_id].create_unloaded()
                 break
-        self._links = dict(
-            (link, v) if v == activity_id else (k, v) for k, v in self._links.items()
-        )
 
     def remove(self, activity_id):
         """Remove an activity from all parts of the ActivityList."""
@@ -114,11 +99,6 @@ class ActivityList(list):
         # Remove from loaded activities
         if activity_id in self._activities:
             del self._activities[activity_id]
-        # Remove from links
-        for link, a_id in self._links.items():
-            if a_id == activity_id:
-                del self._links[link]
-                break
 
     def filtered(self, activity_types):
         return (a for a in self if a.sport in activity_types)
@@ -154,4 +134,4 @@ class ActivityList(list):
         return data
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} {super().__repr__()} _activities={self._activities!r} _link={self._links!r}>"
+        return f"<{self.__class__.__name__} {super().__repr__()} _activities={self._activities!r}>"

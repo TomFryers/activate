@@ -187,7 +187,7 @@
            </widget>
           </item>
           <item>
-           <widget class="Table" name="activity_list_table">
+           <widget class="ActivityListTable" name="activity_list_table">
             <property name="minimumSize">
              <size>
               <width>500</width>
@@ -558,6 +558,11 @@
   </customwidget>
   <customwidget>
    <class>Table</class>
+   <extends>QTableWidget</extends>
+   <header>tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ActivityListTable</class>
    <extends>QTableWidget</extends>
    <header>tables.h</header>
   </customwidget>
