@@ -359,6 +359,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def main_tab_switch(self, tab):
         if self.main_tabs.tabText(tab) == "Summary":
             self.summary_tab_switch()
+        elif self.main_tabs.tabText(tab) == "Activities":
+            if not self.activity_list_table.selectedItems():
+                self.activity_list_table.setCurrentCell(0, 0)
+        else:
+            raise ValueError("Invalid tab")
 
     def summary_tab_switch(self):
         tab = self.summary_tabs.currentIndex()
