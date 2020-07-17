@@ -50,3 +50,18 @@ def to_number(value):
     if isinstance(value, datetime.timedelta):
         return value.total_seconds()
     return value
+
+
+def is_in_period(compare, original, /, period: str, number=0):
+    if period == "year":
+        return original.year - compare.year == number
+    if period == "month":
+        return (
+            original.month - compare.month + (original.year - compare.year) * 12
+            == number
+        )
+    if period == "week":
+        value = (original.date() - compare.date()).days // 7
+        if compare.weekday() > original.weekday():
+            value += 1
+        return value == number

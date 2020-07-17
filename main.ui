@@ -24,16 +24,64 @@
        <attribute name="title">
         <string>Summary</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
-         <widget class="QListWidget" name="activity_types_list">
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>16777215</height>
-           </size>
-          </property>
-         </widget>
+         <layout class="QVBoxLayout" name="summary_options_layout">
+          <item>
+           <widget class="QListWidget" name="activity_types_list">
+            <property name="maximumSize">
+             <size>
+              <width>300</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="summary_period_layout">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Period</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="summary_period_box">
+              <property name="maximumSize">
+               <size>
+                <width>300</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>All Time</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Year</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Month</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Week</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QTabWidget" name="summary_tabs">
@@ -729,6 +777,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>summary_period_box</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>main_window</receiver>
+   <slot>summary_period_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>484</x>
+     <y>662</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -741,5 +805,6 @@
   <slot>handle_summary_check(QListWidgetItem*)</slot>
   <slot>handle_summary_double_click(QListWidgetItem*)</slot>
   <slot>summary_tab_switch()</slot>
+  <slot>summary_period_changed(QString)</slot>
  </slots>
 </ui>

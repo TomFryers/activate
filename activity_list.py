@@ -1,6 +1,7 @@
 import datetime
 
 import activity
+import times
 import units
 
 try:
@@ -100,24 +101,34 @@ class ActivityList(list):
         if activity_id in self._activities:
             del self._activities[activity_id]
 
-    def filtered(self, activity_types):
-        return (a for a in self if a.sport in activity_types)
+    def filtered(self, activity_types, time_period, back=0):
+        now = datetime.datetime.now()
+        time_period = time_period.lower()
 
-    def total_distance(self, activity_types):
-        return sum(a.distance for a in self.filtered(activity_types))
-
-    def total_time(self, activity_types):
-        return sum(
-            (a.duration for a in self.filtered(activity_types)), datetime.timedelta()
+        return (
+            a
+            for a in self
+            if a.sport in activity_types
+            and time_period == "all time"
+            or times.is_in_period(a.start_time, now, time_period, back)
         )
 
-    def total_climb(self, activity_types):
-        return sum(a.climb for a in self.filtered(activity_types))
+    def total_distance(self, activity_types, time_period, back=0):
+        return sum(a.distance for a in self.filtered(activity_types, time_period, back))
 
-    def total_activities(self, activity_types):
-        return sum(1 for _ in self.filtered(activity_types))
+    def total_time(self, activity_types, time_period, back=0):
+        return sum(
+            (a.duration for a in self.filtered(activity_types, time_period, back)),
+            datetime.timedelta(),
+        )
 
-    def get_progression_data(self, activity_types, key):
+    def total_climb(self, activity_types, time_period, back=0):
+        return sum(a.climb for a in self.filtered(activity_types, time_period, back))
+
+    def total_activities(self, activity_types, time_period, back=0):
+        return sum(1 for _ in self.filtered(activity_types, time_period, back))
+
+    def get_progression_data(self, activity_types, time_period, key):
         """
         Get the activity dates, along with the total at that point.
 
@@ -126,7 +137,9 @@ class ActivityList(list):
         """
         data = ([], [])
         total = 0
-        valid_sorted = sorted(self.filtered(activity_types), key=lambda x: x.start_time)
+        valid_sorted = sorted(
+            self.filtered(activity_types, time_period), key=lambda x: x.start_time
+        )
         for a in valid_sorted:
             data[0].append(a.start_time)
             total += key(a)

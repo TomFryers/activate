@@ -169,6 +169,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.progression_graph, self.unit_system
         )
 
+        self.summary_period = "All Time"
+
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
         self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
 
@@ -375,7 +377,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_progression(self):
         allowed_activity_types = self.get_allowed_for_summary()
         data = self.activities.get_progression_data(
-            allowed_activity_types, lambda a: a.distance
+            allowed_activity_types, self.summary_period, lambda a: a.distance
         )
         self.progression_chart.update(((data[0], "date"), (data[1], "distance")))
 
@@ -431,20 +433,30 @@ class MainWindow(QtWidgets.QMainWindow):
         allowed_activity_types = self.get_allowed_for_summary()
         self.set_formatted_number_label(
             self.total_distance_label,
-            self.activities.total_distance(allowed_activity_types),
+            self.activities.total_distance(allowed_activity_types, self.summary_period),
             "distance",
         )
         self.set_formatted_number_label(
             self.total_time_label,
-            self.activities.total_time(allowed_activity_types),
+            self.activities.total_time(allowed_activity_types, self.summary_period),
             "time",
         )
-        self.total_activities_label.setText(str(len(self.activities)))
+        self.total_activities_label.setText(
+            str(
+                self.activities.total_activities(
+                    allowed_activity_types, self.summary_period
+                )
+            )
+        )
         self.set_formatted_number_label(
             self.total_climb_label,
-            self.activities.total_climb(allowed_activity_types),
+            self.activities.total_climb(allowed_activity_types, self.summary_period),
             "altitude",
         )
+
+    def summary_period_changed(self, value):
+        self.summary_period = value
+        self.summary_tab_switch()
 
     @property
     def unit_system(self):
