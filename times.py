@@ -5,7 +5,7 @@ ONE_HOUR = datetime.timedelta(hours=1)
 ONE_MINUTE = datetime.timedelta(minutes=1)
 
 
-def from_GPX(string) -> datetime.datetime:
+def from_GPX(string):
     """Load a time from a string in GPX format."""
     if string is None:
         return None
@@ -52,16 +52,20 @@ def to_number(value):
     return value
 
 
-def is_in_period(compare, original, /, period: str, number=0):
+def period_difference(base, other, period: str) -> int:
+    """
+    Determine the number of years/months/weeks between other and base.
+
+    Returns 0 if they are in the same week, 1 if other is in the
+    previous week etc.
+    """
     if period == "year":
-        return original.year - compare.year == number
+        return other.year - base.year
     if period == "month":
-        return (
-            original.month - compare.month + (original.year - compare.year) * 12
-            == number
-        )
+        return other.month - base.month + (other.year - base.year) * 12
     if period == "week":
-        value = (original.date() - compare.date()).days // 7
-        if compare.weekday() > original.weekday():
+        value = (other.date() - base.date()).days // 7
+        if base.weekday() > other.weekday():
             value += 1
-        return value == number
+        return value
+    raise ValueError('period must be "year", "month" or "week"')

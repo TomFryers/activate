@@ -102,6 +102,15 @@ class ActivityList(list):
             del self._activities[activity_id]
 
     def filtered(self, activity_types, time_period, back=0):
+        """
+        Get an iterable of the matching activities.
+
+        The activity types must match activity_types and they must have
+        taken place in the correct time period. The values for
+        time_period are "all time", "year", "month" and "week". A value
+        of zero for back gives this year/month/week, 1 gives the
+        previous, etc.
+        """
         now = datetime.datetime.now()
         time_period = time_period.lower()
 
@@ -110,7 +119,7 @@ class ActivityList(list):
             for a in self
             if a.sport in activity_types
             and time_period == "all time"
-            or times.is_in_period(a.start_time, now, time_period, back)
+            or times.period_difference(a.start_time, now, time_period) == back
         )
 
     def total_distance(self, activity_types, time_period, back=0):

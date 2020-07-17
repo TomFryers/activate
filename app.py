@@ -3,7 +3,9 @@ import PyQt5.uic
 import pyqtlet
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
+import sys
 
+import activity_list
 import charts
 import load_activity
 import number_formats
@@ -430,6 +432,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
     def update_totals(self):
+        """Update the summary page totals."""
         allowed_activity_types = self.get_allowed_for_summary()
         self.set_formatted_number_label(
             self.total_distance_label,
@@ -461,3 +464,20 @@ class MainWindow(QtWidgets.QMainWindow):
     @property
     def unit_system(self):
         return units.UNIT_SYSTEMS[self.settings.unit_system]
+
+    def quit(self):
+        self.activities.save()
+        return super().quit()
+
+
+def main():
+    """Run the app and display the main window."""
+    app = QtWidgets.QApplication(sys.argv)
+    main_window = MainWindow(activity_list.from_disk())
+
+    main_window.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()

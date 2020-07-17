@@ -111,9 +111,7 @@ class LineChart(Chart):
         if y_range.minimum != 0 and y_range.ratio > 3:
             y_range.minimum = 0
 
-        self.update_axis(
-            Qt.Horizontal, 12, x_range.minimum, x_range.maximum
-        )
+        self.update_axis(Qt.Horizontal, 12, x_range.minimum, x_range.maximum)
         self.update_axis(Qt.Vertical, 4, y_range.minimum, y_range.maximum)
 
     def update_axis(self, direction, ticks, minimum, maximum):
@@ -188,6 +186,7 @@ class Histogram(Chart):
 
 class DateTimeLineChart(LineChart):
     """A line chart with datetimes on the x axis."""
+
     def __init__(self, *args):
         super().__init__(*args)
         self.removeAxis(self.axes(Qt.Horizontal)[0])
