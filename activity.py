@@ -1,13 +1,8 @@
+import pickle
 import random
 
 import activity_list
 from units import DimensionValue
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
 
 DATA_DIR = "activities"
 

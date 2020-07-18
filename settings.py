@@ -1,11 +1,7 @@
 import dataclasses
+import pickle
 
 import units
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
 
 SETTINGS_PATH = "settings.pickle"
 

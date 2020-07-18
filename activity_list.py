@@ -1,14 +1,9 @@
 import datetime
+import pickle
 
 import activity
 import times
 import units
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
 
 SAVE_FILE = "activity_list.pickle"
 
