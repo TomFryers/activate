@@ -71,7 +71,8 @@ def period_difference(base, other, period: str) -> int:
     raise ValueError('period must be "year", "month" or "week"')
 
 
-def to_this_period(base, other, period: str):
+def to_this_period(base, other, period: str) -> datetime.datetime:
+    """Move other into base's period"""
     if period == "year":
         return other.replace(year=base.year)
     if period == "month":

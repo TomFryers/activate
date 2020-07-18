@@ -18,21 +18,21 @@ def axis_number_format(axis):
         axis.setLabelFormat(f"%.{max(0, -math.floor(math.log10(interval)))}f")
 
 
-def date_axis_format(difference):
+def date_axis_format(difference: datetime.timedelta) -> str:
+    """Get the formatting for a date axis based on its range."""
     if difference >= datetime.timedelta(days=365):
         return "MMM yyyy"
-    elif difference >= datetime.timedelta(days=100):
+    if difference >= datetime.timedelta(days=100):
         return "MMMM"
-    elif difference >= datetime.timedelta(days=5):
+    if difference >= datetime.timedelta(days=5):
         return "dd MMMM"
-    elif difference >= datetime.timedelta(days=3):
+    if difference >= datetime.timedelta(days=3):
         return "hh:00 d MMM"
-    elif difference >= datetime.timedelta(days=1):
+    if difference >= datetime.timedelta(days=1):
         return "hh:mm d MMM"
-    elif difference >= datetime.timedelta(hours=12):
+    if difference >= datetime.timedelta(hours=12):
         return "hh:mm"
-    else:
-        return "hh:mm:ss"
+    return "hh:mm:ss"
 
 
 class MinMax:
@@ -120,6 +120,7 @@ class LineChart(Chart):
         super().__init__(seriess, widget, unit_system, title)
 
     def encode_data(self, data):
+        """Convert data with a dimension to floats with correct units."""
         return [
             [self.unit_system.encode(x, unit) for x in series] for series, unit in data
         ]
