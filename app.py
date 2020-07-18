@@ -465,9 +465,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def unit_system(self):
         return units.UNIT_SYSTEMS[self.settings.unit_system]
 
-    def quit(self):
+    def closeEvent(self, event):
         self.activities.save()
-        return super().quit()
+        return super().closeEvent(event)
 
 
 def main():
