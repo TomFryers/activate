@@ -1,9 +1,11 @@
+import datetime
+import sys
+
 import PyQt5
 import PyQt5.uic
 import pyqtlet
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-import sys
 
 import activity_list
 import charts
@@ -21,6 +23,8 @@ TYPE_FLAGS = {
     "Ride": ("Race", "Workout"),
 }
 DELETE_ACTIVITY = 222  # 0xDE[lete]
+
+NOW = datetime.datetime.now()
 
 
 def default_map_location(route):
@@ -168,7 +172,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         self.progression_chart = charts.DateTimeLineChart(
-            self.progression_graph, self.unit_system
+            self.progression_graph, self.unit_system, series_count=5
         )
 
         self.summary_period = "All Time"
@@ -213,7 +217,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.activity.create_unloaded().list_row,
                     row,
                 )
-        self.activities.update(self.activity.activity_id,)
+        self.activities.update(self.activity.activity_id)
         self.update_activity(row)
         self.activity_list_table.setSortingEnabled(True)
 
@@ -319,8 +323,8 @@ class MainWindow(QtWidgets.QMainWindow):
         elif page == 1:
             # Update charts
             if self.activity.track.has_altitude_data:
-                self.charts["ele"].update(self.activity.track.alt_graph)
-            self.charts["speed"].update(self.activity.track.speed_graph)
+                self.charts["ele"].update([self.activity.track.alt_graph])
+            self.charts["speed"].update([self.activity.track.speed_graph])
         elif page == 2:
             self.update_splits(
                 self.activity.track.splits(
@@ -379,9 +383,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_progression(self):
         allowed_activity_types = self.get_allowed_for_summary()
         data = self.activities.get_progression_data(
-            allowed_activity_types, self.summary_period, lambda a: a.distance
+            allowed_activity_types, self.summary_period, NOW, lambda a: a.distance
         )
-        self.progression_chart.update(((data[0], "date"), (data[1], "distance")))
+        self.progression_chart.update(
+            [((d[0], "date"), (d[1], "distance")) for d in data]
+        )
 
     def handle_summary_check(self, item):
         """Get the right check-boxes selected."""
@@ -436,24 +442,30 @@ class MainWindow(QtWidgets.QMainWindow):
         allowed_activity_types = self.get_allowed_for_summary()
         self.set_formatted_number_label(
             self.total_distance_label,
-            self.activities.total_distance(allowed_activity_types, self.summary_period),
+            self.activities.total_distance(
+                allowed_activity_types, self.summary_period, NOW
+            ),
             "distance",
         )
         self.set_formatted_number_label(
             self.total_time_label,
-            self.activities.total_time(allowed_activity_types, self.summary_period),
+            self.activities.total_time(
+                allowed_activity_types, self.summary_period, NOW
+            ),
             "time",
         )
         self.total_activities_label.setText(
             str(
                 self.activities.total_activities(
-                    allowed_activity_types, self.summary_period
+                    allowed_activity_types, self.summary_period, NOW
                 )
             )
         )
         self.set_formatted_number_label(
             self.total_climb_label,
-            self.activities.total_climb(allowed_activity_types, self.summary_period),
+            self.activities.total_climb(
+                allowed_activity_types, self.summary_period, NOW
+            ),
             "altitude",
         )
 

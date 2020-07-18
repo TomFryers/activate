@@ -60,12 +60,23 @@ def period_difference(base, other, period: str) -> int:
     previous week etc.
     """
     if period == "year":
-        return other.year - base.year
+        return base.year - other.year
     if period == "month":
-        return other.month - base.month + (other.year - base.year) * 12
+        return base.month - other.month + (base.year - other.year) * 12
     if period == "week":
-        value = (other.date() - base.date()).days // 7
-        if base.weekday() > other.weekday():
+        value = (base.date() - other.date()).days // 7
+        if other.weekday() > base.weekday():
             value += 1
         return value
     raise ValueError('period must be "year", "month" or "week"')
+
+
+def to_this_period(base, other, period: str):
+    if period == "year":
+        return other.replace(year=base.year)
+    if period == "month":
+        return other.replace(year=base.year, month=base.month)
+    if period == "week":
+        return other.replace(year=base.year, month=base.month, day=base.day) + (
+            other.weekday() - base.weekday()
+        ) * datetime.timedelta(days=1)

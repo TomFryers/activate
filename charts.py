@@ -18,16 +18,37 @@ def axis_number_format(axis):
         axis.setLabelFormat(f"%.{max(0, -math.floor(math.log10(interval)))}f")
 
 
+def date_axis_format(difference):
+    if difference >= datetime.timedelta(days=365):
+        return "MMM yyyy"
+    elif difference >= datetime.timedelta(days=100):
+        return "MMMM"
+    elif difference >= datetime.timedelta(days=5):
+        return "dd MMMM"
+    elif difference >= datetime.timedelta(days=3):
+        return "hh:00 d MMM"
+    elif difference >= datetime.timedelta(days=1):
+        return "hh:mm d MMM"
+    elif difference >= datetime.timedelta(hours=12):
+        return "hh:mm"
+    else:
+        return "hh:mm:ss"
+
+
 class MinMax:
     """Keeps track of the minimum and maximum of some data."""
 
     def __init__(self, *args):
         if args:
-            self.minimum = min(min(a) for a in args)
-            self.maximum = max(max(a) for a in args)
-        else:
-            self.minimum = None
-            self.maximum = None
+            try:
+                self.minimum = min(min(a) for a in args if a)
+                self.maximum = max(max(a) for a in args if a)
+                return
+            # No values given
+            except ValueError:
+                pass
+        self.minimum = None
+        self.maximum = None
 
     def update(self, value):
         """Add a new value to the MinMax."""
@@ -50,6 +71,12 @@ class MinMax:
             return None
         return self.maximum / self.minimum
 
+    def __repr__(self):
+        if self.minimum is None:
+            return f"{self.__class__.__name__}()"
+        else:
+            return f"{self.__class__.__name__}(({self.minimum!r}, {self.maximum!r}))"
+
 
 def data_to_points(data):
     """Convert a [series1, series2] of data to a list of QPointF."""
@@ -62,14 +89,15 @@ series_gc_prevent = []
 class Chart(QtChart.QChart):
     """A chart with sensible defaults and extra functionality."""
 
-    def __init__(self, series, widget, unit_system, title=None):
+    def __init__(self, seriess, widget, unit_system, title=None):
         """Create a new chart."""
         self.unit_system = unit_system
         super().__init__()
         self.setAnimationOptions(self.SeriesAnimations)
         widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
         self.legend().hide()
-        self.addSeries(series)
+        for series in seriess:
+            self.addSeries(series)
         self.createDefaultAxes()
         widget.setChart(self)
         if title is not None:
@@ -77,16 +105,19 @@ class Chart(QtChart.QChart):
 
 
 class LineChart(Chart):
-    def __init__(self, widget, unit_system, title=None, area=False):
+    def __init__(self, widget, unit_system, title=None, area=False, series_count=1):
         """Add a line chart to widget."""
-        series = QtChart.QLineSeries()
-        if area:
-            area = QtChart.QAreaSeries()
-            area.setUpperSeries(series)
-            # Save series so it doesn't get garbage collected
-            series_gc_prevent.append(series)
-            series = area
-        super().__init__(series, widget, unit_system, title)
+        seriess = []
+        for _ in range(series_count):
+            series = QtChart.QLineSeries()
+            if area:
+                area = QtChart.QAreaSeries()
+                area.setUpperSeries(series)
+                # Save series so it doesn't get garbage collected
+                series_gc_prevent.append(series)
+                series = area
+            seriess.append(series)
+        super().__init__(seriess, widget, unit_system, title)
 
     def encode_data(self, data):
         return [
@@ -95,15 +126,18 @@ class LineChart(Chart):
 
     def update(self, data):
         """Change a line chart's data."""
-        data = self.encode_data(data)
+        data = [self.encode_data(d) for d in data]
         # Convert to the correct units
-        series = self.series()[0]
+        seriess = self.series()
         # Extract 'real' series from an area chart
-        if isinstance(series, QtChart.QAreaSeries):
-            series = series.upperSeries()
-        x_range = MinMax(data[0])
-        y_range = MinMax(data[1])
-        series.replace(data_to_points(data))
+        seriess = [
+            s.upperSeries() if isinstance(s, QtChart.QAreaSeries) else s
+            for s in seriess
+        ]
+        x_range = MinMax(*(d[0] for d in data))
+        y_range = MinMax(*(d[1] for d in data))
+        for data_part, series in zip(data, seriess):
+            series.replace(data_to_points(data_part))
 
         # Snap axis minima to zero
         if x_range.minimum != 0 and x_range.ratio > 3:
@@ -137,7 +171,7 @@ class Histogram(Chart):
             bar_set.append(0)
         series.append(bar_set)
         series.setBarWidth(1)
-        super().__init__(series, widget, unit_system)
+        super().__init__([series], widget, unit_system)
         # Replace QBarCategoryAxis with QCategoryAxis because the latter
         # allows putting values between categoreies instead of centring
         # them.
@@ -187,12 +221,13 @@ class Histogram(Chart):
 class DateTimeLineChart(LineChart):
     """A line chart with datetimes on the x axis."""
 
-    def __init__(self, *args):
-        super().__init__(*args)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.removeAxis(self.axes(Qt.Horizontal)[0])
         self.date_time_axis = QtChart.QDateTimeAxis()
         self.addAxis(self.date_time_axis, Qt.AlignBottom)
-        self.series()[0].attachAxis(self.date_time_axis)
+        for series in self.series():
+            series.attachAxis(self.date_time_axis)
 
     def encode_data(self, data):
         x_data = [self.unit_system.encode(x, data[0][1]) * 1000 for x in data[0][0]]
@@ -206,20 +241,5 @@ class DateTimeLineChart(LineChart):
             extra = (maximum - minimum) * 0.01
             minimum -= extra
             maximum += extra
-            x_range = maximum - minimum
-            if x_range >= datetime.timedelta(days=365):
-                self.date_time_axis.setFormat("MMM yyyy")
-            elif x_range >= datetime.timedelta(days=100):
-                self.date_time_axis.setFormat("MMMM")
-            elif x_range >= datetime.timedelta(days=5):
-                self.date_time_axis.setFormat("dd MMMM")
-            elif x_range >= datetime.timedelta(days=3):
-                self.date_time_axis.setFormat("hh:00 d MMM")
-            elif x_range >= datetime.timedelta(days=1):
-                self.date_time_axis.setFormat("hh:mm d MMM")
-            elif x_range >= datetime.timedelta(hours=12):
-                self.date_time_axis.setFormat("hh:mm")
-            else:
-                self.date_time_axis.setFormat("hh:mm:ss")
-
+            self.date_time_axis.setFormat(date_axis_format(maximum - minimum))
         super().update_axis(direction, ticks, minimum, maximum)

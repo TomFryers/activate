@@ -101,7 +101,7 @@ class ActivityList(list):
         if activity_id in self._activities:
             del self._activities[activity_id]
 
-    def filtered(self, activity_types, time_period, back=0):
+    def filtered(self, activity_types, time_period, now, back=0):
         """
         Get an iterable of the matching activities.
 
@@ -111,49 +111,64 @@ class ActivityList(list):
         of zero for back gives this year/month/week, 1 gives the
         previous, etc.
         """
-        now = datetime.datetime.now()
-        time_period = time_period.lower()
+        time_period = time_period.casefold()
 
         return (
             a
             for a in self
             if a.sport in activity_types
-            and time_period == "all time"
-            or times.period_difference(a.start_time, now, time_period) == back
+            and (
+                time_period == "all time"
+                or times.period_difference(now, a.start_time, time_period) == back
+            )
         )
 
-    def total_distance(self, activity_types, time_period, back=0):
-        return sum(a.distance for a in self.filtered(activity_types, time_period, back))
-
-    def total_time(self, activity_types, time_period, back=0):
+    def total_distance(self, activity_types, time_period, now, back=0):
         return sum(
-            (a.duration for a in self.filtered(activity_types, time_period, back)),
+            a.distance for a in self.filtered(activity_types, time_period, now, back)
+        )
+
+    def total_time(self, activity_types, time_period, now, back=0):
+        return sum(
+            (a.duration for a in self.filtered(activity_types, time_period, now, back)),
             datetime.timedelta(),
         )
 
-    def total_climb(self, activity_types, time_period, back=0):
-        return sum(a.climb for a in self.filtered(activity_types, time_period, back))
+    def total_climb(self, activity_types, time_period, now, back=0):
+        return sum(
+            a.climb for a in self.filtered(activity_types, time_period, now, back)
+        )
 
-    def total_activities(self, activity_types, time_period, back=0):
-        return sum(1 for _ in self.filtered(activity_types, time_period, back))
+    def total_activities(self, activity_types, time_period, now, back=0):
+        return sum(1 for _ in self.filtered(activity_types, time_period, now, back))
 
-    def get_progression_data(self, activity_types, time_period, key):
+    def get_progression_data(self, activity_types, time_period, now, key):
         """
         Get the activity dates, along with the total at that point.
 
         Filter out the wrong activity_types. Evaluate key for each
         activity, and get (dates, totals) in order.
         """
-        data = ([], [])
-        total = 0
-        valid_sorted = sorted(
-            self.filtered(activity_types, time_period), key=lambda x: x.start_time
-        )
-        for a in valid_sorted:
-            data[0].append(a.start_time)
-            total += key(a)
-            data[1].append(total)
-        return data
+        time_period = time_period.casefold()
+        result = []
+        for back in range(1 if time_period == "all time" else 5):
+            data = ([], [])
+            total = 0
+            valid_sorted = sorted(
+                self.filtered(activity_types, time_period, now, back),
+                key=lambda x: x.start_time,
+            )
+            for a in valid_sorted:
+                data[0].append(
+                    a.start_time
+                    if time_period == "all time"
+                    else times.to_this_period(now, a.start_time, time_period)
+                )
+                total += key(a)
+                data[1].append(total)
+            result.append(data)
+
+        return result
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {super().__repr__()} _activities={self._activities!r}>"
