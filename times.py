@@ -80,3 +80,35 @@ def to_this_period(base, other, period: str):
         return other.replace(year=base.year, month=base.month, day=base.day) + (
             other.weekday() - base.weekday()
         ) * datetime.timedelta(days=1)
+    raise ValueError('period must be "year", "month" or "week"')
+
+
+def start_of(base, period: str) -> datetime.datetime:
+    """Get the start of the current period."""
+    if period == "year":
+        return datetime.datetime(year=base.year, month=1, day=1)
+    if period == "month":
+        return datetime.datetime(year=base.year, month=base.month, day=1)
+    if period == "week":
+        return datetime.datetime(
+            year=base.year, month=base.month, day=base.day
+        ) - base.weekday() * datetime.timedelta(days=1)
+    raise ValueError('period must be "year", "month" or "week"')
+
+
+def end_of(base, period: str) -> datetime.datetime:
+    """Get the end of the current period."""
+    if period == "year":
+        return start_of(base.replace(year=base.year + 1), period)
+    if period == "month":
+        if base.month == 12:
+            return start_of(
+                base.replace(year=base.year + 1, month=base.month + 1), period
+            )
+        else:
+            return start_of(base.replace(month=base.month + 1), period)
+
+    if period == "week":
+        return start_of(base + datetime.timedelta(days=7), period)
+
+    raise ValueError('period must be "year", "month" or "week"')

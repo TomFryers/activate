@@ -152,7 +152,10 @@ class ActivityList(list):
         time_period = time_period.casefold()
         result = []
         for back in range(1 if time_period == "all time" else 5):
-            data = ([], [])
+            if time_period == "all time":
+                data = ([], [])
+            else:
+                data = ([times.start_of(now, time_period)], [0])
             total = 0
             valid_sorted = sorted(
                 self.filtered(activity_types, time_period, now, back),
@@ -165,6 +168,9 @@ class ActivityList(list):
                     else times.to_this_period(now, a.start_time, time_period)
                 )
                 total += key(a)
+                data[1].append(total)
+            if time_period != "all time" and back != 0:
+                data[0].append(times.end_of(now, time_period))
                 data[1].append(total)
             result.append(data)
 
