@@ -1,4 +1,5 @@
 import datetime
+import itertools
 import math
 
 import PyQt5
@@ -137,8 +138,12 @@ class LineChart(Chart):
         ]
         x_range = MinMax(*(d[0] for d in data))
         y_range = MinMax(*(d[1] for d in data))
-        for data_part, series in zip(data, seriess):
-            series.replace(data_to_points(data_part))
+        for data_part, series in itertools.zip_longest(data, seriess):
+            if data_part is None:
+                series.setVisible(False)
+            else:
+                series.setVisible(True)
+                series.replace(data_to_points(data_part))
 
         # Snap axis minima to zero
         if x_range.minimum != 0 and x_range.ratio > 3:

@@ -388,6 +388,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.progression_chart.update(
             [((d[0], "date"), (d[1], "distance")) for d in data]
         )
+        if self.summary_period == "All Time":
+            self.progression_chart.series()
+        else:
+            self.progression_chart.date_time_axis.setRange(
+                times.start_of(NOW, self.summary_period.casefold()),
+                times.end_of(NOW, self.summary_period.casefold()),
+            )
+        if self.summary_period == "Week":
+            self.progression_chart.date_time_axis.setTickCount(8)
+            self.progression_chart.date_time_axis.setFormat("dddd")
+        if self.summary_period == "Month":
+            self.progression_chart.date_time_axis.setTickCount(32)
+            self.progression_chart.date_time_axis.setFormat("d")
+        if self.summary_period == "Year":
+            self.progression_chart.date_time_axis.setTickCount(13)
+            self.progression_chart.date_time_axis.setFormat("MMMM")
 
     def handle_summary_check(self, item):
         """Get the right check-boxes selected."""
