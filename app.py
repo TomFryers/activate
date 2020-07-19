@@ -160,10 +160,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # Set up charts
         self.charts = {}
         self.charts["ele"] = charts.LineChart(
-            self.altitude_graph, self.unit_system, "Altitude", area=True
+            self.altitude_graph, self.unit_system, area=True
         )
         self.charts["speed"] = charts.LineChart(
-            self.speed_graph, self.unit_system, "Speed", area=False
+            self.speed_graph, self.unit_system, area=False
         )
         self.zones = list(range(0, 20)) + [float("inf")]
         self.zones = [self.unit_system.decode(x, "speed") for x in self.zones]

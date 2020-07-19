@@ -104,6 +104,14 @@ class Chart(QtChart.QChart):
         if title is not None:
             self.setTitle(title)
 
+    def set_axis_dimensions(self, x_axis_dimension, y_axis_dimension):
+        self.axes(Qt.Horizontal)[0].setTitleText(
+            self.unit_system.format_axis_label(x_axis_dimension)
+        )
+        self.axes(Qt.Vertical)[0].setTitleText(
+            self.unit_system.format_axis_label(y_axis_dimension)
+        )
+
 
 class LineChart(Chart):
     def __init__(self, widget, unit_system, title=None, area=False, series_count=1):
@@ -128,6 +136,9 @@ class LineChart(Chart):
 
     def update(self, data):
         """Change a line chart's data."""
+        x_dimension = data[0][0][1]
+        y_dimension = data[0][1][1]
+        self.set_axis_dimensions(x_dimension, y_dimension)
         data = [self.encode_data(d) for d in data]
         # Convert to the correct units
         seriess = self.series()
@@ -208,6 +219,7 @@ class Histogram(Chart):
         cat_axis.setLabelsPosition(QtChart.QCategoryAxis.AxisLabelsPositionOnValue)
         self.addAxis(cat_axis, Qt.AlignBottom)
         series.attachAxis(cat_axis)
+        self.set_axis_dimensions("speed", "Time (min)")
 
     def update(self, data):
         """Update the histogram data."""
