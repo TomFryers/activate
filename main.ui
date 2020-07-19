@@ -86,7 +86,7 @@
         <item>
          <widget class="QTabWidget" name="summary_tabs">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="totals_tab">
            <attribute name="title">
@@ -205,7 +205,7 @@
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QChartView" name="progression_graph"/>
+             <widget class="QtCharts::QChartView" name="progression_graph"/>
             </item>
            </layout>
           </widget>
@@ -442,13 +442,13 @@
             <item>
              <layout class="QVBoxLayout" name="graphs_layout">
               <item>
-               <widget class="QChartView" name="altitude_graph"/>
+               <widget class="QtCharts::QChartView" name="altitude_graph"/>
               </item>
               <item>
-               <widget class="QChartView" name="speed_graph"/>
+               <widget class="QtCharts::QChartView" name="speed_graph"/>
               </item>
               <item>
-               <widget class="QChartView" name="third_graph"/>
+               <widget class="QtCharts::QChartView" name="third_graph"/>
               </item>
              </layout>
             </item>
@@ -528,7 +528,7 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
-             <widget class="QChartView" name="zones_graph"/>
+             <widget class="QtCharts::QChartView" name="zones_graph"/>
             </item>
            </layout>
           </widget>
@@ -600,9 +600,10 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QChartView</class>
+   <class>QtCharts::QChartView</class>
    <extends>QGraphicsView</extends>
-   <header>PyQt5.QtChart</header>
+   <header location="global">QtCharts/QChartView&gt;
+#include &lt;QtCharts/chartsnamespace.h</header>
   </customwidget>
   <customwidget>
    <class>Table</class>
