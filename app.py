@@ -1,5 +1,6 @@
 import collections
 import datetime
+import markdown
 import sys
 
 import PyQt5
@@ -84,12 +85,14 @@ class EditActivityDialog(QtWidgets.QDialog):
         """Load an self.activity's data to the UI."""
         self.name_edit.setText(self.activity.name)
         self.type_edit.setCurrentText(self.activity.sport)
+        self.description_edit.setPlainText(self.activity.description)
         self.update_flags()
 
     def apply_to_activity(self):
         """Apply the settings to an self.activity."""
         self.activity.name = self.name_edit.text()
         self.activity.sport = self.type_edit.currentText()
+        self.activity.description = self.description_edit.toPlainText()
         for i, flag in enumerate(self.flags):
             self.activity.flags[flag] = (
                 self.flag_list.item(i).checkState() == Qt.Checked
@@ -317,6 +320,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # Update labels, map and data box
             self.activity_name_label.setText(self.activity.name)
             self.flags_label.setText(" | ".join(self.activity.active_flags))
+            self.description_label.setText(markdown.markdown(self.activity.description))
             self.date_time_label.setText(times.nice(self.activity.start_time))
             self.activity_type_label.setText(self.activity.sport)
             self.add_info(self.activity.stats)

@@ -22,6 +22,7 @@ class Activity:
         start_time=None,
         distance=None,
         activity_id=None,
+        description="",
     ):
         self.name = name
         self.sport = sport
@@ -42,6 +43,7 @@ class Activity:
             self.activity_id = random.getrandbits(128)
         else:
             self.activity_id = activity_id
+        self.description = description
 
     @property
     def stats(self):
@@ -89,6 +91,7 @@ class Activity:
             self.start_time,
             self.distance,
             self.activity_id,
+            self.description
         )
 
     def save(self):
