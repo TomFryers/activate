@@ -1,3 +1,4 @@
+import collections
 import datetime
 import sys
 
@@ -18,10 +19,10 @@ import units
 ACTIVITY_TYPES = ("Run", "Ride", "Swim", "Walk", "Ski", "Row", "Other")
 
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
-TYPE_FLAGS = {
-    "Run": ("Race", "Long Run", "Workout", "Treadmill"),
-    "Ride": ("Race", "Workout"),
-}
+TYPE_FLAGS = collections.defaultdict(tuple)
+TYPE_FLAGS.update(
+    {"Run": ("Race", "Long Run", "Workout", "Treadmill"), "Ride": ("Race", "Workout")}
+)
 DELETE_ACTIVITY = 222  # 0xDE[lete]
 
 NOW = datetime.datetime.now()
