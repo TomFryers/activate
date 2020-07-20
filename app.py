@@ -221,6 +221,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.activity.create_unloaded().list_row,
                     row,
                 )
+                break
         self.activities.update(self.activity.activity_id)
         self.update_activity(row)
         self.activity_list_table.setSortingEnabled(True)
