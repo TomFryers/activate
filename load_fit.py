@@ -10,6 +10,8 @@ FIELDS = {
     "lon": lambda p: p["position_long"] * CONVERSION_FACTOR,
     "ele": lambda p: p["altitude"] / 5 - 500,
     "time": lambda p: p["timestamp"],
+    "cadence": lambda p: p["cadence"],
+    "heartrate": lambda p: p["heart_rate"],
 }
 
 
