@@ -180,6 +180,15 @@ class Track:
     def __len__(self):
         return len(self["lat"])
 
+    def average(self, field):
+        """Get the mean value of a field, ignoring missing values."""
+        valid = [v for v in self[field] if v is not None]
+        return sum(valid) / len(valid)
+
+    def maximum(self, field):
+        """Get the maximum value of a field, ignoring missing values."""
+        return max(v for v in self[field] if v is not None)
+
     # Caching necessary to avoid fake elevation data
     @cached_property
     def has_altitude_data(self):
@@ -201,7 +210,7 @@ class Track:
 
     @cached_property
     def max_speed(self):
-        return max(s for s in self["speed"] if s is not None)
+        return self.maximum("speed")
 
     @cached_property
     def highest_point(self):
@@ -220,6 +229,22 @@ class Track:
     def average_speed(self):
         duration = self.elapsed_time.total_seconds()
         return self.length / duration
+
+    @cached_property
+    def average_heart_rate(self):
+        return self.average("heartrate")
+
+    @cached_property
+    def average_cadence(self):
+        return self.average("cadence")
+
+    @cached_property
+    def average_power(self):
+        return self.average("power")
+
+    @cached_property
+    def max_power(self):
+        return self.maximum("power")
 
     @cached_property
     def alt_graph(self):

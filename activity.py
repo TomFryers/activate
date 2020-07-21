@@ -60,6 +60,17 @@ class Activity:
             result["Highest Point"] = DimensionValue(
                 self.track.highest_point, "altitude"
             )
+        if "heartrate" in self.track:
+            result["Average HR"] = DimensionValue(
+                self.track.average_heart_rate, "heartrate"
+            )
+        if "cadence" in self.track:
+            result["Avg. Cadence"] = DimensionValue(
+                self.track.average_cadence, "cadence"
+            )
+        if "power" in self.track:
+            result["Average Power"] = DimensionValue(self.track.average_power, "power")
+            result["Max. Power"] = DimensionValue(self.track.max_power, "power")
         return result
 
     @property
