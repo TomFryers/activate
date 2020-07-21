@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import datetime
 import pickle
 
@@ -17,18 +18,16 @@ def from_disk():
         return ActivityList([])
 
 
+@dataclass
 class UnloadedActivity:
-    def __init__(
-        self, name, sport, flags, start_time, distance, duration, climb, activity_id
-    ):
-        self.name = name
-        self.sport = sport
-        self.flags = flags
-        self.start_time = start_time
-        self.distance = distance
-        self.duration = duration
-        self.climb = climb
-        self.activity_id = activity_id
+    name: str
+    sport: str
+    flags: dict
+    start_time: datetime.datetime
+    distance: float
+    duration: float
+    climb: float
+    activity_id: int
 
     def load(self) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""
