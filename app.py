@@ -340,6 +340,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.charts.hide("heartrate")
             if "cadence" in self.activity.track:
                 self.charts.update_show("cadence", [self.activity.track.cadence_graph])
+            else:
+                self.charts.hide("cadence")
         elif page == 2:
             self.update_splits(
                 self.activity.track.splits(
