@@ -70,7 +70,9 @@ class Activity:
                 self.track.average("cadence"), "cadence"
             )
         if "power" in self.track:
-            result["Average Power"] = DimensionValue(self.track.average("power"), "power")
+            result["Average Power"] = DimensionValue(
+                self.track.average("power"), "power"
+            )
             result["Max. Power"] = DimensionValue(self.track.maximum("power"), "power")
         return result
 
