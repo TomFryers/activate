@@ -169,6 +169,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.charts["speed"] = charts.LineChart(
             self.speed_graph, self.unit_system, area=False
         )
+        self.charts["heartrate"] = charts.LineChart(self.third_graph, self.unit_system)
+
         self.zones = list(range(0, 20)) + [float("inf")]
         self.zones = [self.unit_system.decode(x, "speed") for x in self.zones]
         self.charts["zones"] = charts.Histogram(
@@ -331,6 +333,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.activity.track.has_altitude_data:
                 self.charts["ele"].update([self.activity.track.alt_graph])
             self.charts["speed"].update([self.activity.track.speed_graph])
+            if "heartrate" in self.activity.track:
+                self.charts["heartrate"].update([self.activity.track.heart_rate_graph])
         elif page == 2:
             self.update_splits(
                 self.activity.track.splits(

@@ -104,6 +104,15 @@ class Track:
     def __setitem__(self, field, value):
         self.fields[field] = value
 
+    def __contains__(self, field):
+        if field in {"x", "y", "z", "dist_to_last", "dist", "speed"}.union(
+            self.fields.keys()
+        ):
+            return True
+        if field in {"climb", "desc"}:
+            return self.has_altitude_data
+        return False
+
     def calculate_cartesian(self):
         """Calculate cartesian coordinates for each point"""
         self.fields["x"] = []
@@ -224,6 +233,13 @@ class Track:
         return (
             (self["dist"], "distance"),
             (self["speed"], "speed"),
+        )
+
+    @cached_property
+    def heart_rate_graph(self):
+        return (
+            (self["dist"], "distance"),
+            (self["heartrate"], "heartrate"),
         )
 
     @property
