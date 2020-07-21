@@ -90,9 +90,19 @@ series_gc_prevent = []
 class Chart(QtChart.QChart):
     """A chart with sensible defaults and extra functionality."""
 
-    def __init__(self, seriess, widget, unit_system, title=None):
+    def __init__(
+        self,
+        seriess,
+        widget,
+        unit_system,
+        title=None,
+        horizontal_ticks=12,
+        vertical_ticks=4,
+    ):
         """Create a new chart."""
         self.unit_system = unit_system
+        self.horizontal_ticks = horizontal_ticks
+        self.vertical_ticks = vertical_ticks
         super().__init__()
         self.setAnimationOptions(self.SeriesAnimations)
         widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
@@ -114,7 +124,16 @@ class Chart(QtChart.QChart):
 
 
 class LineChart(Chart):
-    def __init__(self, widget, unit_system, title=None, area=False, series_count=1):
+    def __init__(
+        self,
+        widget,
+        unit_system,
+        title=None,
+        area=False,
+        series_count=1,
+        horizontal_ticks=12,
+        vertical_ticks=4,
+    ):
         """Add a line chart to widget."""
         seriess = []
         for _ in range(series_count):
@@ -126,7 +145,14 @@ class LineChart(Chart):
                 series_gc_prevent.append(series)
                 series = area
             seriess.append(series)
-        super().__init__(seriess, widget, unit_system, title)
+        super().__init__(
+            seriess,
+            widget,
+            unit_system,
+            title,
+            horizontal_ticks=horizontal_ticks,
+            vertical_ticks=vertical_ticks,
+        )
 
     def encode_data(self, data):
         """Convert data with a dimension to floats with correct units."""
@@ -169,8 +195,12 @@ class LineChart(Chart):
         if y_range.minimum != 0 and y_range.ratio > 3:
             y_range.minimum = 0
 
-        self.update_axis(Qt.Horizontal, 12, x_range.minimum, x_range.maximum)
-        self.update_axis(Qt.Vertical, 4, y_range.minimum, y_range.maximum)
+        self.update_axis(
+            Qt.Horizontal, self.horizontal_ticks, x_range.minimum, x_range.maximum
+        )
+        self.update_axis(
+            Qt.Vertical, self.vertical_ticks, y_range.minimum, y_range.maximum
+        )
 
     def update_axis(self, direction, ticks, minimum, maximum):
         axis = self.axes(direction)[0]

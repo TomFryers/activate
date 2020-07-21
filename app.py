@@ -176,7 +176,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         self.progression_chart = charts.DateTimeLineChart(
-            self.progression_graph, self.unit_system, series_count=5
+            self.progression_graph, self.unit_system, series_count=5, vertical_ticks=8
         )
 
         self.summary_period = "All Time"
