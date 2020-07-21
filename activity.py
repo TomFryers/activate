@@ -47,22 +47,20 @@ class Activity:
 
     @property
     def stats(self):
-        return {
-            "Distance": DimensionValue(self.distance, "distance"),
-            "Elapsed Time": DimensionValue(self.track.elapsed_time, "time"),
-            "Ascent": DimensionValue(self.track.ascent, "altitude")
-            if self.track.has_altitude_data
-            else "None",
-            "Descent": DimensionValue(self.track.descent, "altitude")
-            if self.track.has_altitude_data
-            else "None",
-            "Average Speed": DimensionValue(self.track.average_speed, "speed"),
-            "Pace": DimensionValue(1 / self.track.average_speed, "pace"),
-            "Max. Speed": DimensionValue(self.track.max_speed, "speed"),
-            "Highest Point": DimensionValue(self.track.highest_point, "altitude")
-            if self.track.has_altitude_data
-            else "None",
-        }
+        result = {}
+        result["Distance"] = DimensionValue(self.distance, "distance")
+        result["Elapsed Time"] = DimensionValue(self.track.elapsed_time, "time")
+        if self.track.has_altitude_data:
+            result["Ascent"] = DimensionValue(self.track.ascent, "altitude")
+            result["Descent"] = DimensionValue(self.track.descent, "altitude")
+        result["Average Speed"] = DimensionValue(self.track.average_speed, "speed")
+        result["Pace"] = DimensionValue(1 / self.track.average_speed, "pace")
+        result["Max. Speed"] = DimensionValue(self.track.max_speed, "speed")
+        if self.track.has_altitude_data:
+            result["Highest Point"] = DimensionValue(
+                self.track.highest_point, "altitude"
+            )
+        return result
 
     @property
     def active_flags(self):
@@ -91,7 +89,7 @@ class Activity:
             self.start_time,
             self.distance,
             self.activity_id,
-            self.description
+            self.description,
         )
 
     def save(self):
