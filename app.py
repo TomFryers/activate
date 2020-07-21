@@ -1,8 +1,9 @@
 import collections
 import datetime
-import markdown
+import pathlib
 import sys
 
+import markdown
 import PyQt5
 import PyQt5.uic
 import pyqtlet
@@ -182,9 +183,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.summary_period = "All Time"
 
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
-        self.export_menu.setIcon(
-            PyQt5.QtGui.QIcon.fromTheme("document-send")
-        )
+        self.export_menu.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-send"))
         self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
 
         self.main_tab_switch(0)
@@ -377,7 +376,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # [1] gives file type chosen ("Activity Files (...)",
         # "All Files" etc.)
         filenames = QtWidgets.QFileDialog.getOpenFileNames(
-            self, "Import an activity", "", "Activity Files (*.gpx *.fit)"
+            self,
+            "Import an activity",
+            PyQt5.QtCore.QDir.homePath(),
+            "Activity Files (*.gpx *.fit)",
         )[0]
         if not filenames:
             return
@@ -388,8 +390,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_list_table.setSortingEnabled(True)
 
     def export_activity(self):
+        original_path = pathlib.Path(self.activity.original_name)
+        if original_path.suffix.casefold() == ".gpx":
+            file_type = "GPX file (*.gpx)"
+        elif original_path.suffix.casefold() == ".fit":
+            file_type = "FIT file (*.fit)"
+        else:
+            file_type = ""
+        out_name = load_activity.decode_name(original_path.name)
         filename = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Export Original Activity",
+            self,
+            "Export Original Activity",
+            f"{PyQt5.QtCore.QDir.homePath()}/{out_name}",
+            file_type,
         )[0]
 
         if not filename:
