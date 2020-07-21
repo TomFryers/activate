@@ -12,6 +12,8 @@ FIELDS = {
     "time": lambda p: p["timestamp"],
     "cadence": lambda p: p["cadence"] / 60,
     "heartrate": lambda p: p["heart_rate"] / 60,
+    "speed": lambda p: p["speed"] / 1000,
+    "distance": lambda p: p["distance"],
 }
 
 

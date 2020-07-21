@@ -19,8 +19,8 @@ FIELDS = {
     "lon": lambda p: float(p.get("lon")),
     "ele": lambda p: float(p.find("./ele").text),
     "time": lambda p: times.from_GPX(p.find("./time").text),
-    "speed": lambda p: None,
-    "distance": lambda p: None,
+    "speed": lambda p: float(p.find("./extensions/speed").text),
+    "distance": lambda p: float(p.find("./extensions/distance").text),
     "cadence": lambda p: float(
         try_multi(p, ("./extensions/cadence", "./extensions/TrackPointExtension/cad",),)
     )

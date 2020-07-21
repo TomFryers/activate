@@ -201,7 +201,7 @@ class Track:
 
     @cached_property
     def max_speed(self):
-        return max(self["speed"])
+        return max(s for s in self["speed"] if s is not None)
 
     @cached_property
     def highest_point(self):
