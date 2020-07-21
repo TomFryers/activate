@@ -332,9 +332,13 @@ class MainWindow(QtWidgets.QMainWindow):
             # Update charts
             if self.activity.track.has_altitude_data:
                 self.charts["ele"].update([self.activity.track.alt_graph])
+            else:
+                self.charts["heartrate"].clear()
             self.charts["speed"].update([self.activity.track.speed_graph])
             if "heartrate" in self.activity.track:
                 self.charts["heartrate"].update([self.activity.track.heart_rate_graph])
+            else:
+                self.charts["heartrate"].clear()
         elif page == 2:
             self.update_splits(
                 self.activity.track.splits(

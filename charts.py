@@ -134,22 +134,28 @@ class LineChart(Chart):
             [self.unit_system.encode(x, unit) for x in series] for series, unit in data
         ]
 
+    @property
+    def data_series(self):
+        return [
+            s.upperSeries() if isinstance(s, QtChart.QAreaSeries) else s
+            for s in self.series()
+        ]
+
+    def clear(self):
+        for series in self.data_series:
+            series.setVisible(False)
+
     def update(self, data):
         """Change a line chart's data."""
         x_dimension = data[0][0][1]
         y_dimension = data[0][1][1]
         self.set_axis_dimensions(x_dimension, y_dimension)
-        data = [self.encode_data(d) for d in data]
         # Convert to the correct units
-        seriess = self.series()
+        data = [self.encode_data(d) for d in data]
         # Extract 'real' series from an area chart
-        seriess = [
-            s.upperSeries() if isinstance(s, QtChart.QAreaSeries) else s
-            for s in seriess
-        ]
         x_range = MinMax(*(d[0] for d in data))
         y_range = MinMax(*(d[1] for d in data))
-        for data_part, series in itertools.zip_longest(data, seriess):
+        for data_part, series in itertools.zip_longest(data, self.data_series):
             if data_part is None:
                 series.setVisible(False)
             else:
