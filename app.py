@@ -162,18 +162,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.do_not_recurse = False
 
         # Set up charts
-        self.charts = {}
-        self.charts["ele"] = charts.LineChart(
-            self.altitude_graph, self.unit_system, area=True
-        )
-        self.charts["speed"] = charts.LineChart(
-            self.speed_graph, self.unit_system, area=False
-        )
-        self.charts["heartrate"] = charts.LineChart(self.third_graph, self.unit_system)
+        self.charts = charts.LineChartSet(self.unit_system, self.graphs_layout)
+        self.charts.add("ele", area=True)
+        self.charts.add("speed")
+        self.charts.add("heartrate")
 
         self.zones = list(range(0, 20)) + [float("inf")]
         self.zones = [self.unit_system.decode(x, "speed") for x in self.zones]
-        self.charts["zones"] = charts.Histogram(
+        self.zones_chart = charts.Histogram(
             self.zones, self.zones_graph, self.unit_system
         )
 
@@ -331,14 +327,16 @@ class MainWindow(QtWidgets.QMainWindow):
         elif page == 1:
             # Update charts
             if self.activity.track.has_altitude_data:
-                self.charts["ele"].update([self.activity.track.alt_graph])
+                self.charts.update_show("ele", [self.activity.track.alt_graph])
             else:
-                self.charts["heartrate"].clear()
-            self.charts["speed"].update([self.activity.track.speed_graph])
+                self.charts.hide("ele")
+            self.charts.update_show("speed", [self.activity.track.speed_graph])
             if "heartrate" in self.activity.track:
-                self.charts["heartrate"].update([self.activity.track.heart_rate_graph])
+                self.charts.update_show(
+                    "heartrate", [self.activity.track.heart_rate_graph]
+                )
             else:
-                self.charts["heartrate"].clear()
+                self.charts.hide("heartrate")
         elif page == 2:
             self.update_splits(
                 self.activity.track.splits(
@@ -346,9 +344,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             )
         elif page == 3:
-            self.charts["zones"].update(
-                self.activity.track.get_zone_durations(self.zones)
-            )
+            self.zones_chart.update(self.activity.track.get_zone_durations(self.zones))
         self.updated.add(page)
 
     def update_activity(self, selected):

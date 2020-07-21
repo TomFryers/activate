@@ -454,17 +454,7 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <layout class="QVBoxLayout" name="graphs_layout">
-              <item>
-               <widget class="QtCharts::QChartView" name="altitude_graph"/>
-              </item>
-              <item>
-               <widget class="QtCharts::QChartView" name="speed_graph"/>
-              </item>
-              <item>
-               <widget class="QtCharts::QChartView" name="third_graph"/>
-              </item>
-             </layout>
+             <layout class="QVBoxLayout" name="graphs_layout"/>
             </item>
            </layout>
           </widget>

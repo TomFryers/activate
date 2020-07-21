@@ -184,6 +184,37 @@ class LineChart(Chart):
             pass
 
 
+class LineChartSet:
+    def __init__(self, unit_system, container):
+        self.unit_system = unit_system
+        self.container = container
+        self.charts = {}
+        self.chart_views = {}
+
+    def add(self, name, area=False):
+        self.chart_views[name] = QtChart.QChartView()
+        self.charts[name] = LineChart(
+            self.chart_views[name], self.unit_system, area=area
+        )
+        self.container.addWidget(self.chart_views[name], 1)
+
+    def __getitem__(self, name):
+        return self.charts[name]
+
+    def show(self, name):
+        self.chart_views[name].setVisible(True)
+
+    def hide(self, name):
+        self.chart_views[name].setVisible(False)
+
+    def update_show(self, name, data):
+        self[name].update(data)
+        self.show(name)
+
+    def __repr__(self):
+        return f"<LineChartSet charts={self.charts!r}>"
+
+
 class Histogram(Chart):
     def __init__(self, zones, widget, unit_system):
         """Create a histogram."""
