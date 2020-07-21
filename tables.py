@@ -1,3 +1,4 @@
+"""Classes inheriting from QTableWidgets or QTableWidgetItems."""
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 

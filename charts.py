@@ -1,3 +1,4 @@
+"""Custom QCharts."""
 import datetime
 import itertools
 import math
@@ -124,6 +125,7 @@ class Chart(QtChart.QChart):
 
 
 class LineChart(Chart):
+    """A chart with 1+ QLineSeries on it."""
     def __init__(
         self,
         widget,
@@ -203,6 +205,7 @@ class LineChart(Chart):
         )
 
     def update_axis(self, direction, ticks, minimum, maximum):
+        """Change an axis range to fit minimum and maximum."""
         axis = self.axes(direction)[0]
         if isinstance(axis, QtChart.QValueAxis):
             fake_axis = QtChart.QValueAxis()
@@ -219,6 +222,8 @@ class LineChart(Chart):
 
 
 class LineChartSet:
+    """A set of line charts that can be hidden and shown."""
+
     def __init__(self, unit_system, container):
         self.unit_system = unit_system
         self.container = container

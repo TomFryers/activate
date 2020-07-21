@@ -1,3 +1,4 @@
+"""Load the fields from a GPX file on disk."""
 import pathlib
 import xml.etree.ElementTree
 
@@ -6,6 +7,7 @@ import times
 
 
 def try_multi(point, locations):
+    """Try to search for a value in several positions."""
     for location in locations:
         try:
             return point.find(location).text

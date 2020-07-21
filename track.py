@@ -1,3 +1,4 @@
+"""Contains the Track class and functions for handling tracks."""
 import math
 from functools import cached_property, lru_cache
 
@@ -78,6 +79,12 @@ def infer_nones(data):
 
 
 def get_nearby_indices(length, position, number=1) -> list:
+    """
+    Return numbers around position, with at most number either side.
+
+    If position is too close to 0 or length, the excess points are
+    removed.
+    """
     relevant_points = [position + i for i in range(-number, number + 1)]
     while relevant_points[0] < 0:
         relevant_points.pop(0)
@@ -87,7 +94,13 @@ def get_nearby_indices(length, position, number=1) -> list:
 
 
 class Track:
-    """A series of GPS points at given times."""
+    """
+    A series of GPS points at given times.
+
+    A track is considered to be purely a sequence of GPS points, with
+    extra data for each point. For more metadata such as a name or
+    description, the Track should be wrapped in an Activity.
+    """
 
     def __init__(self, fields):
         self.fields = fields
@@ -244,7 +257,8 @@ class Track:
         end_time = self["time"][-1]
         return end_time - self.start_time
 
-    def graph(self, y_data, x_data="dist"):
+    def graph(self, y_data, x_data="dist") -> tuple:
+        """Get x and y data as (data, dimension) tuples."""
         return (
             (self[x_data], FIELD_DIMENSIONS[x_data]),
             (self[y_data], FIELD_DIMENSIONS[y_data]),
@@ -254,7 +268,13 @@ class Track:
     def length(self):
         return self["dist"][-1]
 
-    def splits(self, splitlength=1000):
+    def splits(self, splitlength=1000) -> list:
+        """
+        Split an activity into splits, with per-split data.
+
+        Each split is a list in the format
+        [lap, split, speed, net climb, total climb].
+        """
         splits = []
         lasttime = None
         lastalt = None
