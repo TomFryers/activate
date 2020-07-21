@@ -53,24 +53,24 @@ class Activity:
         if self.track.has_altitude_data:
             result["Ascent"] = DimensionValue(self.track.ascent, "altitude")
             result["Descent"] = DimensionValue(self.track.descent, "altitude")
-        result["Average Speed"] = DimensionValue(self.track.average_speed, "speed")
-        result["Pace"] = DimensionValue(1 / self.track.average_speed, "pace")
-        result["Max. Speed"] = DimensionValue(self.track.max_speed, "speed")
+        result["Average Speed"] = DimensionValue(self.track.average("speed"), "speed")
+        result["Pace"] = DimensionValue(1 / self.track.average("speed"), "pace")
+        result["Max. Speed"] = DimensionValue(self.track.maximum("speed"), "speed")
         if self.track.has_altitude_data:
             result["Highest Point"] = DimensionValue(
-                self.track.highest_point, "altitude"
+                self.track.maximum("ele"), "altitude"
             )
         if "heartrate" in self.track:
             result["Average HR"] = DimensionValue(
-                self.track.average_heart_rate, "heartrate"
+                self.track.average("heartrate"), "heartrate"
             )
         if "cadence" in self.track:
             result["Avg. Cadence"] = DimensionValue(
-                self.track.average_cadence, "cadence"
+                self.track.average("cadence"), "cadence"
             )
         if "power" in self.track:
-            result["Average Power"] = DimensionValue(self.track.average_power, "power")
-            result["Max. Power"] = DimensionValue(self.track.max_power, "power")
+            result["Average Power"] = DimensionValue(self.track.average("power"), "power")
+            result["Max. Power"] = DimensionValue(self.track.maximum("power"), "power")
         return result
 
     @property

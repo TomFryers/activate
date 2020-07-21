@@ -1,5 +1,5 @@
 import math
-from functools import cached_property
+from functools import cached_property, lru_cache
 
 import times
 from units import DimensionValue
@@ -7,6 +7,24 @@ from units import DimensionValue
 EARTH_RADIUS = 6378137
 E_2 = 0.00669437999014
 SPEED_RANGE = 1
+
+FIELD_DIMENSIONS = {
+    "lat": "latlon",
+    "lon": "latlon",
+    "ele": "altitude",
+    "climb": "altitude",
+    "desc": "altitude",
+    "time": "time",
+    "speed": "speed",
+    "dist": "distance",
+    "dist_to_last": "distance",
+    "cadence": "cadence",
+    "heartrate": "heartrate",
+    "power": "power",
+    "x": "distance",
+    "y": "distance",
+    "z": "distance",
+}
 
 
 def to_cartesian(lat, lon, ele):
@@ -180,14 +198,23 @@ class Track:
     def __len__(self):
         return len(self["lat"])
 
+    def without_nones(self, field):
+        return (v for v in self[field] if v is not None)
+
+    @lru_cache
     def average(self, field):
         """Get the mean value of a field, ignoring missing values."""
-        valid = [v for v in self[field] if v is not None]
+        if field == "speed":
+            duration = self.elapsed_time.total_seconds()
+            return self.length / duration
+
+        valid = list(self.without_nones(field))
         return sum(valid) / len(valid)
 
+    @lru_cache
     def maximum(self, field):
         """Get the maximum value of a field, ignoring missing values."""
-        return max(v for v in self[field] if v is not None)
+        return max(self.without_nones(field))
 
     # Caching necessary to avoid fake elevation data
     @cached_property
@@ -208,14 +235,6 @@ class Track:
         if self.has_altitude_data:
             return sum(x for x in self["desc"] if x is not None)
 
-    @cached_property
-    def max_speed(self):
-        return self.maximum("speed")
-
-    @cached_property
-    def highest_point(self):
-        return max(self["ele"])
-
     @property
     def start_time(self):
         return self["time"][0]
@@ -225,60 +244,10 @@ class Track:
         end_time = self["time"][-1]
         return end_time - self.start_time
 
-    @cached_property
-    def average_speed(self):
-        duration = self.elapsed_time.total_seconds()
-        return self.length / duration
-
-    @cached_property
-    def average_heart_rate(self):
-        return self.average("heartrate")
-
-    @cached_property
-    def average_cadence(self):
-        return self.average("cadence")
-
-    @cached_property
-    def average_power(self):
-        return self.average("power")
-
-    @cached_property
-    def max_power(self):
-        return self.maximum("power")
-
-    @cached_property
-    def alt_graph(self):
+    def graph(self, y_data, x_data="dist"):
         return (
-            (self["dist"], "distance"),
-            (self["ele"], "altitude"),
-        )
-
-    @cached_property
-    def speed_graph(self):
-        return (
-            (self["dist"], "distance"),
-            (self["speed"], "speed"),
-        )
-
-    @cached_property
-    def heart_rate_graph(self):
-        return (
-            (self["dist"], "distance"),
-            (self["heartrate"], "heartrate"),
-        )
-
-    @cached_property
-    def cadence_graph(self):
-        return (
-            (self["dist"], "distance"),
-            (self["cadence"], "cadence"),
-        )
-
-    @cached_property
-    def power_graph(self):
-        return (
-            (self["dist"], "distance"),
-            (self["power"], "power"),
+            (self[x_data], FIELD_DIMENSIONS[x_data]),
+            (self[y_data], FIELD_DIMENSIONS[y_data]),
         )
 
     @property

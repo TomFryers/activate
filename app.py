@@ -329,22 +329,24 @@ class MainWindow(QtWidgets.QMainWindow):
         elif page == 1:
             # Update charts
             if self.activity.track.has_altitude_data:
-                self.charts.update_show("ele", [self.activity.track.alt_graph])
+                self.charts.update_show("ele", [self.activity.track.graph("ele")])
             else:
                 self.charts.hide("ele")
-            self.charts.update_show("speed", [self.activity.track.speed_graph])
+            self.charts.update_show("speed", [self.activity.track.graph("speed")])
             if "heartrate" in self.activity.track:
                 self.charts.update_show(
-                    "heartrate", [self.activity.track.heart_rate_graph]
+                    "heartrate", [self.activity.track.graph("heartrate")]
                 )
             else:
                 self.charts.hide("heartrate")
             if "cadence" in self.activity.track:
-                self.charts.update_show("cadence", [self.activity.track.cadence_graph])
+                self.charts.update_show(
+                    "cadence", [self.activity.track.graph("cadence")]
+                )
             else:
                 self.charts.hide("cadence")
             if "power" in self.activity.track:
-                self.charts.update_show("power", [self.activity.track.power_graph])
+                self.charts.update_show("power", [self.activity.track.graph("power")])
             else:
                 self.charts.hide("power")
         elif page == 2:
