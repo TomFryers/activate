@@ -1,5 +1,6 @@
 import pickle
 import random
+import shutil
 
 import activity_list
 from units import DimensionValue
@@ -106,3 +107,6 @@ class Activity:
     def save(self):
         with open(f"{DATA_DIR}/{self.activity_id}.pickle", "wb") as f:
             pickle.dump(self.save_data, f)
+
+    def export_original(self, filename):
+        shutil.copy2(self.original_name, filename)

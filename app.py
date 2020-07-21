@@ -182,6 +182,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.summary_period = "All Time"
 
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
+        self.export_menu.setIcon(
+            PyQt5.QtGui.QIcon.fromTheme("document-send")
+        )
         self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
 
         self.main_tab_switch(0)
@@ -383,6 +386,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.add_activity(load_activity.import_and_load(filename))
         self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
+
+    def export_activity(self):
+        filename = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Export Original Activity",
+        )[0]
+
+        if not filename:
+            return
+        self.activity.export_original(filename)
 
     def main_tab_switch(self, tab):
         if self.main_tabs.tabText(tab) == "Summary":

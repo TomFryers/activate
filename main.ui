@@ -557,7 +557,14 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="export_menu">
+     <property name="title">
+      <string>Export</string>
+     </property>
+     <addaction name="export_original"/>
+    </widget>
     <addaction name="action_import"/>
+    <addaction name="export_menu"/>
     <addaction name="separator"/>
     <addaction name="action_quit"/>
    </widget>
@@ -599,6 +606,11 @@
   <action name="edit_activity">
    <property name="text">
     <string>Activity</string>
+   </property>
+  </action>
+  <action name="export_original">
+   <property name="text">
+    <string>Original</string>
    </property>
   </action>
  </widget>
@@ -798,6 +810,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>export_original</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>export_activity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -811,5 +839,6 @@
   <slot>handle_summary_double_click(QListWidgetItem*)</slot>
   <slot>summary_tab_switch()</slot>
   <slot>summary_period_changed(QString)</slot>
+  <slot>export_activity_original()</slot>
  </slots>
 </ui>
