@@ -249,6 +249,13 @@ class Track:
             (self["cadence"], "cadence"),
         )
 
+    @cached_property
+    def power_graph(self):
+        return (
+            (self["dist"], "distance"),
+            (self["power"], "power"),
+        )
+
     @property
     def length(self):
         return self["dist"][-1]

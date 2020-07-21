@@ -36,7 +36,7 @@ FIELDS = {
         )
     )
     / 60,
-    "power": lambda p: None,
+    "power": lambda p: float(p.find("./extensions/distance").text),
 }
 
 

@@ -113,6 +113,8 @@ MIN_PER_KM = PaceUnit(KM)
 MIN_PER_MILE = PaceUnit(MILE)
 BEAT_PER_MINUTE = Unit("beat per minute", "bpm", 1 / 60)
 CYCLES_PER_MINUTE = Unit("cycles per minute", "rpm", 1 / 60)
+WATT = Unit("watt", "W", 1)
+HORSE_POWER = Unit("horsepower", "hp", 745.6998715822702)
 UNITLESS = Unit("", "", 1)
 DATE = DateUnit()
 ALL = {
@@ -124,6 +126,7 @@ ALL = {
     "date": (DATE,),
     "heartrate": (BEAT_PER_MINUTE,),
     "cadence": (CYCLES_PER_MINUTE,),
+    "power": (WATT,),
     None: UNITLESS,
 }
 
@@ -136,6 +139,7 @@ METRIC = {
     "date": DATE,
     "heartrate": BEAT_PER_MINUTE,
     "cadence": CYCLES_PER_MINUTE,
+    "power": WATT,
     None: UNITLESS,
 }
 
@@ -148,6 +152,7 @@ IMPERIAL = {
     "date": DATE,
     "heartrate": BEAT_PER_MINUTE,
     "cadence": CYCLES_PER_MINUTE,
+    "power": HORSE_POWER,
     None: UNITLESS,
 }
 

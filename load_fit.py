@@ -14,6 +14,7 @@ FIELDS = {
     "heartrate": lambda p: p["heart_rate"] / 60,
     "speed": lambda p: p["speed"] / 1000,
     "distance": lambda p: p["distance"],
+    "power": lambda p: p["power"],
 }
 
 
