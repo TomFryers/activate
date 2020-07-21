@@ -145,26 +145,40 @@ class ActivityList(list):
         activity, and get (dates, totals) in order.
         """
         time_period = time_period.casefold()
+        if time_period == "all time":
+            data = ([], [])
+            total = 0
+            valid_sorted = sorted(
+                self.filtered(activity_types, time_period, now, 0),
+                key=lambda x: x.start_time,
+            )
+            for a in valid_sorted:
+                data[0].append(a.start_time)
+                data[1].append(total)
+                total += key(a)
+                data[0].append(a.start_time + a.duration)
+                data[1].append(total)
+
+            return [data]
+
+        # Other time periods
         result = []
-        for back in range(1 if time_period == "all time" else 5):
-            if time_period == "all time":
-                data = ([], [])
-            else:
-                data = ([times.start_of(now, time_period)], [0])
+        for back in range(5):
+            data = ([times.start_of(now, time_period)], [0])
             total = 0
             valid_sorted = sorted(
                 self.filtered(activity_types, time_period, now, back),
                 key=lambda x: x.start_time,
             )
             for a in valid_sorted:
-                data[0].append(
-                    a.start_time
-                    if time_period == "all time"
-                    else times.to_this_period(now, a.start_time, time_period)
-                )
-                total += key(a)
+                data[0].append(times.to_this_period(now, a.start_time, time_period))
                 data[1].append(total)
-            if time_period != "all time" and back != 0:
+                total += key(a)
+                data[0].append(
+                    times.to_this_period(now, a.start_time + a.duration, time_period)
+                )
+                data[1].append(total)
+            if back != 0:
                 data[0].append(times.end_of(now, time_period))
                 data[1].append(total)
             result.append(data)
