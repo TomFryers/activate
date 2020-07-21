@@ -112,6 +112,7 @@ MINUTE = Unit("minute", "min", 60)
 MIN_PER_KM = PaceUnit(KM)
 MIN_PER_MILE = PaceUnit(MILE)
 BEAT_PER_MINUTE = Unit("beat per minute", "bpm", 1 / 60)
+CYCLES_PER_MINUTE = Unit("cycles per minute", "rpm", 1 / 60)
 UNITLESS = Unit("", "", 1)
 DATE = DateUnit()
 ALL = {
@@ -122,6 +123,7 @@ ALL = {
     "pace": (MIN_PER_KM, MIN_PER_MILE),
     "date": (DATE,),
     "heartrate": (BEAT_PER_MINUTE,),
+    "cadence": (CYCLES_PER_MINUTE,),
     None: UNITLESS,
 }
 
@@ -133,6 +135,7 @@ METRIC = {
     "pace": MIN_PER_KM,
     "date": DATE,
     "heartrate": BEAT_PER_MINUTE,
+    "cadence": CYCLES_PER_MINUTE,
     None: UNITLESS,
 }
 
@@ -144,6 +147,7 @@ IMPERIAL = {
     "pace": MIN_PER_MILE,
     "date": DATE,
     "heartrate": BEAT_PER_MINUTE,
+    "cadence": CYCLES_PER_MINUTE,
     None: UNITLESS,
 }
 

@@ -166,6 +166,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.charts.add("ele", area=True)
         self.charts.add("speed")
         self.charts.add("heartrate")
+        self.charts.add("cadence")
 
         self.zones = list(range(0, 20)) + [float("inf")]
         self.zones = [self.unit_system.decode(x, "speed") for x in self.zones]
@@ -337,6 +338,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             else:
                 self.charts.hide("heartrate")
+            if "cadence" in self.activity.track:
+                self.charts.update_show("cadence", [self.activity.track.cadence_graph])
         elif page == 2:
             self.update_splits(
                 self.activity.track.splits(

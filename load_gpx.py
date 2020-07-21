@@ -21,7 +21,10 @@ FIELDS = {
     "time": lambda p: times.from_GPX(p.find("./time").text),
     "speed": lambda p: None,
     "distance": lambda p: None,
-    "cadence": lambda p: None,
+    "cadence": lambda p: float(
+        try_multi(p, ("./extensions/cadence", "./extensions/TrackPointExtension/cad",),)
+    )
+    / 60,
     "heartrate": lambda p: float(
         try_multi(
             p,

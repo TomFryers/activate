@@ -242,6 +242,13 @@ class Track:
             (self["heartrate"], "heartrate"),
         )
 
+    @cached_property
+    def cadence_graph(self):
+        return (
+            (self["dist"], "distance"),
+            (self["cadence"], "cadence"),
+        )
+
     @property
     def length(self):
         return self["dist"][-1]
