@@ -174,15 +174,18 @@ class LineChart(Chart):
 
     def update_axis(self, direction, ticks, minimum, maximum):
         axis = self.axes(direction)[0]
-        axis.setRange(minimum, maximum)
-        axis.setTickCount(ticks)
-        try:
-            axis.applyNiceNumbers()
-            # Set the correct axis label formatting
+        if isinstance(axis, QtChart.QValueAxis):
+            fake_axis = QtChart.QValueAxis()
+            fake_axis.setRange(minimum, maximum)
+            fake_axis.setTickCount(ticks)
+            fake_axis.applyNiceNumbers()
+            axis.setRange(fake_axis.min(), fake_axis.max())
+            axis.setTickCount(fake_axis.tickCount())
             axis_number_format(axis)
         # For date axes in subclass
-        except AttributeError:
-            pass
+        else:
+            axis.setRange(minimum, maximum)
+            axis.setTickCount(ticks)
 
 
 class LineChartSet:
