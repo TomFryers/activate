@@ -53,7 +53,28 @@ def load(filename):
     return (data[0], convert_activity_type(data[1], data[0]), track.Track(data[2]))
 
 
+def encode_name(filename, current_filenames):
+    """
+    Rename a file to avoid name collisions.
+
+    Renames foo.gpx to _0_foo.gpx if foo.gpx already exists. If that
+    exists tries _1_foo.gpx, _2_foo.gpx... until a free name is found.
+    If the name already starts with an underscore, it is replaced with a
+    double underscore, so _foo_bar.gpx becomes __foo_bar.gpx,
+    _0___foo_bar.gpx etc.
+    """
+    if filename[0] == "_":
+        filename = "_" + filename
+    full_name = f"{TRACK_DIR}/{filename}"
+    i = 0
+    while full_name in current_filenames:
+        full_name = f"{TRACK_DIR}/_{i}_{filename}"
+        i += 1
+    return full_name
+
+
 def decode_name(filename):
+    """Get a file's original name from its encoded one."""
     if filename[0] != "_":
         return filename
     filename = filename[filename[1:].index("_") + 2 :]
@@ -62,16 +83,10 @@ def decode_name(filename):
     return filename
 
 
-def import_and_load(filename):
+def import_and_load(filename) -> activity.Activity:
+    """Import an activity and copy it into the originals directory."""
     filename = pathlib.Path(filename)
     filenames = glob.glob(f"{TRACK_DIR}/*")
-    out_name = filename.name
-    if out_name[0] == "_":
-        out_name = "_" + out_name
-    real_out_name = f"{TRACK_DIR}/{out_name}"
-    i = 0
-    while real_out_name in filenames:
-        real_out_name = f"{TRACK_DIR}/_{i}_{out_name}"
-        i += 1
-    shutil.copy2(filename, real_out_name)
-    return activity.from_track(*load(str(real_out_name)), str(real_out_name))
+    out_name = encode_name(filename.name, filenames)
+    shutil.copy2(filename, out_name)
+    return activity.from_track(*load(str(out_name)), str(out_name))
