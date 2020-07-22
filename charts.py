@@ -98,7 +98,7 @@ class Chart(QtChart.QChart):
         unit_system,
         title=None,
         horizontal_ticks=12,
-        vertical_ticks=4,
+        vertical_ticks=5,
     ):
         """Create a new chart."""
         self.unit_system = unit_system
@@ -134,7 +134,7 @@ class LineChart(Chart):
         area=False,
         series_count=1,
         horizontal_ticks=12,
-        vertical_ticks=4,
+        vertical_ticks=5,
     ):
         """Add a line chart to widget."""
         seriess = []
