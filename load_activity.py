@@ -1,3 +1,4 @@
+"""Functions for loading activities from files."""
 import glob
 import pathlib
 import shutil
@@ -25,7 +26,7 @@ ACTIVITY_TYPE_NAMES = {
 }
 
 
-def convert_activity_type(activity_type, name):
+def convert_activity_type(activity_type: str, name) -> str:
     """Get the correct activity type from a raw one or by inference."""
     if activity_type in {"unknown", "generic"}:
         # Infer activity type from name
@@ -43,7 +44,7 @@ def has_extension(filename, extension) -> bool:
     return filename.casefold().endswith("." + extension)
 
 
-def load(filename):
+def load(filename) -> tuple:
     """Get a (name, sport, Track) tuple by loading from a file."""
     if has_extension(filename, "gpx"):
         data = load_gpx.load_gpx(filename)

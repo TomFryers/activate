@@ -1,3 +1,8 @@
+"""
+Defines the activity list, which contains all of the user's real data.
+
+This is where computation of summary values should be done.
+"""
 from dataclasses import dataclass
 import datetime
 import pickle
@@ -46,6 +51,8 @@ class UnloadedActivity:
 
 
 class ActivityList(list):
+    """A list of activities, which may be loaded."""
+
     def __init__(self, activities):
         """Create a list of unloaded activities."""
         self._activities = {}

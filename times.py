@@ -1,3 +1,4 @@
+"""Functions for dealing with datetimes and timedeltas."""
 import datetime
 
 ONE_DAY = datetime.timedelta(days=1)

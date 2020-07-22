@@ -1,3 +1,4 @@
+"""Contains classes and for handling units and some predefined units."""
 import datetime
 
 

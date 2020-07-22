@@ -126,6 +126,7 @@ class Chart(QtChart.QChart):
 
 class LineChart(Chart):
     """A chart with 1+ QLineSeries on it."""
+
     def __init__(
         self,
         widget,

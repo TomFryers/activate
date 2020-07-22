@@ -1,3 +1,4 @@
+"""Contains a class holding current user settings."""
 import dataclasses
 import pickle
 
