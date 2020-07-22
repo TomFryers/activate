@@ -2,7 +2,7 @@ import pathlib
 
 import fitparse
 
-import load_activity
+import files
 
 CONVERSION_FACTOR = 180 / 2 ** 31
 FIELDS = {
@@ -37,4 +37,4 @@ def load_fit(filename):
                     value = None
                 fields[field].append(value)
     fields = {field: fields[field] for field in fields if set(fields[field]) != {None}}
-    return (load_activity.decode_name(pathlib.Path(filename).stem), sport, fields)
+    return (files.decode_name(pathlib.Path(filename).stem), sport, fields)

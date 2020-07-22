@@ -2,7 +2,7 @@
 import pathlib
 import xml.etree.ElementTree
 
-import load_activity
+import files
 import times
 
 
@@ -53,7 +53,7 @@ def load_gpx(filename):
     try:
         name = tree.find("./trk/name").text
     except AttributeError:
-        name = load_activity.decode_name(pathlib.Path(filename).stem)
+        name = files.decode_name(pathlib.Path(filename).stem)
 
     try:
         sport = tree.find("./trk/type").text

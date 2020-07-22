@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import collections
 import datetime
-import pathlib
 import sys
 
 import markdown
@@ -13,6 +12,7 @@ from PyQt5.QtCore import Qt
 
 import activity_list
 import charts
+import files
 import load_activity
 import number_formats
 import settings
@@ -391,14 +391,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_list_table.setSortingEnabled(True)
 
     def export_activity(self):
-        original_path = pathlib.Path(self.activity.original_name)
-        if original_path.suffix.casefold() == ".gpx":
+        if files.has_extension(self.activity.original_name, ".gpx"):
             file_type = "GPX file (*.gpx)"
-        elif original_path.suffix.casefold() == ".fit":
+        elif files.has_extension(self.activity.original_name, ".fit"):
             file_type = "FIT file (*.fit)"
         else:
             file_type = ""
-        out_name = load_activity.decode_name(original_path.name)
+        out_name = files.decode_name(self.activity.original_name)
         filename = QtWidgets.QFileDialog.getSaveFileName(
             self,
             "Export Original Activity",
