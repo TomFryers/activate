@@ -324,6 +324,8 @@ class Track:
 
             # Add it to the correct bucket
             value = self[field][point]
+            if value is None:
+                continue
             for zone in zones[::-1]:
                 if value > zone:
                     buckets[zone] += duration
