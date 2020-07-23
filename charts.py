@@ -142,6 +142,25 @@ class Chart(QtChart.QChart):
             self.unit_system.format_axis_label(y_axis_dimension)
         )
 
+    def update_axis(self, direction, ticks, minimum, maximum):
+        """Change an axis range to fit minimum and maximum."""
+        axis = self.axes(direction)[0]
+        if isinstance(axis, QtChart.QValueAxis):
+            fake_axis = QtChart.QValueAxis()
+            fake_axis.setRange(minimum, maximum)
+            fake_axis.setTickCount(ticks)
+            fake_axis.applyNiceNumbers()
+            axis.setRange(fake_axis.min(), fake_axis.max())
+            axis.setTickCount(fake_axis.tickCount())
+            axis_number_format(axis)
+        elif isinstance(axis, QtChart.QLogValueAxis):
+            # Minimum must be decreased slightly to add the necessary extra tick
+            axis.setRange(minimum / 1.00001, maximum)
+        # For date axes in subclass
+        else:
+            axis.setRange(minimum, maximum)
+            axis.setTickCount(ticks)
+
 
 class LineChart(Chart):
     """A chart with 1+ QLineSeries on it."""
@@ -236,25 +255,6 @@ class LineChart(Chart):
             Qt.Vertical, self.vertical_ticks, y_range.minimum, y_range.maximum
         )
 
-    def update_axis(self, direction, ticks, minimum, maximum):
-        """Change an axis range to fit minimum and maximum."""
-        axis = self.axes(direction)[0]
-        if isinstance(axis, QtChart.QValueAxis):
-            fake_axis = QtChart.QValueAxis()
-            fake_axis.setRange(minimum, maximum)
-            fake_axis.setTickCount(ticks)
-            fake_axis.applyNiceNumbers()
-            axis.setRange(fake_axis.min(), fake_axis.max())
-            axis.setTickCount(fake_axis.tickCount())
-            axis_number_format(axis)
-        elif isinstance(axis, QtChart.QLogValueAxis):
-            # Minimum must be decreased slightly to add the necessary extra tick
-            axis.setRange(minimum / 1.00001, maximum)
-        # For date axes in subclass
-        else:
-            axis.setRange(minimum, maximum)
-            axis.setTickCount(ticks)
-
 
 class LineChartSet:
     """A set of line charts that can be hidden and shown."""
@@ -340,11 +340,7 @@ class Histogram(Chart):
             bar_set.replace(position, units.MINUTE.encode(amount))
 
         # Format the vertical axis
-        value_axis = self.axes(Qt.Vertical)[0]
-        value_axis.setRange(0, units.MINUTE.encode(max(data.values())))
-        value_axis.setTickCount(15)
-        value_axis.applyNiceNumbers()
-        axis_number_format(value_axis)
+        self.update_axis(Qt.Vertical, 15, 0, units.MINUTE.encode(max(data.values())))
 
 
 class DateTimeLineChart(LineChart):
