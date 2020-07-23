@@ -1,4 +1,5 @@
 """Contains the Track class and functions for handling tracks."""
+import datetime
 import math
 from functools import cached_property, lru_cache
 
@@ -332,3 +333,41 @@ class Track:
                     break
 
         return buckets
+
+    def get_curve(self, table_distances):
+        table_distances = [x for x in table_distances if x <= self.length]
+        bests = {}
+        for distance in table_distances:
+            for last_point in range(len(self)):
+                if self["dist"][last_point] > distance:
+                    break
+            bests[distance] = (
+                self["time"][last_point] - self.start_time
+            ).total_seconds()
+            first_point = 0
+            while last_point < len(self) - 1:
+                last_point += 1
+                while True:
+                    dist = self["dist"][last_point] - self["dist"][first_point]
+                    if dist < distance:
+                        break
+                    first_point += 1
+                first_point -= 1
+                time_taken = (
+                    self["time"][last_point] - self["time"][first_point]
+                ).total_seconds()
+                if time_taken < bests[distance]:
+                    bests[distance] = time_taken
+
+        speeds = [distance / bests[distance] for distance in bests]
+        bests_table = [
+            (
+                DimensionValue(distance, "distance"),
+                DimensionValue(datetime.timedelta(seconds=bests[distance]), "time"),
+            )
+            for distance in bests
+        ]
+        return (
+            bests_table,
+            ((list(bests.keys()), "distance"), (speeds, "speed")),
+        )

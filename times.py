@@ -31,7 +31,11 @@ def to_string(time: datetime.timedelta, exact=False):
         result.append(f"{secs:0>2d}")
     else:
         result.append(f"{secs:0>.2f}")
-    return "".join(result).lstrip("0")
+    # Only seconds
+    if len(result) == 1:
+        result.append(" s")
+
+    return "".join(result).lstrip("0").strip()
 
 
 def nice(time: datetime.datetime):

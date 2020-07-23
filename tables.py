@@ -32,7 +32,7 @@ def create_table_item(
         widget.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
     # Format as string
     else:
-        widget = QtWidgets.QTableWidgetItem(item)
+        widget = QtWidgets.QTableWidgetItem(str(item))
     if align is not None:
         widget.setTextAlignment(align)
     return widget

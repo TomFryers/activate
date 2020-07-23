@@ -19,6 +19,70 @@ import settings
 import times
 import units
 
+MARATHON = 42195
+GOOD_DISTANCES = {
+    "Run": {
+        60: "60 m",
+        100: "100 m",
+        200: "200 m",
+        300: "300 m",
+        400: "400 m",
+        500: "500 m",
+        800: "800 m",
+        1000: "1000 m",
+        1500: "1500 m",
+        units.MILE.decode(1): "1 mile",
+        2000: "2 km",
+        3000: "3 km",
+        units.MILE.decode(2): "2 mile",
+        4000: "4 km",
+        5000: "5 km",
+        units.MILE.decode(5): "5 mile",
+        10000: "10 km",
+        15000: "15 km",
+        units.MILE.decode(10): "10 mile",
+        20000: "20 km",
+        MARATHON / 2: "half marathon",
+        MARATHON: "marathon",
+        50000: "50 km",
+    },
+    "Ride": {
+        100: "100 m",
+        200: "200 m",
+        300: "300 m",
+        500: "500 m",
+        1000: "1 km",
+        2000: "2 km",
+        3000: "3 km",
+        4000: "4 km",
+        5000: "5 km",
+        10000: "10 km",
+        15000: "15 km",
+        20000: "20 km",
+        30000: "30 km",
+        50000: "50 km",
+        100000: "100 km",
+        150000: "150 km",
+        200000: "200 km",
+    },
+    None: {
+        10: "10 m",
+        20: "20 m",
+        50: "50 m",
+        100: "100 m",
+        200: "200 m",
+        500: "500 m",
+        1000: "1 km",
+        2000: "2 km",
+        5000: "5 km",
+        10000: "10 km",
+        20000: "20 km",
+        50000: "50 km",
+        100000: "100 km",
+        200000: "200 km",
+        1000000: "1000 km",
+    },
+}
 ACTIVITY_TYPES = ("Run", "Ride", "Swim", "Walk", "Ski", "Row", "Other")
 
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
@@ -134,6 +198,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_list_table.unit_system = self.unit_system
         self.split_table.unit_system = self.unit_system
         self.info_table.unit_system = self.unit_system
+        self.curve_table.unit_system = self.unit_system
 
         self.update_activity_list()
 
@@ -175,6 +240,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.zones = [self.unit_system.decode(x, "speed") for x in self.zones]
         self.zones_chart = charts.Histogram(
             self.zones, self.zones_graph, self.unit_system
+        )
+
+        self.curve_chart = charts.LineChart(
+            self.curve_graph, self.unit_system, area=True, vertical_ticks=12
         )
 
         self.progression_chart = charts.DateTimeLineChart(
@@ -360,6 +429,26 @@ class MainWindow(QtWidgets.QMainWindow):
             )
         elif page == 3:
             self.zones_chart.update(self.activity.track.get_zone_durations(self.zones))
+        elif page == 4:
+            good_distances = (
+                GOOD_DISTANCES[self.activity.sport]
+                if self.activity.sport in GOOD_DISTANCES
+                else GOOD_DISTANCES[None]
+            )
+            table, graph = self.activity.track.get_curve(good_distances)
+            self.curve_chart.update([graph])
+            for index, row in enumerate(table):
+                self.curve_table.setRowCount(len(table))
+                self.curve_table.set_row(
+                    row,
+                    index,
+                    (
+                        lambda x: good_distances[
+                            round(self.unit_system.decode(x, "distance"), 8)
+                        ],
+                        lambda x: times.to_string(x),
+                    ),
+                )
         self.updated.add(page)
 
     def update_activity(self, selected):

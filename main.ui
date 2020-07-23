@@ -536,6 +536,51 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="tab">
+           <attribute name="title">
+            <string>Curve</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QtCharts::QChartView" name="curve_graph"/>
+            </item>
+            <item>
+             <widget class="Table" name="curve_table">
+              <property name="maximumSize">
+               <size>
+                <width>162</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>77</number>
+              </attribute>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>77</number>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>Distance</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Time</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
