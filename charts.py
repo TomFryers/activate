@@ -99,18 +99,37 @@ class Chart(QtChart.QChart):
         title=None,
         horizontal_ticks=12,
         vertical_ticks=5,
+        horizontal_log=False,
+        vertical_log=False,
     ):
         """Create a new chart."""
         self.unit_system = unit_system
         self.horizontal_ticks = horizontal_ticks
         self.vertical_ticks = vertical_ticks
+        self.horizontal_log = horizontal_log
+        self.vertical_log = vertical_log
         super().__init__()
         self.setAnimationOptions(self.SeriesAnimations)
         widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
         self.legend().hide()
+        if horizontal_log:
+            x_axis = QtChart.QLogValueAxis()
+            x_axis.setMinorTickCount(-1)
+            x_axis.setLabelFormat("%g")
+        else:
+            x_axis = QtChart.QValueAxis()
+        if vertical_log:
+            y_axis = QtChart.QLogValueAxis()
+            y_axis.setMinorTickCount(-1)
+            y_axis.setLabelFormat("%g")
+        else:
+            y_axis = QtChart.QValueAxis()
+        self.addAxis(x_axis, Qt.AlignBottom)
+        self.addAxis(y_axis, Qt.AlignLeft)
         for series in seriess:
             self.addSeries(series)
-        self.createDefaultAxes()
+            series.attachAxis(x_axis)
+            series.attachAxis(y_axis)
         widget.setChart(self)
         if title is not None:
             self.setTitle(title)
@@ -136,6 +155,8 @@ class LineChart(Chart):
         series_count=1,
         horizontal_ticks=12,
         vertical_ticks=5,
+        horizontal_log=False,
+        vertical_log=False,
     ):
         """Add a line chart to widget."""
         seriess = []
@@ -153,8 +174,10 @@ class LineChart(Chart):
             widget,
             unit_system,
             title,
-            horizontal_ticks=horizontal_ticks,
-            vertical_ticks=vertical_ticks,
+            horizontal_ticks,
+            vertical_ticks,
+            horizontal_log,
+            vertical_log,
         )
 
     def encode_data(self, data):
@@ -201,9 +224,9 @@ class LineChart(Chart):
                 series.replace(data_to_points(data_part))
 
         # Snap axis minima to zero
-        if x_range.minimum != 0 and x_range.ratio > 3:
+        if not self.horizontal_log and x_range.minimum != 0 and x_range.ratio > 3:
             x_range.minimum = 0
-        if y_range.minimum != 0 and y_range.ratio > 3:
+        if not self.vertical_log and y_range.minimum != 0 and y_range.ratio > 3:
             y_range.minimum = 0
 
         self.update_axis(
@@ -224,6 +247,9 @@ class LineChart(Chart):
             axis.setRange(fake_axis.min(), fake_axis.max())
             axis.setTickCount(fake_axis.tickCount())
             axis_number_format(axis)
+        elif isinstance(axis, QtChart.QLogValueAxis):
+            # Minimum must be decreased slightly to add the necessary extra tick
+            axis.setRange(minimum / 1.00001, maximum)
         # For date axes in subclass
         else:
             axis.setRange(minimum, maximum)

@@ -244,7 +244,11 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         self.curve_chart = charts.LineChart(
-            self.curve_graph, self.unit_system, area=True, vertical_ticks=12
+            self.curve_graph,
+            self.unit_system,
+            area=True,
+            vertical_ticks=12,
+            horizontal_log=True,
         )
 
         self.progression_chart = charts.DateTimeLineChart(
