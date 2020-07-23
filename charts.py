@@ -297,7 +297,6 @@ class Histogram(Chart):
         series.append(bar_set)
         series.setBarWidth(1)
         super().__init__([series], widget, unit_system)
-        self.set_axis_dimensions("speed", "Time (min)")
         self.set_zones(zones)
 
     def set_zones(self, zones):
@@ -342,6 +341,7 @@ class Histogram(Chart):
                 bar_set.append(0)
         self.addAxis(cat_axis, Qt.AlignBottom)
         series.attachAxis(cat_axis)
+        self.set_axis_dimensions("speed", "Time (min)")
 
     def update(self, data):
         """Update the histogram data."""
