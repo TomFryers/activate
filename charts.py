@@ -294,19 +294,20 @@ class Histogram(Chart):
         """Create a histogram."""
         series = QtChart.QBarSeries()
         bar_set = QtChart.QBarSet("", series)
-        # One less bar than there are zones
-        for _ in zones[:-1]:
-            bar_set.append(0)
         series.append(bar_set)
         series.setBarWidth(1)
         super().__init__([series], widget, unit_system)
-        # Replace QBarCategoryAxis with QCategoryAxis because the latter
-        # allows putting values between categoreies instead of centring
-        # them.
+        self.set_axis_dimensions("speed", "Time (min)")
+        self.set_zones(zones)
+
+    def set_zones(self, zones):
+        # Use QBarCategoryAxis instead of QCategoryAxis because the
+        # latter allows putting values between categoreies instead of
+        # centring them.
         cat_axis = self.axes(Qt.Horizontal)[0]
         self.removeAxis(cat_axis)
         cat_axis = QtChart.QCategoryAxis(self)
-
+        cat_axis.setLabelsPosition(QtChart.QCategoryAxis.AxisLabelsPositionOnValue)
         # Hide the start value because zones[0] does its job
         cat_axis.setStartValue(float("-inf"))
 
@@ -314,7 +315,8 @@ class Histogram(Chart):
         if zones[0] == float("-inf"):
             cat_axis.append("\u2212\u221e", -0.5)
         else:
-            cat_axis.append(number_formats.maybe_as_int(zones[0]), -0.5)
+            zone_num = self.unit_system.encode(zones[0], "speed")
+            cat_axis.append(number_formats.maybe_as_int(zone_num), -0.5)
 
         # Add axis labels
         for position, zone in enumerate(zones[1:-1]):
@@ -325,12 +327,21 @@ class Histogram(Chart):
         if zones[-1] == float("inf"):
             cat_axis.append("\u221e", len(zones) - 1.5)
         else:
-            cat_axis.append(number_formats.maybe_as_int(zones[-1]), len(zones) - 1.5)
+            zone_num = self.unit_system.encode(zones[-1], "speed")
+            cat_axis.append(number_formats.maybe_as_int(zone_num), len(zones) - 1.5)
 
-        cat_axis.setLabelsPosition(QtChart.QCategoryAxis.AxisLabelsPositionOnValue)
+        cat_axis.setRange(-0.5, len(zones) - 1.5)
+
+        # One less bar than there are zones borders
+        series = self.series()[0]
+        bar_set = series.barSets()[0]
+        if bar_set.count() > len(zones) - 1:
+            bar_set.remove(0, bar_set.count() - len(zones) + 1)
+        elif bar_set.count() < len(zones) - 1:
+            for _ in range(len(zones) - 1 - bar_set.count()):
+                bar_set.append(0)
         self.addAxis(cat_axis, Qt.AlignBottom)
         series.attachAxis(cat_axis)
-        self.set_axis_dimensions("speed", "Time (min)")
 
     def update(self, data):
         """Update the histogram data."""

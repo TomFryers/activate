@@ -366,7 +366,16 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             )
         elif page == 3:
-            self.zones_chart.update(self.activity.track.get_zone_durations(self.zones))
+            zones = (
+                activity_types.ZONES[self.activity.sport]
+                if self.activity.sport in activity_types.ZONES
+                else activity_types.ZONES[None]
+            )
+            print(zones)
+            zones = [self.unit_system.decode(x, "speed") for x in zones]
+            print(zones)
+            self.zones_chart.set_zones(zones)
+            self.zones_chart.update(self.activity.track.get_zone_durations(zones))
         elif page == 4:
             good_distances = (
                 activity_types.SPECIAL_DISTANCES[self.activity.sport]

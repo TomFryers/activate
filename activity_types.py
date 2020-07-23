@@ -107,6 +107,13 @@ SPECIAL_DISTANCES = {
         1000000: "1000 km",
     },
 }
+ZONES = {
+    "Run": list(range(20)) + [float("inf")],
+    "Ride": list(range(0, 60, 2)) + [float("inf")],
+    "Swim": [x / 2 for x in range(12)] + [float("inf")],
+    "Walk": [x / 2 for x in range(20)] + [float("inf")],
+    None: list(range(20)) + [float("inf")],
+}
 TYPES = ("Run", "Ride", "Swim", "Walk", "Ski", "Row", "Other")
 FLAGS = {
     "Run": ("Race", "Long Run", "Workout", "Treadmill"),
