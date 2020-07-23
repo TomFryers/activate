@@ -159,10 +159,18 @@ class LineChart(Chart):
 
     def encode_data(self, data):
         """Convert data with a dimension to floats with correct units."""
-        return [
-            [self.unit_system.encode(x, unit) for x in series if x is not None]
-            for series, unit in data
-        ]
+        # Convert units
+        data = zip(
+            *(
+                [
+                    None if x is None else self.unit_system.encode(x, unit)
+                    for x in series
+                ]
+                for series, unit in data
+            )
+        )
+        # Get rid of Nones
+        return list(zip(*(p for p in data if None not in p)))
 
     @property
     def data_series(self):
