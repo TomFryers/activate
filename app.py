@@ -11,6 +11,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
 import activity_list
+import activity_types
 import charts
 import files
 import load_activity
@@ -19,119 +20,10 @@ import settings
 import times
 import units
 
-MARATHON = 42195
-GOOD_DISTANCES = {
-    "Run": {
-        60: "60 m",
-        100: "100 m",
-        200: "200 m",
-        300: "300 m",
-        400: "400 m",
-        500: "500 m",
-        800: "800 m",
-        1000: "1000 m",
-        1500: "1500 m",
-        units.MILE.decode(1): "1 mile",
-        2000: "2 km",
-        3000: "3 km",
-        units.MILE.decode(2): "2 mile",
-        4000: "4 km",
-        5000: "5 km",
-        units.MILE.decode(5): "5 mile",
-        10000: "10 km",
-        15000: "15 km",
-        units.MILE.decode(10): "10 mile",
-        20000: "20 km",
-        MARATHON / 2: "half marathon",
-        MARATHON: "marathon",
-        50000: "50 km",
-        100000: "100 km",
-    },
-    "Ride": {
-        100: "100 m",
-        200: "200 m",
-        300: "300 m",
-        500: "500 m",
-        1000: "1 km",
-        2000: "2 km",
-        3000: "3 km",
-        4000: "4 km",
-        5000: "5 km",
-        10000: "10 km",
-        15000: "15 km",
-        20000: "20 km",
-        30000: "30 km",
-        50000: "50 km",
-        100000: "100 km",
-        150000: "150 km",
-        200000: "200 km",
-    },
-    "Swim": {
-        25: "25 m",
-        50: "50 m",
-        75: "75 m",
-        100: "100 m",
-        150: "150 m",
-        200: "200 m",
-        300: "300 m",
-        400: "400 m",
-        500: "500 m",
-        800: "800 m",
-        1000: "1000 m",
-        1500: "1500 m",
-        units.MILE.decode(1): "1 mile",
-        2000: "2 km",
-        3000: "3 km",
-        units.MILE.decode(2): "2 mile",
-        5000: "5 km",
-        10000: "10 km",
-    },
-    "Walk": {
-        50: "50 m",
-        100: "100 m",
-        200: "200 m",
-        500: "500 m",
-        1000: "1000 m",
-        units.MILE.decode(1): "1 mile",
-        2000: "2 km",
-        units.MILE.decode(2): "2 mile",
-        5000: "5 km",
-        units.MILE.decode(5): "5 mile",
-        10000: "10 km",
-        15000: "15 km",
-        units.MILE.decode(10): "10 mile",
-        20000: "20 km",
-        units.MILE.decode(10): "20 mile",
-        50000: "50 km",
-        units.MILE.decode(10): "50 mile",
-        100000: "100 km",
-    },
-    None: {
-        10: "10 m",
-        20: "20 m",
-        50: "50 m",
-        100: "100 m",
-        200: "200 m",
-        500: "500 m",
-        1000: "1 km",
-        2000: "2 km",
-        5000: "5 km",
-        10000: "10 km",
-        20000: "20 km",
-        50000: "50 km",
-        100000: "100 km",
-        200000: "200 km",
-        500000: "500 km",
-        1000000: "1000 km",
-    },
-}
-ACTIVITY_TYPES = ("Run", "Ride", "Swim", "Walk", "Ski", "Row", "Other")
 
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
 TYPE_FLAGS = collections.defaultdict(tuple)
-TYPE_FLAGS.update(
-    {"Run": ("Race", "Long Run", "Workout", "Treadmill"), "Ride": ("Race", "Workout")}
-)
+TYPE_FLAGS.update(activity_types.FLAGS)
 DELETE_ACTIVITY = 222  # 0xDE[lete]
 
 NOW = datetime.datetime.now()
@@ -172,7 +64,7 @@ class EditActivityDialog(QtWidgets.QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         PyQt5.uic.loadUi("edit_activity.ui", self)
-        self.type_edit.addItems(ACTIVITY_TYPES)
+        self.type_edit.addItems(activity_types.TYPES)
         self.delete_activity_button.setIcon(PyQt5.QtGui.QIcon.fromTheme("edit-delete"))
 
     def update_flags(self):
@@ -265,8 +157,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set up activity types list for the summary page
         self.do_not_recurse = True
-        self.activity_types_list.addItems(["All"] + list(ACTIVITY_TYPES))
-        for i in range(len(["All"] + list(ACTIVITY_TYPES))):
+        self.activity_types_list.addItems(["All"] + list(activity_types.TYPES))
+        for i in range(len(["All"] + list(activity_types.TYPES))):
             self.activity_types_list.item(i).setCheckState(Qt.Checked)
         self.do_not_recurse = False
 
@@ -477,9 +369,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.zones_chart.update(self.activity.track.get_zone_durations(self.zones))
         elif page == 4:
             good_distances = (
-                GOOD_DISTANCES[self.activity.sport]
-                if self.activity.sport in GOOD_DISTANCES
-                else GOOD_DISTANCES[None]
+                activity_types.SPECIAL_DISTANCES[self.activity.sport]
+                if self.activity.sport in activity_types.SPECIAL_DISTANCES
+                else activity_types.SPECIAL_DISTANCES[None]
             )
             table, graph = self.activity.track.get_curve(good_distances)
             self.curve_chart.update([graph])
@@ -593,12 +485,12 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.do_not_recurse = True
         if item.text() == "All" and item.checkState() != Qt.PartiallyChecked:
-            for i in range(len(ACTIVITY_TYPES)):
+            for i in range(len(activity_types.TYPES)):
                 self.activity_types_list.item(i + 1).setCheckState(item.checkState())
         else:
             states = set(
                 self.activity_types_list.item(i + 1).checkState()
-                for i in range(len(ACTIVITY_TYPES))
+                for i in range(len(activity_types.TYPES))
             )
             if len(states) == 1:
                 new_state = next(iter(states))
@@ -615,7 +507,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.do_not_recurse = True
         self.activity_types_list.item(0).setCheckState(Qt.PartiallyChecked)
-        for i in range(len(ACTIVITY_TYPES)):
+        for i in range(len(activity_types.TYPES)):
             this_item = self.activity_types_list.item(i + 1)
             this_item.setCheckState(Qt.Checked if this_item is item else Qt.Unchecked)
         self.do_not_recurse = False
@@ -624,7 +516,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def get_allowed_for_summary(self):
         """Get the allowed activity types from the checklist."""
         allowed_activity_types = set()
-        for i, a in enumerate(ACTIVITY_TYPES):
+        for i, a in enumerate(activity_types.TYPES):
             if self.activity_types_list.item(i + 1).checkState() == Qt.Checked:
                 allowed_activity_types.add(a)
         return allowed_activity_types
