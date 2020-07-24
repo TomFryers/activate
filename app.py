@@ -391,7 +391,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         lambda x: good_distances[
                             round(self.unit_system.decode(x, "distance"), 8)
                         ],
-                        lambda x: times.to_string(x),
+                        times.to_string,
+                        lambda x: str(round(x, 1)),
                     ),
                 )
         self.updated.add(page)

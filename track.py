@@ -364,6 +364,7 @@ class Track:
             (
                 DimensionValue(distance, "distance"),
                 DimensionValue(datetime.timedelta(seconds=bests[distance]), "time"),
+                DimensionValue(distance / bests[distance], "speed"),
             )
             for distance in bests
         ]
