@@ -421,8 +421,17 @@ class MainWindow(QtWidgets.QMainWindow):
         if not filenames:
             return
         self.activity_list_table.setSortingEnabled(False)
-        for filename in filenames:
+        import_progress_dialog = QtWidgets.QProgressDialog(
+            "Importing Activities", "Cancel", 0, len(filenames), self
+        )
+        import_progress_dialog.setWindowModality(Qt.WindowModal)
+        for completed, filename in enumerate(filenames):
+            import_progress_dialog.setValue(completed)
             self.add_activity(load_activity.import_and_load(filename))
+            if import_progress_dialog.wasCanceled():
+                break
+        else:
+            import_progress_dialog.setValue(len(filenames))
         self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
 
