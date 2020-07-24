@@ -371,9 +371,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.activity.sport in activity_types.ZONES
                 else activity_types.ZONES[None]
             )
-            print(zones)
             zones = [self.unit_system.decode(x, "speed") for x in zones]
-            print(zones)
             self.zones_chart.set_zones(zones)
             self.zones_chart.update(self.activity.track.get_zone_durations(zones))
         elif page == 4:
