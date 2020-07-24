@@ -20,7 +20,6 @@ import settings
 import times
 import units
 
-
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
 TYPE_FLAGS = collections.defaultdict(tuple)
 TYPE_FLAGS.update(activity_types.FLAGS)

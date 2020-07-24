@@ -3,21 +3,20 @@ Defines the activity list, which contains all of the user's real data.
 
 This is where computation of summary values should be done.
 """
-from dataclasses import dataclass
 import datetime
 import pickle
+from dataclasses import dataclass
 
 import activity
+import files
 import times
 import units
-
-SAVE_FILE = "activity_list.pickle"
 
 
 def from_disk():
     """Load an activity list from disk, if it exists."""
     try:
-        with open(SAVE_FILE, "rb") as f:
+        with open(files.SAVE, "rb") as f:
             return ActivityList(pickle.load(f))
     except FileNotFoundError:
         return ActivityList([])
@@ -36,7 +35,7 @@ class UnloadedActivity:
 
     def load(self) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""
-        with open(f"{activity.DATA_DIR}/{self.activity_id}.pickle", "rb") as f:
+        with open(f"{files.ACTIVITIES}/{self.activity_id}.pickle", "rb") as f:
             data = pickle.load(f)
         return activity.Activity(*data)
 
@@ -72,7 +71,7 @@ class ActivityList(list):
 
         This only stores the list data, not the actual activities.
         """
-        with open(SAVE_FILE, "wb") as f:
+        with open(files.SAVE, "wb") as f:
             pickle.dump(self[:], f)
 
     def add_activity(self, new_activity):

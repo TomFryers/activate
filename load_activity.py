@@ -9,8 +9,6 @@ import load_fit
 import load_gpx
 import track
 
-TRACK_DIR = "originals"
-
 ACTIVITY_TYPE_NAMES = {
     "running": "Run",
     "cycling": "Ride",
@@ -53,7 +51,7 @@ def load(filename) -> tuple:
 def import_and_load(filename) -> activity.Activity:
     """Import an activity and copy it into the originals directory."""
     filename = pathlib.Path(filename)
-    filenames = glob.glob(f"{TRACK_DIR}/*")
-    out_name = files.encode_name(filename.name, filenames, TRACK_DIR)
+    filenames = glob.glob(f"{files.TRACKS}*")
+    out_name = files.encode_name(filename.name, filenames, files.TRACKS)
     shutil.copy2(filename, out_name)
     return activity.from_track(*load(str(out_name)), str(out_name))

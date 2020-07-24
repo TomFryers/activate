@@ -1,5 +1,11 @@
 """Functions for manipulating files."""
 
+DATA = "data/"
+ACTIVITIES = DATA + "activities/"
+TRACKS = DATA + "originals/"
+SAVE = DATA + "activity_list.pickle"
+SETTINGS = DATA + "settings.pickle"
+
 
 def has_extension(filename, extension) -> bool:
     """Determine if a file path has a given extension."""
@@ -17,14 +23,14 @@ def encode_name(filename, current_filenames, directory):
     """
     # No-underscore, unique filename
     if filename[0] != "_":
-        full_name = f"{directory}/{filename}"
+        full_name = f"{directory}{filename}"
         if full_name not in current_filenames:
             return full_name
 
     # Others
     i = 0
     while True:
-        full_name = f"{directory}/_{i}_{filename}"
+        full_name = f"{directory}_{i}_{filename}"
         i += 1
         if full_name not in current_filenames:
             return full_name
