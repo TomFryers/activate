@@ -2,7 +2,7 @@ import pathlib
 
 import fitparse
 
-import files
+from activate.core import files
 
 CONVERSION_FACTOR = 180 / 2 ** 31
 FIELDS = {

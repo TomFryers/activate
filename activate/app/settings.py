@@ -2,8 +2,7 @@
 import dataclasses
 import pickle
 
-import files
-import units
+from activate.core import files, units
 
 
 def load_settings():

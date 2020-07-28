@@ -7,8 +7,7 @@ import PyQt5
 from PyQt5 import QtChart
 from PyQt5.QtCore import Qt
 
-import number_formats
-import units
+from activate.core import number_formats, units
 
 
 def axis_number_format(axis):

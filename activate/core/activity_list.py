@@ -7,10 +7,7 @@ import datetime
 import pickle
 from dataclasses import dataclass
 
-import activity
-import files
-import times
-import units
+from activate.core import activity, files, times, units
 
 
 def from_disk():

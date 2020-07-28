@@ -2,9 +2,8 @@ import pickle
 import random
 import shutil
 
-import activity_list
-import files
-from units import DimensionValue
+from activate.core import activity_list, files
+from activate.core.units import DimensionValue
 
 
 def from_track(name, sport, track, filename):
@@ -106,7 +105,7 @@ class Activity:
         )
 
     def save(self):
-        with open(f"{files.ACTIVITIES}/{self.activity_id}.pickle", "wb") as f:
+        with open(f"{files.ACTIVITIES}{self.activity_id}.pickle", "wb") as f:
             pickle.dump(self.save_data, f)
 
     def export_original(self, filename):

@@ -1,5 +1,5 @@
 """Define various activity type constants."""
-import units
+from activate.core import units
 
 MARATHON = 42195
 SPECIAL_DISTANCES = {

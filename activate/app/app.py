@@ -10,15 +10,16 @@ import pyqtlet
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
-import activity_list
-import activity_types
-import charts
-import files
-import load_activity
-import number_formats
-import settings
-import times
-import units
+from activate.app import charts, settings
+from activate.core import (
+    activity_list,
+    activity_types,
+    files,
+    load_activity,
+    number_formats,
+    times,
+    units,
+)
 
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
 TYPE_FLAGS = collections.defaultdict(tuple)
@@ -39,7 +40,7 @@ def default_map_location(route):
 class SettingsDialog(QtWidgets.QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        PyQt5.uic.loadUi("settings.ui", self)
+        PyQt5.uic.loadUi("activate/app/settings.ui", self)
 
     def load_from_settings(self, current_settings: settings.Settings):
         """Load a settings object to the UI widgets."""
@@ -62,7 +63,7 @@ class SettingsDialog(QtWidgets.QDialog):
 class EditActivityDialog(QtWidgets.QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        PyQt5.uic.loadUi("edit_activity.ui", self)
+        PyQt5.uic.loadUi("activate/app/edit_activity.ui", self)
         self.type_edit.addItems(activity_types.TYPES)
         self.delete_activity_button.setIcon(PyQt5.QtGui.QIcon.fromTheme("edit-delete"))
 
@@ -123,7 +124,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activities = activities
         super(MainWindow, self).__init__(*args, **kwargs)
 
-        PyQt5.uic.loadUi("main.ui", self)
+        PyQt5.uic.loadUi("activate/app/main.ui", self)
         self.updated = set()
 
         self.settings = settings.load_settings()

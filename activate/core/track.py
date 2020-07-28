@@ -3,8 +3,8 @@ import datetime
 import math
 from functools import cached_property, lru_cache
 
-import times
-from units import DimensionValue
+from activate.core import times
+from activate.core.units import DimensionValue
 
 EARTH_RADIUS = 6378137
 E_2 = 0.00669437999014

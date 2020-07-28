@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="main_tabs">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="summary_tab">
        <attribute name="title">
@@ -296,7 +296,7 @@
         <item>
          <widget class="QTabWidget" name="activity_tabs">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="overview_tab">
            <attribute name="title">
@@ -672,14 +672,14 @@
 #include &lt;QtCharts/chartsnamespace.h</header>
   </customwidget>
   <customwidget>
-   <class>Table</class>
-   <extends>QTableWidget</extends>
-   <header>tables.h</header>
-  </customwidget>
-  <customwidget>
    <class>ActivityListTable</class>
    <extends>QTableWidget</extends>
-   <header>tables.h</header>
+   <header>activate/app/tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Table</class>
+   <extends>QTableWidget</extends>
+   <header>activate/app/tables.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -3,11 +3,7 @@ import glob
 import pathlib
 import shutil
 
-import activity
-import files
-import load_fit
-import load_gpx
-import track
+from activate.core import activity, files, track, filetypes
 
 ACTIVITY_TYPE_NAMES = {
     "running": "Run",
@@ -41,9 +37,9 @@ def convert_activity_type(activity_type: str, name) -> str:
 def load(filename) -> tuple:
     """Get a (name, sport, Track) tuple by loading from a file."""
     if files.has_extension(filename, "gpx"):
-        data = load_gpx.load_gpx(filename)
+        data = filetypes.gpx.load_gpx(filename)
     elif files.has_extension(filename, "fit"):
-        data = load_fit.load_fit(filename)
+        data = filetypes.fit.load_fit(filename)
 
     return (data[0], convert_activity_type(data[1], data[0]), track.Track(data[2]))
 
