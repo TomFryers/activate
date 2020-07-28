@@ -10,9 +10,8 @@ import pyqtlet
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
-from activate.app import charts, settings
+from activate.app import activity_list, charts, paths, settings
 from activate.core import (
-    activity_list,
     activity_types,
     files,
     load_activity,
@@ -125,6 +124,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         PyQt5.uic.loadUi("activate/app/main.ui", self)
+        paths.ensure_all_present()
         self.updated = set()
 
         self.settings = settings.load_settings()
@@ -228,7 +228,7 @@ class MainWindow(QtWidgets.QMainWindow):
             ):
                 self.assign_activity_items(
                     self.activity.activity_id,
-                    self.activity.create_unloaded().list_row,
+                    self.activity.unload(activity_list.UnloadedActivity).list_row,
                     row,
                 )
                 break
@@ -292,7 +292,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_activity(self, new_activity, position=0):
         """Add an activity to list."""
         activity_id = new_activity.activity_id
-        activity_elements = new_activity.create_unloaded().list_row
+        activity_elements = new_activity.unload(activity_list.UnloadedActivity).list_row
         self.activity_list_table.insertRow(position)
         self.activities.add_activity(new_activity)
         self.assign_activity_items(activity_id, activity_elements, position)
@@ -426,7 +426,7 @@ class MainWindow(QtWidgets.QMainWindow):
         import_progress_dialog.setWindowModality(Qt.WindowModal)
         for completed, filename in enumerate(filenames):
             import_progress_dialog.setValue(completed)
-            self.add_activity(load_activity.import_and_load(filename))
+            self.add_activity(load_activity.import_and_load(filename, paths.TRACKS))
             if import_progress_dialog.wasCanceled():
                 break
         else:

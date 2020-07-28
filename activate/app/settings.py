@@ -2,13 +2,14 @@
 import dataclasses
 import pickle
 
-from activate.core import files, units
+from activate.app import paths
+from activate.core import units
 
 
 def load_settings():
     """Load settings from a configuration file."""
     try:
-        with open(files.SETTINGS, "rb") as f:
+        with open(paths.SETTINGS, "rb") as f:
             return pickle.load(f)
     except FileNotFoundError:
         return Settings(unit_system=units.DEFAULT)
@@ -22,5 +23,5 @@ class Settings:
 
     def save(self):
         """Save settings to a configuration file."""
-        with open(files.SETTINGS, "wb") as f:
+        with open(paths.SETTINGS, "wb") as f:
             pickle.dump(self, f)

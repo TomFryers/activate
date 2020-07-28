@@ -2,7 +2,6 @@ import pickle
 import random
 import shutil
 
-from activate.core import activity_list, files
 from activate.core.units import DimensionValue
 
 
@@ -78,8 +77,8 @@ class Activity:
     def active_flags(self):
         return [k for k, v in self.flags.items() if v]
 
-    def create_unloaded(self):
-        return activity_list.UnloadedActivity(
+    def unload(self, unloaded_class):
+        return unloaded_class(
             self.name,
             self.sport,
             self.flags,
@@ -104,8 +103,8 @@ class Activity:
             self.description,
         )
 
-    def save(self):
-        with open(f"{files.ACTIVITIES}{self.activity_id}.pickle", "wb") as f:
+    def save(self, path):
+        with open(f"{path}{self.activity_id}.pickle", "wb") as f:
             pickle.dump(self.save_data, f)
 
     def export_original(self, filename):

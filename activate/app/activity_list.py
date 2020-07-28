@@ -7,13 +7,14 @@ import datetime
 import pickle
 from dataclasses import dataclass
 
-from activate.core import activity, files, times, units
+from activate.app import paths
+from activate.core import activity, times, units
 
 
 def from_disk():
     """Load an activity list from disk, if it exists."""
     try:
-        with open(files.SAVE, "rb") as f:
+        with open(paths.SAVE, "rb") as f:
             return ActivityList(pickle.load(f))
     except FileNotFoundError:
         return ActivityList([])
@@ -32,7 +33,7 @@ class UnloadedActivity:
 
     def load(self) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""
-        with open(f"{files.ACTIVITIES}/{self.activity_id}.pickle", "rb") as f:
+        with open(f"{paths.ACTIVITIES}/{self.activity_id}.pickle", "rb") as f:
             data = pickle.load(f)
         return activity.Activity(*data)
 
@@ -68,7 +69,7 @@ class ActivityList(list):
 
         This only stores the list data, not the actual activities.
         """
-        with open(files.SAVE, "wb") as f:
+        with open(paths.SAVE, "wb") as f:
             pickle.dump(self[:], f)
 
     def add_activity(self, new_activity):
@@ -78,14 +79,14 @@ class ActivityList(list):
         Also saves the activity to disk.
         """
         self._activities[new_activity.activity_id] = new_activity
-        self.append(new_activity.create_unloaded())
-        new_activity.save()
+        self.append(new_activity.unload(UnloadedActivity))
+        new_activity.save(paths.ACTIVITIES)
 
     def update(self, activity_id):
         """Regenerate an unloaded activity from its loaded version."""
         for i, unloaded_activity in enumerate(self):
             if unloaded_activity.activity_id == activity_id:
-                self[i] = self._activities[activity_id].create_unloaded()
+                self[i] = self._activities[activity_id].unload(UnloadedActivity)
                 break
 
     def remove(self, activity_id):

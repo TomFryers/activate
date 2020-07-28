@@ -1,11 +1,5 @@
 """Functions for manipulating files."""
 
-DATA = "data/"
-ACTIVITIES = DATA + "activities/"
-TRACKS = DATA + "originals/"
-SAVE = DATA + "activity_list.pickle"
-SETTINGS = DATA + "settings.pickle"
-
 
 def has_extension(filename, extension) -> bool:
     """Determine if a file path has a given extension."""
