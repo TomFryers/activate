@@ -1,1 +1,1 @@
-from . import gpx, fit
+from . import fit, gpx

@@ -3,7 +3,7 @@ import glob
 import pathlib
 import shutil
 
-from activate.core import activity, files, track, filetypes
+from activate.core import activity, files, filetypes, track
 
 ACTIVITY_TYPE_NAMES = {
     "running": "Run",
