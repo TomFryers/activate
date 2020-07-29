@@ -421,7 +421,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.summary_tab_switch()
         elif self.main_tabs.tabText(tab) == "Activities":
             if not self.activity_list_table.selectedItems():
-                self.activity_list_table.setCurrentCell(0, 0)
+                self.activity_list_table.selectRow(0)
         else:
             raise ValueError("Invalid tab")
 
