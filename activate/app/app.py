@@ -28,11 +28,11 @@ DELETE_ACTIVITY = 222  # 0xDE[lete]
 NOW = datetime.datetime.now()
 
 
-def default_map_location(route):
-    """Calculate the mean position for centering the map."""
+def get_bounds(route):
+    """Find the area of the map"""
     return [
-        (min(p[component] for p in route) + max(p[component] for p in route)) / 2
-        for component in range(2)
+        [min(p[0] for p in route), min(p[1] for p in route)],
+        [max(p[0] for p in route), max(p[1] for p in route)],
     ]
 
 
@@ -238,7 +238,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def show_on_map(self, route: list):
         """Display a list of points on the map."""
-        self.map.setView(default_map_location(route))
+        self.map.fitBounds(get_bounds(route))
         try:
             self.map.removeLayer(self.route_line)
             self.map.removeLayer(self.start_icon)
