@@ -11,7 +11,7 @@ def get_bounds(route):
     ]
 
 
-DEFAULT_POS = [51, -1]
+DEFAULT_POS = [53, -1]
 
 
 def call_js_method(obj, method, *params) -> None:
@@ -35,7 +35,7 @@ class Map(pyqtlet.MapWidget):
         parent.addWidget(self)
         self.setContextMenuPolicy(Qt.NoContextMenu)
         self.map = L.map(self, {"attributionControl": False})
-        self.map.setView(DEFAULT_POS, 14)
+        self.map.setView(DEFAULT_POS, 6)
         L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(self.map)
 
 
