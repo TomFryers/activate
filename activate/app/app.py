@@ -30,7 +30,7 @@ NOW = datetime.datetime.now()
 class SettingsDialog(QtWidgets.QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        PyQt5.uic.loadUi("activate/app/settings.ui", self)
+        PyQt5.uic.loadUi("resources/ui/settings.ui", self)
 
     def load_from_settings(self, current_settings: settings.Settings):
         """Load a settings object to the UI widgets."""
@@ -53,7 +53,7 @@ class SettingsDialog(QtWidgets.QDialog):
 class EditActivityDialog(QtWidgets.QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        PyQt5.uic.loadUi("activate/app/edit_activity.ui", self)
+        PyQt5.uic.loadUi("resources/ui/edit_activity.ui", self)
         self.type_edit.addItems(activity_types.TYPES)
         self.delete_activity_button.setIcon(PyQt5.QtGui.QIcon.fromTheme("edit-delete"))
 
@@ -114,7 +114,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activities = activities
         super(MainWindow, self).__init__(*args, **kwargs)
 
-        PyQt5.uic.loadUi("activate/app/main.ui", self)
+        PyQt5.uic.loadUi("resources/ui/main.ui", self)
         paths.ensure_all_present()
         self.updated = set()
 
@@ -555,7 +555,7 @@ class MainWindow(QtWidgets.QMainWindow):
 def main():
     """Run the app and display the main window."""
     app = QtWidgets.QApplication(sys.argv)
-    app.setWindowIcon(PyQt5.QtGui.QIcon("icon.png"))
+    app.setWindowIcon(PyQt5.QtGui.QIcon("resources/icons/icon.png"))
     main_window = MainWindow(activity_list.from_disk())
 
     main_window.show()
