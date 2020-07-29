@@ -97,7 +97,7 @@ class EditActivityDialog(QtWidgets.QDialog):
                 self.flag_list.item(i).checkState() == Qt.Checked
             )
 
-        self.activity.save()
+        self.activity.save(paths.ACTIVITIES)
 
     def handle_delete_button(self):
         confirm_box = QtWidgets.QMessageBox()
