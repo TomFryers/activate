@@ -10,6 +10,7 @@ SAVE = DATA + "activity_list.pickle"
 SETTINGS = (
     QStandardPaths.writableLocation(QStandardPaths.ConfigLocation) + "/activate.pickle"
 )
+HOME = QStandardPaths.writableLocation(QStandardPaths.HomeLocation) + "/"
 
 
 def ensure_exists(path):

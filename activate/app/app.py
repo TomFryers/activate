@@ -375,10 +375,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # [1] gives file type chosen ("Activity Files (...)",
         # "All Files" etc.)
         filenames = QtWidgets.QFileDialog.getOpenFileNames(
-            self,
-            "Import an activity",
-            PyQt5.QtCore.QDir.homePath(),
-            "Activity Files (*.gpx *.fit)",
+            self, "Import an activity", paths.HOME, "Activity Files (*.gpx *.fit)",
         )[0]
         if not filenames:
             return
@@ -406,10 +403,7 @@ class MainWindow(QtWidgets.QMainWindow):
             file_type = ""
         out_name = files.decode_name(self.activity.original_name)
         filename = QtWidgets.QFileDialog.getSaveFileName(
-            self,
-            "Export Original Activity",
-            f"{PyQt5.QtCore.QDir.homePath()}/{out_name}",
-            file_type,
+            self, "Export Original Activity", f"{paths.HOME}/{out_name}", file_type,
         )[0]
 
         if not filename:
