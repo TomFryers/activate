@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg1114"
+   version="1.1"
+   viewBox="0 0 16 16"
+   height="16mm"
+   width="16mm">
+  <defs
+     id="defs1108" />
+  <metadata
+     id="metadata1111">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="display:inline"
+     id="layer1">
+    <path
+       id="path1677"
+       style="mix-blend-mode:normal;fill:#802091;fill-opacity:1;stroke-width:36.3809;stroke-linecap:square;stroke-linejoin:round"
+       d="M 45.353516,7.5585938 A 15.11811,22.677167 0 0 0 30.236328,30.236328 15.11811,22.677167 0 0 0 45.353516,52.914062 15.11811,22.677167 0 0 0 60.472656,30.236328 15.11811,22.677167 0 0 0 45.353516,7.5585938 Z m 0,3.7792972 a 7.5590551,7.5590551 0 0 1 7.560546,7.560547 7.5590551,7.5590551 0 0 1 -7.560546,7.558593 7.5590551,7.5590551 0 0 1 -7.558594,-7.558593 7.5590551,7.5590551 0 0 1 7.558594,-7.560547 z m -0.08203,22.677734 a 7.559055,7.559055 0 0 1 0.08203,0 7.559055,7.559055 0 0 1 7.560546,7.558594 7.559055,7.559055 0 0 1 -7.560546,7.560547 7.559055,7.559055 0 0 1 -7.558594,-7.560547 7.559055,7.559055 0 0 1 7.476562,-7.558594 z"
+       transform="scale(0.26458333)" />
+    <path
+       id="path1677-7"
+       style="fill:#802090;fill-opacity:1;stroke-width:36.3809;stroke-linecap:square;stroke-linejoin:round"
+       d="M 15.117188,7.5585938 A 15.11811,22.677167 0 0 0 0,30.236328 15.11811,22.677167 0 0 0 0.69726562,37.039062 15.11811,15.11811 0 0 1 15.117188,26.457031 7.5590551,7.5590551 0 0 1 7.5585938,18.898438 a 7.5590551,7.5590551 0 0 1 7.5585942,-7.560547 7.5590551,7.5590551 0 0 1 7.560546,7.560547 7.5590551,7.5590551 0 0 1 -7.560546,7.558593 15.11811,15.11811 0 0 1 14.421874,10.582031 15.11811,22.677167 0 0 0 0.697266,-6.802734 15.11811,22.677167 0 0 0 -15.11914,-22.6777342 z"
+       transform="scale(0.26458333)" />
+  </g>
+</svg>

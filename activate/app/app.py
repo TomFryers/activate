@@ -555,6 +555,7 @@ class MainWindow(QtWidgets.QMainWindow):
 def main():
     """Run the app and display the main window."""
     app = QtWidgets.QApplication(sys.argv)
+    app.setWindowIcon(PyQt5.QtGui.QIcon("icon.png"))
     main_window = MainWindow(activity_list.from_disk())
 
     main_window.show()
