@@ -6,11 +6,10 @@ import sys
 import markdown
 import PyQt5
 import PyQt5.uic
-import pyqtlet
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
-from activate.app import activity_list, charts, paths, settings
+from activate.app import activity_list, charts, maps, paths, settings
 from activate.core import (
     activity_types,
     files,
@@ -26,14 +25,6 @@ TYPE_FLAGS.update(activity_types.FLAGS)
 DELETE_ACTIVITY = 222  # 0xDE[lete]
 
 NOW = datetime.datetime.now()
-
-
-def get_bounds(route):
-    """Find the area of the map"""
-    return [
-        [min(p[0] for p in route), min(p[1] for p in route)],
-        [max(p[0] for p in route), max(p[1] for p in route)],
-    ]
 
 
 class SettingsDialog(QtWidgets.QDialog):
@@ -136,13 +127,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.update_activity_list()
 
-        # Set up map
-        self.map_widget = pyqtlet.MapWidget()
-        self.map_widget.setContextMenuPolicy(Qt.NoContextMenu)
-        self.map = pyqtlet.L.map(self.map_widget, {"attributionControl": False})
-        self.map_container.addWidget(self.map_widget)
-        self.map.setView([51, -1], 14)
-        pyqtlet.L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(self.map)
+        self.map_widget = maps.RouteMap(self.map_container)
 
         # Set activity list heading resize modes
         header = self.activity_list_table.horizontalHeader()
@@ -236,28 +221,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_activity(row)
         self.activity_list_table.setSortingEnabled(True)
 
-    def show_on_map(self, route: list):
-        """Display a list of points on the map."""
-        self.map.fitBounds(get_bounds(route))
-        try:
-            self.map.removeLayer(self.route_line)
-            self.map.removeLayer(self.start_icon)
-            self.map.removeLayer(self.finish_icon)
-        except AttributeError:
-            pass
-        self.route_line = pyqtlet.L.polyline(
-            route, {"smoothFactor": 0, "color": "#802090"}
-        )
-        self.start_icon = pyqtlet.L.circleMarker(
-            route[0], {"radius": 8, "color": "#10b020"}
-        )
-        self.finish_icon = pyqtlet.L.circleMarker(
-            route[-1], {"radius": 8, "color": "#e00000"}
-        )
-        self.start_icon.addTo(self.map)
-        self.finish_icon.addTo(self.map)
-        self.route_line.addTo(self.map)
-
     def add_info(self, info: dict):
         """
         Add data to the table widget on the right.
@@ -335,7 +298,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.date_time_label.setText(times.nice(self.activity.start_time))
             self.activity_type_label.setText(self.activity.sport)
             self.add_info(self.activity.stats)
-            self.show_on_map(self.activity.track.lat_lon_list)
+            self.map_widget.show(self.activity.track.lat_lon_list)
         elif page == 1:
             # Update charts
             if self.activity.track.has_altitude_data:
