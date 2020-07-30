@@ -14,9 +14,11 @@ HOME = QStandardPaths.writableLocation(QStandardPaths.HomeLocation) + "/"
 
 
 def ensure_exists(path):
+    """Create a directory if it doesn't already exist."""
     pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
 
 def ensure_all_present():
+    """Create all the required directories."""
     for path in (ACTIVITIES, TRACKS):
         ensure_exists(path)

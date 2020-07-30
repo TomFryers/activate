@@ -98,6 +98,14 @@ class Table(QtWidgets.QTableWidget):
 
 class ValueColumnTable(QtWidgets.QTableWidget):
     def lock_column_count(self):
+        """
+        Disable the setColumnCount method.
+
+        Use the unlock_column_count method to re-enable it. This method
+        is useful because PyQt5.uic calls setColumnCount on objects
+        after they are created.
+        """
+
         self.oldSetColumnCount = self.setColumnCount
         self.setColumnCount = lambda x: None
 
