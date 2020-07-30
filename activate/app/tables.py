@@ -207,3 +207,29 @@ class CurveTable(ValueColumnTable):
         self.setRowCount(len(table))
         for index, row in enumerate(table):
             self.set_row(good_distance_names[index : index + 1] + list(row[1:]), index)
+
+
+class InfoTable(Table):
+    """
+    The table widget on the right.
+
+    This is used for distance, climb, duration etc.
+    """
+
+    def update_data(self, info: dict):
+        self.setRowCount(len(info))
+        for row, (field, value) in enumerate(info.items()):
+            self.set_item(row, 0, field)
+            self.set_item(
+                row,
+                1,
+                value,
+                number_formats.info_format(field),
+                align=Qt.AlignRight | Qt.AlignVCenter,
+            )
+            self.set_item(
+                row,
+                2,
+                self.unit_system.units[value.dimension].symbol,
+                align=Qt.AlignLeft | Qt.AlignVCenter,
+            )

@@ -122,29 +122,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_activity(row)
         self.activity_list_table.setSortingEnabled(True)
 
-    def add_info(self, info: dict):
-        """
-        Add data to the table widget on the right.
-
-        This is used for distance, climb, duration etc.
-        """
-        self.info_table.setRowCount(len(info))
-        for i, (k, v) in enumerate(info.items()):
-            self.info_table.set_item(i, 0, k)
-            self.info_table.set_item(
-                i,
-                1,
-                v,
-                number_formats.info_format(k),
-                align=Qt.AlignRight | Qt.AlignVCenter,
-            )
-            self.info_table.set_item(
-                i,
-                2,
-                self.unit_system.units[v.dimension].symbol,
-                align=Qt.AlignLeft | Qt.AlignVCenter,
-            )
-
     def update_activity_list(self):
         """Make the activity list show the correct activities."""
         self.activity_list_table.setRowCount(len(self.activities))
@@ -185,7 +162,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.description_label.setText(markdown.markdown(self.activity.description))
             self.date_time_label.setText(times.nice(self.activity.start_time))
             self.activity_type_label.setText(self.activity.sport)
-            self.add_info(self.activity.stats)
+            self.info_table.update_data(self.activity.stats)
             self.map_widget.show(self.activity.track.lat_lon_list)
         elif page == 1:
             # Update charts
