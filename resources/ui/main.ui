@@ -17,9 +17,6 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QTabWidget" name="main_tabs">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
       <widget class="QWidget" name="summary_tab">
        <attribute name="title">
         <string>Summary</string>
@@ -266,38 +263,12 @@
             <property name="cornerButtonEnabled">
              <bool>false</bool>
             </property>
-            <property name="columnCount">
-             <number>4</number>
-            </property>
-            <column>
-             <property name="text">
-              <string>Name</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Type</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Start Time</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Distance</string>
-             </property>
-            </column>
            </widget>
           </item>
          </layout>
         </item>
         <item>
          <widget class="QTabWidget" name="activity_tabs">
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
           <widget class="QWidget" name="overview_tab">
            <attribute name="title">
             <string>Overview</string>
@@ -464,7 +435,7 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="Table" name="split_table">
+             <widget class="SplitTable" name="split_table">
               <property name="minimumSize">
                <size>
                 <width>210</width>
@@ -483,45 +454,12 @@
               <property name="sortingEnabled">
                <bool>true</bool>
               </property>
-              <property name="columnCount">
-               <number>6</number>
-              </property>
               <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                <bool>true</bool>
               </attribute>
               <attribute name="verticalHeaderVisible">
                <bool>false</bool>
               </attribute>
-              <column>
-               <property name="text">
-                <string>Number</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Time</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Split</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Speed</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Net Climb</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Ascent</string>
-               </property>
-              </column>
              </widget>
             </item>
            </layout>
@@ -545,7 +483,7 @@
              <widget class="QtCharts::QChartView" name="curve_graph"/>
             </item>
             <item>
-             <widget class="Table" name="curve_table">
+             <widget class="CurveTable" name="curve_table">
               <property name="maximumSize">
                <size>
                 <width>215</width>
@@ -567,21 +505,6 @@
               <attribute name="verticalHeaderVisible">
                <bool>false</bool>
               </attribute>
-              <column>
-               <property name="text">
-                <string>Distance</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Time</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Speed</string>
-               </property>
-              </column>
              </widget>
             </item>
            </layout>
@@ -678,6 +601,16 @@
   </customwidget>
   <customwidget>
    <class>Table</class>
+   <extends>QTableWidget</extends>
+   <header>activate/app/tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SplitTable</class>
+   <extends>QTableWidget</extends>
+   <header>activate/app/tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CurveTable</class>
    <extends>QTableWidget</extends>
    <header>activate/app/tables.h</header>
   </customwidget>

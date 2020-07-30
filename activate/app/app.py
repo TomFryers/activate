@@ -129,17 +129,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.map_widget = maps.RouteMap(self.map_container)
 
-        # Set activity list heading resize modes
-        header = self.activity_list_table.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-
-        # Disable resizing in activity list
-        self.activity_list_table.resize_to_contents("v")
-        self.split_table.resize_to_contents("h")
-
         # Set up activity types list for the summary page
         self.do_not_recurse = True
         self.activity_types_list.addItems(["All"] + list(activity_types.TYPES))
@@ -267,24 +256,11 @@ class MainWindow(QtWidgets.QMainWindow):
         Assigns values to a row, formatting (value, dimension) tuples
         properly.
         """
-        formats = [
-            number_formats.list_format(self.activity_list_table.get_heading(j))
-            for j in range(len(activity_elements))
-        ]
-        self.activity_list_table.set_row(activity_id, activity_elements, row, formats)
+        self.activity_list_table.set_id_row(activity_id, activity_elements, row)
 
     def update_splits(self, data):
         """Update the activity splits page."""
-        self.split_table.setRowCount(len(data))
-        for y, row in enumerate(data):
-            row_data = [y + 1] + row
-            formats = [
-                number_formats.split_format(self.split_table.get_heading(x))
-                for x in range(len(row_data))
-            ]
-            self.split_table.set_row(
-                row_data, y, formats, alignments=Qt.AlignRight | Qt.AlignVCenter
-            )
+        self.split_table.update_data(data)
 
     def update_page(self, page):
         """Switch to a new activity tab page."""
@@ -345,19 +321,7 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             table, graph = self.activity.track.get_curve(good_distances)
             self.curve_chart.update([graph])
-            for index, row in enumerate(table):
-                self.curve_table.setRowCount(len(table))
-                self.curve_table.set_row(
-                    row,
-                    index,
-                    (
-                        lambda x: good_distances[
-                            round(self.unit_system.decode(x, "distance"), 8)
-                        ],
-                        times.to_string,
-                        lambda x: str(round(x, 1)),
-                    ),
-                )
+            self.curve_table.update_data(list(good_distances.values()), table)
         self.updated.add(page)
 
     def update_activity(self, selected):

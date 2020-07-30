@@ -2,7 +2,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
-from activate.core import units
+from activate.core import number_formats, times, units
 
 
 def iterablise(obj):
@@ -88,6 +88,7 @@ class Table(QtWidgets.QTableWidget):
         ):
             self.set_item(position, column, value, format, align)
 
+    @property
     def headings(self):
         return [self.get_heading(i) for i in range(self.columnCount())]
 
@@ -95,14 +96,106 @@ class Table(QtWidgets.QTableWidget):
         return self.horizontalHeaderItem(index).text()
 
 
-class ActivityListTable(Table):
+class ValueColumnTable(QtWidgets.QTableWidget):
+    def lock_column_count(self):
+        self.oldSetColumnCount = self.setColumnCount
+        self.setColumnCount = lambda x: None
+
+    def unlock_column_count(self):
+        self.setColumnCount = self.oldSetColumnCount
+
+    def resize_to_contents(self, vertical=False):
+        if vertical:
+            header = self.verticalHeader()
+        else:
+            header = self.horizontalHeader()
+        header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+
+    def define_columns(self, names, format_functions=None, alignments=None):
+        self.setColumnCount(len(names))
+        self.setHorizontalHeaderLabels(names)
+        if format_functions is None:
+            self.format_functions = [None for _ in names]
+        else:
+            self.format_functions = format_functions
+        if alignments is None:
+            self.alignments = [None for _ in names]
+        else:
+            self.alignments = alignments
+
+    def set_item(self, row, column, value):
+        self.setItem(
+            row,
+            column,
+            create_table_item(
+                value,
+                self.format_functions[column],
+                self.unit_system,
+                self.alignments[column],
+            ),
+        )
+
+    def set_row(self, values, position):
+        for column, value in enumerate(values):
+            self.set_item(position, column, value)
+
+
+class SplitTable(ValueColumnTable):
+    headings = ["Number", "Time", "Split", "Speed", "Net Climb", "Ascent"]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.define_columns(
+            self.headings,
+            [number_formats.split_format(h) for h in self.headings],
+            alignments=[Qt.AlignRight | Qt.AlignVCenter for _ in self.headings],
+        )
+
+        self.resize_to_contents()
+        self.lock_column_count()
+
+    def update_data(self, data):
+        self.setRowCount(len(data))
+        for y, row in enumerate(data):
+            row_data = [y + 1] + row
+            self.set_row(row_data, y)
+
+
+class ActivityListTable(ValueColumnTable):
+    headings = ["Name", "Type", "Start Time", "Distance"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.insertRow(0)
+        self.define_columns(
+            self.headings, [number_formats.list_format(h) for h in self.headings],
+        )
+        self.resize_to_contents()
+        self.resize_to_contents(vertical=True)
+        self.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        self.lock_column_count()
 
     @property
     def current_activity_id(self):
         return self.selectedItems()[0].activity_id
 
-    def set_row(self, activity_id, values, position, formats=None, alignments=None):
-        super().set_row(values, position, formats, alignments)
+    def set_id_row(self, activity_id, values, position):
+        self.set_row(values, position)
         self.item(position, 0).activity_id = activity_id
+
+
+class CurveTable(ValueColumnTable):
+    headings = ["Distance", "Time", "Speed"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.define_columns(
+            self.headings, [lambda x: x, times.to_string, lambda x: str(round(x, 1)),],
+        )
+        self.lock_column_count()
+        self.resize_to_contents()
+
+    def update_data(self, good_distance_names, table):
+        self.setRowCount(len(table))
+        for index, row in enumerate(table):
+            self.set_row(good_distance_names[index : index + 1] + list(row[1:]), index)
