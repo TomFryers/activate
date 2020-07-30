@@ -112,7 +112,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
                 == self.activity
             ):
-                self.assign_activity_items(
+                self.activity_list_table.set_id_row(
                     self.activity.activity_id,
                     self.activity.unload(activity_list.UnloadedActivity).list_row,
                     row,
@@ -126,26 +126,18 @@ class MainWindow(QtWidgets.QMainWindow):
         """Make the activity list show the correct activities."""
         self.activity_list_table.setRowCount(len(self.activities))
         for i, activity in enumerate(self.activities):
-            self.assign_activity_items(activity.activity_id, activity.list_row, row=i)
+            self.activity_list_table.set_id_row(
+                activity.activity_id, activity.list_row, i
+            )
         self.activity_list_table.resizeColumnsToContents()
-        self.activity_list_table.sortItems(2, Qt.DescendingOrder)
+        self.activity_list_table.default_sort()
 
     def add_activity(self, new_activity, position=0):
         """Add an activity to list."""
         activity_id = new_activity.activity_id
         activity_elements = new_activity.unload(activity_list.UnloadedActivity).list_row
-        self.activity_list_table.insertRow(position)
         self.activities.add_activity(new_activity)
-        self.assign_activity_items(activity_id, activity_elements, position)
-
-    def assign_activity_items(self, activity_id, activity_elements, row=0):
-        """
-        Set the items in the given activity list row to specific values.
-
-        Assigns values to a row, formatting (value, dimension) tuples
-        properly.
-        """
-        self.activity_list_table.set_id_row(activity_id, activity_elements, row)
+        self.activity_list_table.add_id_row(activity_id, activity_elements, position)
 
     def update_splits(self, data):
         """Update the activity splits page."""

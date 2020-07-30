@@ -188,8 +188,20 @@ class ActivityListTable(ValueColumnTable):
         return self.selectedItems()[0].activity_id
 
     def set_id_row(self, activity_id, values, position):
+        """
+        Set the items in the given activity list row to specific values.
+
+        Assigns activity_id to the item in column zero in the new_row.
+        """
         self.set_row(values, position)
         self.item(position, 0).activity_id = activity_id
+
+    def add_id_row(self, activity_id, values, position):
+        self.insertRow(position)
+        self.set_id_row(activity_id, values, position)
+
+    def default_sort(self):
+        self.sortItems(2, Qt.DescendingOrder)
 
 
 class CurveTable(ValueColumnTable):
