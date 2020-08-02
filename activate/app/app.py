@@ -8,7 +8,7 @@ import PyQt5.uic
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
-from activate.app import activity_list, charts, dialogs, maps, paths, settings, tables
+from activate.app import activity_list, charts, dialogs, maps, paths, settings
 from activate.core import (
     activity_types,
     files,
