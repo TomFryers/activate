@@ -8,7 +8,7 @@ import PyQt5.uic
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
-from activate.app import activity_list, charts, dialogs, maps, paths, settings
+from activate.app import activity_list, charts, dialogs, maps, paths, settings, tables
 from activate.core import (
     activity_types,
     files,
@@ -32,10 +32,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.settings = settings.load_settings()
 
-        self.activity_list_table.unit_system = self.unit_system
-        self.split_table.unit_system = self.unit_system
-        self.info_table.unit_system = self.unit_system
-        self.curve_table.unit_system = self.unit_system
+        self.activity_list_table.set_units(self.unit_system)
+        self.split_table.set_units(self.unit_system)
+        self.info_table.set_units(self.unit_system)
+        self.curve_table.set_units(self.unit_system)
 
         self.update_activity_list()
 

@@ -135,10 +135,10 @@ class Chart(QtChart.QChart):
 
     def set_axis_dimensions(self, x_axis_dimension, y_axis_dimension):
         self.axes(Qt.Horizontal)[0].setTitleText(
-            self.unit_system.format_axis_label(x_axis_dimension)
+            self.unit_system.format_name_unit(x_axis_dimension)
         )
         self.axes(Qt.Vertical)[0].setTitleText(
-            self.unit_system.format_axis_label(y_axis_dimension)
+            self.unit_system.format_name_unit(y_axis_dimension)
         )
 
     def update_axis(self, direction, ticks, minimum, maximum):

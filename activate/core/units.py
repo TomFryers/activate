@@ -53,15 +53,16 @@ class UnitConfig:
     def format(self, value, dimension):
         return self.units[dimension].format(value)
 
-    def format_axis_label(self, dimension) -> str:
+    def format_name_unit(self, dimension, symbol=None) -> str:
         """
-        Get 'Distance / m' or similar string.
+        Get 'Distance (m)' or similar string.
 
         Returns the dimension if it isn't recognised.
         """
-        if dimension not in self.units:
-            return dimension
-        symbol = self.units[dimension].symbol
+        if symbol is None:
+            if dimension not in self.units:
+                return dimension
+            symbol = self.units[dimension].symbol
         if symbol:
             return f"{dimension.title()} ({symbol})"
         return dimension.title()

@@ -97,20 +97,8 @@ class Table(QtWidgets.QTableWidget):
 
 
 class ValueColumnTable(QtWidgets.QTableWidget):
-    def lock_column_count(self):
-        """
-        Disable the setColumnCount method.
-
-        Use the unlock_column_count method to re-enable it. This method
-        is useful because PyQt5.uic calls setColumnCount on objects
-        after they are created.
-        """
-
-        self.oldSetColumnCount = self.setColumnCount
-        self.setColumnCount = lambda x: None
-
-    def unlock_column_count(self):
-        self.setColumnCount = self.oldSetColumnCount
+    def set_units(self, unit_system):
+        self.unit_system = unit_system
 
     def resize_to_contents(self, vertical=False):
         if vertical:
@@ -119,9 +107,16 @@ class ValueColumnTable(QtWidgets.QTableWidget):
             header = self.horizontalHeader()
         header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
 
-    def define_columns(self, names, format_functions=None, alignments=None):
+    def define_columns(self, names, dimensions, format_functions=None, alignments=None):
         self.setColumnCount(len(names))
-        self.setHorizontalHeaderLabels(names)
+        self.setHorizontalHeaderLabels(
+            [
+                self.unit_system.format_name_unit(
+                    name, self.unit_system.units[dimension].symbol
+                )
+                for name, dimension in zip(names, dimensions)
+            ]
+        )
         if format_functions is None:
             self.format_functions = [None for _ in names]
         else:
@@ -150,17 +145,18 @@ class ValueColumnTable(QtWidgets.QTableWidget):
 
 class SplitTable(ValueColumnTable):
     headings = ["Number", "Time", "Split", "Speed", "Net Climb", "Ascent"]
+    dimensions = [None, "time", "time", "speed", "altitude", "altitude"]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def set_units(self, *args, **kwargs):
+        super().set_units(*args, **kwargs)
         self.define_columns(
             self.headings,
+            self.dimensions,
             [number_formats.split_format(h) for h in self.headings],
             alignments=[Qt.AlignRight | Qt.AlignVCenter for _ in self.headings],
         )
 
         self.resize_to_contents()
-        self.lock_column_count()
 
     def update_data(self, data):
         self.setRowCount(len(data))
@@ -171,17 +167,18 @@ class SplitTable(ValueColumnTable):
 
 class ActivityListTable(ValueColumnTable):
     headings = ["Name", "Type", "Start Time", "Distance"]
+    dimensions = [None, None, None, "distance"]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.insertRow(0)
+    def set_units(self, *args, **kwargs):
+        super().set_units(*args, **kwargs)
         self.define_columns(
-            self.headings, [number_formats.list_format(h) for h in self.headings],
+            self.headings,
+            self.dimensions,
+            [number_formats.list_format(h) for h in self.headings],
         )
         self.resize_to_contents()
         self.resize_to_contents(vertical=True)
         self.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        self.lock_column_count()
 
     @property
     def current_activity_id(self):
@@ -206,14 +203,16 @@ class ActivityListTable(ValueColumnTable):
 
 class CurveTable(ValueColumnTable):
     headings = ["Distance", "Time", "Speed"]
+    dimensions = ["distance", "time", "speed"]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def set_units(self, *args, **kwargs):
+        super().set_units(*args, **kwargs)
         self.define_columns(
-            self.headings, [lambda x: x, times.to_string, lambda x: str(round(x, 1)),],
+            self.headings,
+            self.dimensions,
+            [lambda x: x, times.to_string, lambda x: str(round(x, 1))],
         )
-        self.lock_column_count()
-        self.resize_to_contents()
+        # self.resize_to_contents()
 
     def update_data(self, good_distance_names, table):
         self.setRowCount(len(table))
@@ -227,6 +226,9 @@ class InfoTable(Table):
 
     This is used for distance, climb, duration etc.
     """
+
+    def set_units(self, unit_system):
+        self.unit_system = unit_system
 
     def update_data(self, info: dict):
         self.setRowCount(len(info))

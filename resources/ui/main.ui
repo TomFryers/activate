@@ -272,6 +272,9 @@
         </item>
         <item>
          <widget class="QTabWidget" name="activity_tabs">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
           <widget class="QWidget" name="overview_tab">
            <attribute name="title">
             <string>Overview</string>
@@ -489,19 +492,16 @@
              <widget class="CurveTable" name="curve_table">
               <property name="maximumSize">
                <size>
-                <width>215</width>
+                <width>320</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarAlwaysOff</enum>
               </property>
               <property name="selectionMode">
                <enum>QAbstractItemView::SingleSelection</enum>
               </property>
-              <attribute name="horizontalHeaderMinimumSectionSize">
-               <number>70</number>
-              </attribute>
-              <attribute name="horizontalHeaderDefaultSectionSize">
-               <number>70</number>
-              </attribute>
               <attribute name="horizontalHeaderStretchLastSection">
                <bool>true</bool>
               </attribute>
