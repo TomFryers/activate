@@ -134,7 +134,9 @@ class ActivityList(list):
 
     def total_climb(self, activity_types, time_period, now, back=0):
         return sum(
-            a.climb for a in self.filtered(activity_types, time_period, now, back)
+            a.climb
+            for a in self.filtered(activity_types, time_period, now, back)
+            if a.climb is not None
         )
 
     def total_activities(self, activity_types, time_period, now, back=0):

@@ -155,7 +155,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.date_time_label.setText(times.nice(self.activity.start_time))
             self.activity_type_label.setText(self.activity.sport)
             self.info_table.update_data(self.activity.stats)
-            self.map_widget.show(self.activity.track.lat_lon_list)
+            if self.activity.track.has_position_data:
+                self.map_widget.setVisible(True)
+                self.map_widget.show(self.activity.track.lat_lon_list)
+            else:
+                self.map_widget.setVisible(False)
         elif page == 1:
             # Update charts
             if self.activity.track.has_altitude_data:

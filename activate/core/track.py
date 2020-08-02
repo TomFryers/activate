@@ -106,9 +106,8 @@ class Track:
     def __init__(self, fields):
         self.fields = fields
         for essential in ("lat", "lon"):
-            if essential not in self.fields or set(self[essential]) == {None}:
-                raise ValueError("Missing lat or lon in Track field")
-            infer_nones(self[essential])
+            if essential in self.fields and set(self[essential]) != {None}:
+                infer_nones(self[essential])
 
         if "time" in self.fields:
             infer_nones(self["time"])
@@ -137,10 +136,12 @@ class Track:
         self.fields[field] = value
 
     def __contains__(self, field):
-        if field in {"x", "y", "z", "dist_to_last", "dist", "speed"}.union(
-            self.fields.keys()
-        ):
+        if field in self.fields.keys():
             return True
+        if field in {"x", "y", "z"}:
+            return self.has_position_data
+        if field in {"dist_to_last", "dist"}:
+            return "dist" in self or "dist_to_last" in self or self.has_position_data
         if field in {"climb", "desc"}:
             return self.has_altitude_data
         return False
@@ -161,12 +162,18 @@ class Track:
     def calculate_dist_to_last(self):
         """Calculate distances between adjacent points"""
         self.fields["dist_to_last"] = [None]
-        for point in range(1, len(self)):
-            self.fields["dist_to_last"].append(
-                math.sqrt(
-                    sum((self[i][point] - self[i][point - 1]) ** 2 for i in "xyz")
+        if "dist" in self:
+            self.fields["dist_to_last"] += [
+                self.fields["dist"][i] - self.fields["dist"][i - 1]
+                for i in range(1, len(self))
+            ]
+        else:
+            for point in range(1, len(self)):
+                self.fields["dist_to_last"].append(
+                    math.sqrt(
+                        sum((self[i][point] - self[i][point - 1]) ** 2 for i in "xyz")
+                    )
                 )
-            )
 
     def calculate_climb_desc(self):
         self.fields["climb"] = [None]
@@ -210,7 +217,7 @@ class Track:
         self["speed"] = speeds
 
     def __len__(self):
-        return len(self["lat"])
+        return len(next(iter(self.fields.values())))
 
     def without_nones(self, field):
         return (v for v in self[field] if v is not None)
@@ -234,6 +241,10 @@ class Track:
     @cached_property
     def has_altitude_data(self):
         return "ele" in self.fields
+
+    @cached_property
+    def has_position_data(self):
+        return "lat" in self.fields and "lon" in self.fields
 
     @cached_property
     def lat_lon_list(self):
@@ -267,7 +278,7 @@ class Track:
 
     @property
     def length(self):
-        return self["dist"][-1]
+        return next(x for x in reversed(self["dist"]) if x is not None)
 
     def splits(self, splitlength=1000) -> list:
         """
@@ -286,6 +297,8 @@ class Track:
             if lasttime is None:
                 lasttime = time
                 lastalt = alt
+            if dist is None:
+                continue
             if dist // splitlength > len(splits):
                 speed = splitlength / (time - lasttime).total_seconds()
                 splits.append(
@@ -336,25 +349,32 @@ class Track:
 
     def get_curve(self, table_distances):
         table_distances = [x for x in table_distances if x <= self.length]
+        distance_values = []
+        time_values = []
+        for dist, time in zip(self["dist"], self["time"]):
+            if dist is not None:
+                distance_values.append(dist)
+                time_values.append(time)
+
         bests = {}
         for distance in table_distances:
-            for last_point in range(len(self)):
-                if self["dist"][last_point] > distance:
+            for last_point in range(len(distance_values)):
+                if distance_values[last_point] > distance:
                     break
             bests[distance] = (
-                self["time"][last_point] - self.start_time
+                time_values[last_point] - self.start_time
             ).total_seconds()
             first_point = 0
-            while last_point < len(self) - 1:
+            while last_point < len(distance_values) - 1:
                 last_point += 1
                 while True:
-                    dist = self["dist"][last_point] - self["dist"][first_point]
+                    dist = distance_values[last_point] - distance_values[first_point]
                     if dist < distance:
                         break
                     first_point += 1
                 first_point -= 1
                 time_taken = (
-                    self["time"][last_point] - self["time"][first_point]
+                    time_values[last_point] - time_values[first_point]
                 ).total_seconds()
                 if time_taken < bests[distance]:
                     bests[distance] = time_taken
