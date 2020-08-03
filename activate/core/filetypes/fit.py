@@ -1,3 +1,4 @@
+"""Load and parse FIT files."""
 import pathlib
 
 import fitparse
@@ -29,7 +30,7 @@ LENGTH_SWIM_FIELDS = {
 
 
 def load_fit(filename):
-    """Extract the fields from a FIT file."""
+    """Load and parse a FIT file."""
     fit = list(fitparse.FitFile(filename).messages)
     for message in fit:
         point = message.get_values()
@@ -39,6 +40,7 @@ def load_fit(filename):
 
 
 def parse_fit(filename, fit, available_fields):
+    """Extract the useful fields from a FIT file."""
     sport = "unknown"
     fields = {field: [] for field in available_fields}
     for message in fit:

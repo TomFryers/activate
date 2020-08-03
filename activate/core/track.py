@@ -80,6 +80,8 @@ class Track:
     A track is considered to be purely a sequence of GPS points, with
     extra data for each point. For more metadata such as a name or
     description, the Track should be wrapped in an Activity.
+
+    Some tracks (those representing pool swims) have no position data.
     """
 
     def __init__(self, fields):
