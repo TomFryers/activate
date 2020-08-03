@@ -3,11 +3,9 @@ import datetime
 import math
 from functools import cached_property, lru_cache
 
-from activate.core import times
+from activate.core import geometry, times
 from activate.core.units import DimensionValue
 
-EARTH_RADIUS = 6378137
-E_2 = 0.00669437999014
 SPEED_RANGE = 1
 
 FIELD_DIMENSIONS = {
@@ -27,25 +25,6 @@ FIELD_DIMENSIONS = {
     "y": "distance",
     "z": "distance",
 }
-
-
-def to_cartesian(lat, lon, ele):
-    """Convert from geodetic to cartesian coordinates based on WGS 84."""
-    if None in {lat, lon, ele}:
-        return (None, None, None)
-    lat = math.radians(lat)
-    lon = math.radians(lon)
-    sin_lat = math.sin(lat)
-    cos_lat = math.cos(lat)
-    sin_lon = math.sin(lon)
-    cos_lon = math.cos(lon)
-    partial_radius = EARTH_RADIUS / math.sqrt(1 - E_2 * sin_lat ** 2)
-    lat_radius = (ele + partial_radius) * cos_lat
-    return (
-        lat_radius * cos_lon,
-        lat_radius * sin_lon,
-        ((1 - E_2) * partial_radius + ele) * sin_lat,
-    )
 
 
 def infer_nones(data):
@@ -152,7 +131,7 @@ class Track:
         self.fields["y"] = []
         self.fields["z"] = []
         for point in range(len(self)):
-            x, y, z = to_cartesian(
+            x, y, z = geometry.to_cartesian(
                 self["lat"][point], self["lon"][point], self["ele"][point],
             )
             self.fields["x"].append(x)
