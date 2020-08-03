@@ -358,7 +358,7 @@ class Track:
                 time_taken = (
                     time_values[last_point] - time_values[first_point]
                 ).total_seconds()
-                if time_taken < bests[distance]:
+                if time_taken < bests[distance] and first_point > 0:
                     bests[distance] = time_taken
 
         speeds = [distance / bests[distance] for distance in bests]
