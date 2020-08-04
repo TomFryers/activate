@@ -540,6 +540,7 @@
      <addaction name="export_original"/>
     </widget>
     <addaction name="action_import"/>
+    <addaction name="action_add_manual"/>
     <addaction name="export_menu"/>
     <addaction name="separator"/>
     <addaction name="action_quit"/>
@@ -587,6 +588,11 @@
   <action name="export_original">
    <property name="text">
     <string>Original</string>
+   </property>
+  </action>
+  <action name="action_add_manual">
+   <property name="text">
+    <string>Add Manual</string>
    </property>
   </action>
  </widget>
@@ -817,6 +823,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_add_manual</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>add_manual_activity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -831,5 +853,6 @@
   <slot>summary_tab_switch()</slot>
   <slot>summary_period_changed(QString)</slot>
   <slot>export_activity_original()</slot>
+  <slot>add_manual_activity()</slot>
  </slots>
 </ui>

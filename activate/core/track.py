@@ -1,6 +1,7 @@
 """Contains the Track class and functions for handling tracks."""
 import datetime
 import math
+from dataclasses import dataclass
 from functools import cached_property, lru_cache
 
 from activate.core import geometry, times
@@ -73,6 +74,26 @@ def get_nearby_indices(length, position, number=1) -> list:
     return relevant_points
 
 
+@dataclass
+class ManualTrack:
+    start_time: datetime.datetime
+    length: float
+    ascent: float
+    elapsed_time: datetime.timedelta
+
+    has_altitude_data = False
+    has_position_data = False
+    manual = True
+
+    def average(self, field):
+        if field == "speed":
+            return self.length / self.elapsed_time.total_seconds()
+        raise AttributeError(f"{self.__class__.__name__} has no average {field}")
+
+    def __contains__(self, _):
+        return False
+
+
 class Track:
     """
     A series of GPS points at given times.
@@ -83,6 +104,8 @@ class Track:
 
     Some tracks (those representing pool swims) have no position data.
     """
+
+    manual = False
 
     def __init__(self, fields):
         self.fields = fields

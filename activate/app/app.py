@@ -10,11 +10,13 @@ from PyQt5.QtCore import Qt
 
 from activate.app import activity_list, charts, dialogs, maps, paths, settings
 from activate.core import (
+    activity,
     activity_types,
     files,
     load_activity,
     number_formats,
     times,
+    track,
     units,
 )
 
@@ -75,6 +77,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_types_list.check_all()
 
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
+        self.action_add_manual.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-new"))
         self.export_menu.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-send"))
         self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
 
@@ -83,6 +86,28 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_unit_settings(self):
         settings_window = dialogs.SettingsDialog()
         self.settings = settings_window.exec(self.settings, "Units")
+
+    def add_manual_activity(self):
+        manual_window = dialogs.ManualActivityDialog()
+        data = manual_window.exec({})
+        print(data)
+        self.add_activity(
+            activity.Activity(
+                data["Name"],
+                data["Type"],
+                track.ManualTrack(
+                    data["Start Time"],
+                    data["Distance"] * 1000,
+                    data["Ascent"],
+                    data["Duration"],
+                ),
+                "[manual]",
+                data["Flags"],
+                data["Start Time"],
+                data["Distance"] * 1000,
+                description=data["Description"],
+            )
+        )
 
     def edit_activity_data(self):
         edit_activity_dialog = dialogs.EditActivityDialog()
@@ -213,6 +238,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity = self.activities.get_activity(
             self.activity_list_table.item(selected, 0).activity_id
         )
+        if self.activity.track.manual:
+            self.activity_tabs.setCurrentIndex(0)
+            for page in range(1, 5):
+                self.activity_tabs.setTabEnabled(page, False)
+        else:
+            for page in range(1, 5):
+                self.activity_tabs.setTabEnabled(page, True)
         # Previously generated pages need refreshing
         self.updated = set()
         self.update_page(self.activity_tabs.currentIndex())

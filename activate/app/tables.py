@@ -194,8 +194,12 @@ class ActivityListTable(ValueColumnTable):
         self.item(position, 0).activity_id = activity_id
 
     def add_id_row(self, activity_id, values, position):
+        sorting_was_enabled = self.isSortingEnabled()
+        self.setSortingEnabled(False)
         self.insertRow(position)
         self.set_id_row(activity_id, values, position)
+        if sorting_was_enabled:
+            self.setSortingEnabled(True)
 
     def default_sort(self):
         self.sortItems(2, Qt.DescendingOrder)

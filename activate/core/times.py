@@ -118,3 +118,8 @@ def end_of(base, period: str) -> datetime.datetime:
         return start_of(base + datetime.timedelta(days=7), period)
 
     raise ValueError('period must be "year", "month" or "week"')
+
+
+def hours_minutes_seconds(time: datetime.timedelta) -> tuple:
+    time = time.total_seconds()
+    return (time // 3600, *divmod(time % 3600, 60))

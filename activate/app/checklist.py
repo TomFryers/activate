@@ -42,6 +42,8 @@ class CheckList(QtWidgets.QListWidget):
     def row_names(self, new_items):
         self.clear()
         self.addItems(new_items)
+        for row in self:
+            row.setCheckState(Qt.Unchecked)
 
     @property
     def states(self):
