@@ -90,7 +90,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_manual_activity(self):
         manual_window = dialogs.ManualActivityDialog()
         data = manual_window.exec({})
-        print(data)
         self.add_activity(
             activity.Activity(
                 data["Name"],
