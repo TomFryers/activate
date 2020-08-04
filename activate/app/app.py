@@ -41,13 +41,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.map_widget = maps.RouteMap(self.map_container)
 
-        # Set up activity types list for the summary page
-        self.do_not_recurse = True
-        self.activity_types_list.addItems(["All"] + list(activity_types.TYPES))
-        for i in range(len(["All"] + list(activity_types.TYPES))):
-            self.activity_types_list.item(i).setCheckState(Qt.Checked)
-        self.do_not_recurse = False
-
         # Set up charts
         self.charts = charts.LineChartSet(self.unit_system, self.graphs_layout)
         self.charts.add("ele", area=True)
@@ -75,6 +68,11 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         self.summary_period = "All Time"
+
+        # Set up activity types list for the summary page
+        self.activity_types_list.row_names = list(activity_types.TYPES)
+        self.activity_types_list.add_all_row()
+        self.activity_types_list.check_all()
 
         self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
         self.export_menu.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-send"))
@@ -304,45 +302,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def handle_summary_check(self, item):
         """Get the right check-boxes selected."""
-        if self.do_not_recurse:
-            return
-        self.do_not_recurse = True
-        if item.text() == "All" and item.checkState() != Qt.PartiallyChecked:
-            for i in range(len(activity_types.TYPES)):
-                self.activity_types_list.item(i + 1).setCheckState(item.checkState())
-        else:
-            states = set(
-                self.activity_types_list.item(i + 1).checkState()
-                for i in range(len(activity_types.TYPES))
-            )
-            if len(states) == 1:
-                new_state = next(iter(states))
-            else:
-                new_state = Qt.PartiallyChecked
-            self.activity_types_list.item(0).setCheckState(new_state)
-        self.do_not_recurse = False
+        self.activity_types_list.item_changed(item)
         self.summary_tab_switch()
 
     def handle_summary_double_click(self, item):
         """Select this item only."""
-        if item.text() == "All":
-            self.activity_types_list.item(0).setCheckState(Qt.Checked)
-            return
-        self.do_not_recurse = True
-        self.activity_types_list.item(0).setCheckState(Qt.PartiallyChecked)
-        for i in range(len(activity_types.TYPES)):
-            this_item = self.activity_types_list.item(i + 1)
-            this_item.setCheckState(Qt.Checked if this_item is item else Qt.Unchecked)
-        self.do_not_recurse = False
+        self.activity_types_list.item_double_clicked(item)
         self.summary_tab_switch()
 
     def get_allowed_for_summary(self):
         """Get the allowed activity types from the checklist."""
-        allowed_activity_types = set()
-        for i, a in enumerate(activity_types.TYPES):
-            if self.activity_types_list.item(i + 1).checkState() == Qt.Checked:
-                allowed_activity_types.add(a)
-        return allowed_activity_types
+        return set(self.activity_types_list.checked_rows)
 
     def set_formatted_number_label(self, label, value, dimension):
         """Set a label to a number, formatted with the correct units."""

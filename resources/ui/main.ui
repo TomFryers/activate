@@ -28,7 +28,7 @@
         <item>
          <layout class="QVBoxLayout" name="summary_options_layout">
           <item>
-           <widget class="QListWidget" name="activity_types_list">
+           <widget class="CheckList" name="activity_types_list">
             <property name="maximumSize">
              <size>
               <width>300</width>
@@ -616,6 +616,11 @@
    <class>CurveTable</class>
    <extends>QTableWidget</extends>
    <header>activate/app/tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CheckList</class>
+   <extends>QListWidget</extends>
+   <header>activate/app/checklist.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
