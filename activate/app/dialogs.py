@@ -63,11 +63,11 @@ class SettingsDialog(QtWidgets.QDialog):
         PyQt5.uic.loadUi("resources/ui/settings.ui", self)
 
     def load_from_settings(self, current_settings: settings.Settings):
-        """Load a settings object to the UI widgets."""
+        """Load a Settings object to the UI widgets."""
         self.unit_system.setCurrentText(current_settings.unit_system)
 
     def get_settings(self) -> settings.Settings:
-        """Get a settings object from the UIT widgets."""
+        """Get a Settings object from the UI widgets."""
         return settings.Settings(unit_system=self.unit_system.currentText())
 
     def exec(self, current_settings, page):
