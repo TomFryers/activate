@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets
 
 from activate.app import checklist, paths, settings
 from activate.core import activity_types, times
-from Py5.QtCore import Qt
+from PyQt5.QtCore import Qt
 
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
 TYPE_FLAGS = collections.defaultdict(tuple)
