@@ -183,6 +183,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.map_widget.show(self.activity.track.lat_lon_list)
             else:
                 self.map_widget.setVisible(False)
+            self.activity_tabs.update()
         elif page == 1:
             # Update charts
             if self.activity.track.has_altitude_data:
