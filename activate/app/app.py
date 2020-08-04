@@ -300,16 +300,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.progression_chart.date_time_axis.setTickCount(13)
             self.progression_chart.date_time_axis.setFormat("MMMM")
 
-    def handle_summary_check(self, item):
-        """Get the right check-boxes selected."""
-        self.activity_types_list.item_changed(item)
-        self.summary_tab_switch()
-
-    def handle_summary_double_click(self, item):
-        """Select this item only."""
-        self.activity_types_list.item_double_clicked(item)
-        self.summary_tab_switch()
-
     def get_allowed_for_summary(self):
         """Get the allowed activity types from the checklist."""
         return set(self.activity_types_list.checked_rows)

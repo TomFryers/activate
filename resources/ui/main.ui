@@ -741,7 +741,7 @@
    <sender>activity_types_list</sender>
    <signal>itemChanged(QListWidgetItem*)</signal>
    <receiver>main_window</receiver>
-   <slot>handle_summary_check(QListWidgetItem*)</slot>
+   <slot>summary_tab_switch()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>745</x>
@@ -757,7 +757,7 @@
    <sender>activity_types_list</sender>
    <signal>itemDoubleClicked(QListWidgetItem*)</signal>
    <receiver>main_window</receiver>
-   <slot>handle_summary_double_click(QListWidgetItem*)</slot>
+   <slot>summary_tab_switch()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>745</x>

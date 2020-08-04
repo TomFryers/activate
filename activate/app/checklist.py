@@ -25,6 +25,8 @@ class CheckList(QtWidgets.QListWidget):
         self.do_not_recurse = False
         self.all_row = False
         super().__init__(*args, **kwargs)
+        self.itemChanged.connect(self.item_changed)
+        self.itemDoubleClicked.connect(self.item_double_clicked)
 
     def __getitem__(self, index):
         result = self.item(index)
