@@ -17,22 +17,27 @@ DELETE_ACTIVITY = 222  # 0xDE[lete]
 class DurationEdit(QtWidgets.QFormLayout):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.addRow("Hours", QtWidgets.QSpinBox())
-        self.addRow("Minutes", QtWidgets.QSpinBox())
-        self.addRow("Seconds", QtWidgets.QDoubleSpinBox())
+        self.hours_widget = QtWidgets.QSpinBox()
+        self.addRow("Hours", self.hours_widget)
+        self.minutes_widget = QtWidgets.QSpinBox()
+        self.minutes_widget.setRange(0, 59)
+        self.addRow("Minutes", self.minutes_widget)
+        self.seconds_widget = QtWidgets.QDoubleSpinBox()
+        self.seconds_widget.setRange(0, 59.99)
+        self.addRow("Seconds", self.seconds_widget)
 
     def value(self):
         return datetime.timedelta(
-            hours=self.itemAt(0, self.FieldRole).widget().value(),
-            minutes=self.itemAt(1, self.FieldRole).widget().value(),
-            seconds=self.itemAt(2, self.FieldRole).widget().value(),
+            hours=self.hours_widget.value(),
+            minutes=self.minutes_widget.value(),
+            seconds=self.seconds_widget.value(),
         )
 
     def set_value(self, new: datetime.timedelta):
         hours, minutes, seconds = times.hours_minutes_seconds(new)
-        self.itemAt(0, self.FieldRole).widget().setValue(hours)
-        self.itemAt(1, self.FieldRole).widget().setValue(minutes)
-        self.itemAt(2, self.FieldRole).widget().setValue(seconds)
+        self.hours_widget.setValue(hours)
+        self.minutes_widget.setValue(minutes)
+        self.seconds_widget.setValue(seconds)
 
 
 class ActivityFlagEdit(checklist.CheckList):
