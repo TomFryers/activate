@@ -159,6 +159,10 @@ class ManualActivityDialog(FormDialog):
         super().__init__(*args, form=Form(layout), **kwargs)
         self.setWindowTitle("Manual Activity")
 
+    def accept(self):
+        if self.form.fields["Duration"].value() > datetime.timedelta(0):
+            super().accept()
+
 
 class EditActivityDialog(FormDialog):
     def __init__(self, *args, **kwargs):
