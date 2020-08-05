@@ -109,7 +109,11 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
     def edit_activity_data(self):
-        edit_activity_dialog = dialogs.EditActivityDialog()
+        edit_activity_dialog = (
+            dialogs.EditManualActivityDialog()
+            if self.activity.track.manual
+            else dialogs.EditActivityDialog()
+        )
         return_value = edit_activity_dialog.exec(self.activity)
         if not return_value:
             return

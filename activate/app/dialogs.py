@@ -64,7 +64,7 @@ WIDGET_SETTERS = {
     QtWidgets.QDoubleSpinBox: lambda w, v: w.setValue(v),
     QtWidgets.QComboBox: lambda w, v: w.setCurrentText(v),
     QtWidgets.QTimeEdit: lambda w, v: w.setTime(v),
-    QtWidgets.QDateTimeEdit: lambda w, v: w.setDateTime(),
+    QtWidgets.QDateTimeEdit: lambda w, v: w.setDateTime(v),
     QtWidgets.QDateEdit: lambda w, v: w.setDate(v),
     QtWidgets.QAbstractSlider: lambda w, v: w.setValue(v),
     QtWidgets.QKeySequenceEdit: lambda w, v: w.setKeySequence(v),
@@ -151,31 +151,8 @@ class ManualActivityDialog(FormDialog):
         }
         layout["Type"].currentTextChanged.connect(layout["Flags"].change_options)
         layout["Type"].addItems(activity_types.TYPES)
-        super().__init__(Form(layout), *args, **kwargs)
+        super().__init__(*args, form=Form(layout), **kwargs)
         self.setWindowTitle("Manual Activity")
-
-
-class SettingsDialog(QtWidgets.QDialog):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        PyQt5.uic.loadUi("resources/ui/settings.ui", self)
-
-    def load_from_settings(self, current_settings: settings.Settings):
-        """Load a Settings object to the UI widgets."""
-        self.unit_system.setCurrentText(current_settings.unit_system)
-
-    def get_settings(self) -> settings.Settings:
-        """Get a Settings object from the UI widgets."""
-        return settings.Settings(unit_system=self.unit_system.currentText())
-
-    def exec(self, current_settings, page):
-        self.settings_tabs.setCurrentIndex(("Units",).index(page))
-        result = super().exec()
-        if not result:
-            return current_settings
-        new_settings = self.get_settings()
-        new_settings.save()
-        return new_settings
 
 
 class EditActivityDialog(FormDialog):
@@ -188,8 +165,11 @@ class EditActivityDialog(FormDialog):
         }
         layout["Type"].currentTextChanged.connect(layout["Flags"].change_options)
         layout["Type"].addItems(activity_types.TYPES)
-        super().__init__(Form(layout), *args, **kwargs)
+        super().__init__(*args, form=Form(layout), **kwargs)
         self.setWindowTitle("Edit Activity")
+        self.add_delete_button()
+
+    def add_delete_button(self):
         self.delete_button = QtWidgets.QPushButton("Delete Activity")
         self.delete_button.setIcon(PyQt5.QtGui.QIcon.fromTheme("edit-delete"))
         self.delete_button.clicked.connect(self.handle_delete_button)
@@ -226,3 +206,60 @@ class EditActivityDialog(FormDialog):
         if result and result != DELETE_ACTIVITY:
             self.apply_to_activity(result)
         return result
+
+
+class EditManualActivityDialog(EditActivityDialog, ManualActivityDialog):
+    def __init__(self, *args, **kwargs):
+        ManualActivityDialog.__init__(self, *args, **kwargs)
+        self.setWindowTitle("Edit Activity")
+        self.add_delete_button()
+
+    def apply_to_activity(self, data):
+        super().apply_to_activity(data)
+        self.activity.track.length = data["Distance"]
+        self.activity.track.start_time = data["Start Time"]
+        self.activity.track.elapsed_time = data["Duration"]
+        self.activity.track.ascent = data["Ascent"]
+
+    def exec(self, activity):
+        self.activity = activity
+
+        result = ManualActivityDialog.exec(
+            self,
+            {
+                "Name": self.activity.name,
+                "Type": self.activity.sport,
+                "Distance": self.activity.track.length / 1000,
+                "Start Time": self.activity.track.start_time,
+                "Duration": self.activity.track.elapsed_time,
+                "Ascent": self.activity.track.ascent,
+                "Flags": self.activity.flags,
+                "Description": self.activity.description,
+            },
+        )
+        if result and result != DELETE_ACTIVITY:
+            self.apply_to_activity(result)
+        return result
+
+
+class SettingsDialog(QtWidgets.QDialog):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        PyQt5.uic.loadUi("resources/ui/settings.ui", self)
+
+    def load_from_settings(self, current_settings: settings.Settings):
+        """Load a Settings object to the UI widgets."""
+        self.unit_system.setCurrentText(current_settings.unit_system)
+
+    def get_settings(self) -> settings.Settings:
+        """Get a Settings object from the UI widgets."""
+        return settings.Settings(unit_system=self.unit_system.currentText())
+
+    def exec(self, current_settings, page):
+        self.settings_tabs.setCurrentIndex(("Units",).index(page))
+        result = super().exec()
+        if not result:
+            return current_settings
+        new_settings = self.get_settings()
+        new_settings.save()
+        return new_settings
