@@ -156,6 +156,8 @@ class ManualActivityDialog(FormDialog):
         }
         layout["Type"].currentTextChanged.connect(layout["Flags"].change_options)
         layout["Type"].addItems(activity_types.TYPES)
+        layout["Distance"].setRange(0, 100000)
+        layout["Ascent"].setRange(0, 100000)
         super().__init__(*args, form=Form(layout), **kwargs)
         self.setWindowTitle("Manual Activity")
 
