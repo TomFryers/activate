@@ -24,7 +24,7 @@
        <attribute name="title">
         <string>Summary</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <layout class="QHBoxLayout" name="summary_tab_layout">
         <item>
          <layout class="QVBoxLayout" name="summary_options_layout">
           <item>
@@ -92,7 +92,7 @@
            <attribute name="title">
             <string>Totals</string>
            </attribute>
-           <layout class="QFormLayout" name="formLayout">
+           <layout class="QFormLayout" name="totals_tab_layout">
             <item row="0" column="0">
              <widget class="QLabel" name="distance_stat_label">
               <property name="font">
@@ -203,7 +203,7 @@
            <attribute name="title">
             <string>Progression</string>
            </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <layout class="QHBoxLayout" name="progression_tab_layout">
             <item>
              <widget class="QtCharts::QChartView" name="progression_graph"/>
             </item>
@@ -217,7 +217,7 @@
        <attribute name="title">
         <string>Activities</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <layout class="QHBoxLayout" name="activities_tab_layout">
         <item>
          <layout class="QVBoxLayout" name="activity_list_area">
           <item>
@@ -279,7 +279,7 @@
            <attribute name="title">
             <string>Overview</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout">
+           <layout class="QGridLayout" name="overview_tab_layout">
             <item row="0" column="0">
              <layout class="QVBoxLayout" name="activity_text_area">
               <item>
@@ -429,7 +429,7 @@
            <attribute name="title">
             <string>Data</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <layout class="QVBoxLayout" name="data_tab_layout">
             <item>
              <layout class="QVBoxLayout" name="graphs_layout"/>
             </item>
@@ -439,7 +439,7 @@
            <attribute name="title">
             <string>Splits</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
+           <layout class="QVBoxLayout" name="splits_tab_layout">
             <item>
              <widget class="SplitTable" name="split_table">
               <property name="minimumSize">
@@ -474,17 +474,17 @@
            <attribute name="title">
             <string>Zones</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <layout class="QVBoxLayout" name="zones_tab_layout">
             <item>
              <widget class="QtCharts::QChartView" name="zones_graph"/>
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab">
+          <widget class="QWidget" name="curve_tab">
            <attribute name="title">
             <string>Curve</string>
            </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <layout class="QHBoxLayout" name="curve_tab_layout">
             <item>
              <widget class="QtCharts::QChartView" name="curve_graph"/>
             </item>
