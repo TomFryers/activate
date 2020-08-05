@@ -42,6 +42,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_activity_list()
 
         self.map_widget = maps.RouteMap(self.map_container)
+        size_policy = self.map_widget.sizePolicy()
+        size_policy.setRetainSizeWhenHidden(True)
+        self.map_widget.setSizePolicy(size_policy)
 
         # Set up charts
         self.charts = charts.LineChartSet(self.unit_system, self.graphs_layout)
@@ -186,7 +189,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.map_widget.show(self.activity.track.lat_lon_list)
             else:
                 self.map_widget.setVisible(False)
-            self.activity_tabs.update()
         elif page == 1:
             # Update charts
             if self.activity.track.has_altitude_data:
@@ -239,6 +241,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_activity(self, selected):
         """Show a new activity on the right."""
         # Find the correct activity
+        self.setUpdatesEnabled(False)
         self.activity = self.activities.get_activity(
             self.activity_list_table.item(selected, 0).activity_id
         )
@@ -252,6 +255,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Previously generated pages need refreshing
         self.updated = set()
         self.update_page(self.activity_tabs.currentIndex())
+        self.setUpdatesEnabled(True)
 
     def import_activities(self):
         """Import some user-given activities."""
