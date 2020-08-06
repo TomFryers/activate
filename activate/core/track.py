@@ -13,8 +13,11 @@ FIELD_DIMENSIONS = {
     "lat": "latlon",
     "lon": "latlon",
     "ele": "altitude",
+    "height_change": "altitude",
     "climb": "altitude",
     "desc": "altitude",
+    "gradient": None,
+    "angle": "angle",
     "time": "time",
     "speed": "speed",
     "dist": "distance",
@@ -134,6 +137,12 @@ class Track:
                 self.calculate_speed()
             elif field in {"climb", "desc"}:
                 self.calculate_climb_desc()
+            elif field == "height_change":
+                self.calculate_height_change()
+            elif field == "gradient":
+                self.calculate_gradient()
+            elif field == "angle":
+                self.calculate_angle()
         return self.fields[field]
 
     def __setitem__(self, field, value):
@@ -146,7 +155,7 @@ class Track:
             return self.has_position_data
         if field in {"dist_to_last", "dist"}:
             return "dist" in self or "dist_to_last" in self or self.has_position_data
-        if field in {"climb", "desc"}:
+        if field in {"climb", "desc", "height_change", "gradient", "angle"}:
             return self.has_altitude_data
         return False
 
@@ -167,10 +176,13 @@ class Track:
         """Calculate distances between adjacent points"""
         self.fields["dist_to_last"] = [None]
         if "dist" in self.fields:
-            self.fields["dist_to_last"] += [
-                self.fields["dist"][i] - self.fields["dist"][i - 1]
-                for i in range(1, len(self))
-            ]
+            for point in range(1, len(self)):
+                relevant = self.fields["dist"][point - 1 : point + 1]
+                if None in relevant:
+                    value = None
+                else:
+                    value = relevant[1] - relevant[0]
+                self.fields["dist_to_last"].append(value)
         else:
             for point in range(1, len(self)):
                 self.fields["dist_to_last"].append(
@@ -182,16 +194,10 @@ class Track:
     def calculate_climb_desc(self):
         self.fields["climb"] = [None]
         self.fields["desc"] = [None]
-        current = self["ele"][0]
         for point in range(1, len(self)):
-            last = current
-            current = self["ele"][point]
-            if current > last:
-                self.fields["climb"].append(current - last)
-                self.fields["desc"].append(0)
-            else:
-                self.fields["desc"].append(last - current)
-                self.fields["climb"].append(0)
+            height_change = self["height_change"][point]
+            self.fields["climb"].append(max(height_change, 0))
+            self.fields["desc"].append(max(-height_change, 0))
 
     def calculate_dist(self):
         """Calculate cumulative distances"""
@@ -220,6 +226,31 @@ class Track:
             else:
                 speeds.append(0)
         self["speed"] = speeds
+
+    def calculate_height_change(self):
+        """Calculate differences in elevation between adjacent points."""
+        self.fields["height_change"] = [None]
+        current = self["ele"][0]
+        for point in range(1, len(self)):
+            last = current
+            current = self["ele"][point]
+            self.fields["height_change"].append(current - last)
+
+    def calculate_gradient(self):
+        """Calculate the gradient at each point."""
+        self.fields["gradient"] = [None]
+        for point in range(1, len(self)):
+            distance = self["dist_to_last"][point]
+            if distance is not None and distance > 0:
+                self.fields["gradient"].append(self["height_change"][point] / distance)
+            else:
+                self.fields["gradient"].append(None)
+
+    def calculate_angle(self):
+        """Calculate the angle of inclination at each point."""
+        self.fields["angle"] = [
+            None if g is None else math.atan(g) for g in self["gradient"]
+        ]
 
     def __len__(self):
         return len(next(iter(self.fields.values())))

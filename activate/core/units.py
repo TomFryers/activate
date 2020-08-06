@@ -1,5 +1,6 @@
 """Contains classes and for handling units and some predefined units."""
 import datetime
+import math
 
 
 class DimensionValue:
@@ -117,6 +118,7 @@ BEAT_PER_MINUTE = Unit("beat per minute", "bpm", 1 / 60)
 CYCLES_PER_MINUTE = Unit("cycles per minute", "rpm", 1 / 60)
 WATT = Unit("watt", "W", 1)
 HORSE_POWER = Unit("horsepower", "hp", 745.6998715822702)
+DEGREE = Unit("degree", "°", math.tau / 360)
 UNITLESS = Unit("", "", 1)
 DATE = DateUnit()
 ALL = {
@@ -129,6 +131,7 @@ ALL = {
     "heartrate": (BEAT_PER_MINUTE,),
     "cadence": (CYCLES_PER_MINUTE,),
     "power": (WATT,),
+    "angle": (DEGREE,),
     None: UNITLESS,
 }
 
@@ -142,6 +145,7 @@ METRIC = {
     "heartrate": BEAT_PER_MINUTE,
     "cadence": CYCLES_PER_MINUTE,
     "power": WATT,
+    "angle": DEGREE,
     None: UNITLESS,
 }
 
@@ -155,6 +159,7 @@ IMPERIAL = {
     "heartrate": BEAT_PER_MINUTE,
     "cadence": CYCLES_PER_MINUTE,
     "power": HORSE_POWER,
+    "angle": DEGREE,
     None: UNITLESS,
 }
 
