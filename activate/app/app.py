@@ -54,11 +54,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.charts.add("cadence")
         self.charts.add("power")
 
-        self.zones = list(range(0, 20)) + [float("inf")]
-        self.zones = [self.unit_system.decode(x, "speed") for x in self.zones]
-        self.zones_chart = charts.Histogram(
-            self.zones, self.zones_graph, self.unit_system
-        )
+        self.zones_chart = charts.Histogram([0], self.zones_graph, self.unit_system)
 
         self.curve_chart = charts.LineChart(
             self.curve_graph,
