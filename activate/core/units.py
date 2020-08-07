@@ -1,12 +1,13 @@
 """Contains classes and for handling units and some predefined units."""
 import datetime
 import math
+from dataclasses import dataclass
 
 
+@dataclass
 class DimensionValue:
-    def __init__(self, value, dimension):
-        self.value = value
-        self.dimension = dimension
+    value: float
+    dimension: str
 
     def format(self, unit_system):
         return unit_system.format(self.value, self.dimension)
@@ -14,15 +15,12 @@ class DimensionValue:
     def encode(self, unit_system):
         return unit_system.encode(self.value, self.dimension)
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}({self.value!r}, {self.dimension!r})"
 
-
+@dataclass
 class Unit:
-    def __init__(self, name, symbol, size):
-        self.name = name
-        self.symbol = symbol
-        self.size = size
+    name: str
+    symbol: str
+    size: float
 
     def encode(self, value):
         return value / self.size
@@ -32,11 +30,6 @@ class Unit:
 
     def format(self, value):
         return (self.encode(value), self.symbol)
-
-    def __repr__(self):
-        return (
-            f"{self.__class__.__name__}({self.name!r}, {self.symbol!r}, {self.size!r})"
-        )
 
     def __truediv__(self, other):
         return Unit(
@@ -53,11 +46,11 @@ class Unit:
         )
 
 
+@dataclass
 class UnitConfig:
     """The current preferred unit system."""
 
-    def __init__(self, units: dict):
-        self.units = units
+    units: dict
 
     def encode(self, value, dimension):
         return self.units[dimension].encode(value)
@@ -81,9 +74,6 @@ class UnitConfig:
         if symbol:
             return f"{dimension.title()} ({symbol})"
         return dimension.title()
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}({self.units!r})"
 
 
 class PaceUnit(Unit):
