@@ -75,8 +75,7 @@ class MinMax:
     def __repr__(self):
         if self.minimum is None:
             return f"{self.__class__.__name__}()"
-        else:
-            return f"{self.__class__.__name__}(({self.minimum!r}, {self.maximum!r}))"
+        return f"{self.__class__.__name__}(({self.minimum!r}, {self.maximum!r}))"
 
 
 def data_to_points(data):
@@ -85,6 +84,15 @@ def data_to_points(data):
 
 
 series_gc_prevent = []
+
+
+def create_axis(log=False):
+    if log:
+        axis = QtChart.QLogValueAxis()
+        axis.setMinorTickCount(-1)
+        axis.setLabelFormat("%g")
+        return axis
+    return QtChart.QValueAxis()
 
 
 class Chart(QtChart.QChart):
@@ -111,18 +119,9 @@ class Chart(QtChart.QChart):
         self.setAnimationOptions(self.SeriesAnimations)
         widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
         self.legend().hide()
-        if horizontal_log:
-            x_axis = QtChart.QLogValueAxis()
-            x_axis.setMinorTickCount(-1)
-            x_axis.setLabelFormat("%g")
-        else:
-            x_axis = QtChart.QValueAxis()
-        if vertical_log:
-            y_axis = QtChart.QLogValueAxis()
-            y_axis.setMinorTickCount(-1)
-            y_axis.setLabelFormat("%g")
-        else:
-            y_axis = QtChart.QValueAxis()
+
+        x_axis = create_axis(horizontal_log)
+        y_axis = create_axis(vertical_log)
         self.addAxis(x_axis, Qt.AlignBottom)
         self.addAxis(y_axis, Qt.AlignLeft)
         for series in seriess:
