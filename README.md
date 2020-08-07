@@ -1,6 +1,6 @@
 # Activate
 
-![Icon](resources/icons/icon.png)
+![Icon](resources/icons/icon_cropped.png)
 
 Activate is a free activity log and analysis tool.
 
