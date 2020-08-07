@@ -38,6 +38,20 @@ class Unit:
             f"{self.__class__.__name__}({self.name!r}, {self.symbol!r}, {self.size!r})"
         )
 
+    def __truediv__(self, other):
+        return Unit(
+            f"{self.name} per {other.name}",
+            f"{self.symbol} ∕ {other.symbol}",
+            self.size / other.size,
+        )
+
+    def __mul__(self, other):
+        return Unit(
+            f"{self.name} {other.name}",
+            f"{self.symbol} {other.symbol}",
+            self.size * other.size,
+        )
+
 
 class UnitConfig:
     """The current preferred unit system."""
@@ -106,14 +120,16 @@ MILE = Unit("mile", "mi", 1609.344)
 METRE = Unit("metre", "m", 1)
 FOOT = Unit("foot", "ft", 0.3048)
 YARD = Unit("yard", "yd", 0.9144)
-METRE_PER_SECOND = Unit("metre per second", "m ∕ s", 1)
-KM_PER_HOUR = Unit("kilometre per hour", "km ∕ h", 1 / 3.6)
-MILE_PER_HOUR = Unit("mile per hour", "mph", 1609.344 / 3600)
-FOOT_PER_MINUTE = Unit("foot per minute", "ft ∕ min", 0.3048 / 60)
-METRE_PER_MINUTE = Unit("metre per minute", "m ∕ min", 1 / 60)
-TIME = Unit("minutes and seconds", "", 1)
 SECOND = Unit("second", "s", 1)
 MINUTE = Unit("minute", "min", 60)
+HOUR = Unit("hour", "h", 3600)
+METRE_PER_SECOND = METRE / SECOND
+KM_PER_HOUR = KM / HOUR
+MILE_PER_HOUR = MILE / HOUR
+MILE_PER_HOUR.symbol = "mph"
+FOOT_PER_MINUTE = FOOT / MINUTE
+METRE_PER_MINUTE = METRE / MINUTE
+TIME = Unit("minutes and seconds", "", 1)
 MIN_PER_KM = PaceUnit(KM)
 MIN_PER_MILE = PaceUnit(MILE)
 BEAT_PER_MINUTE = Unit("beat per minute", "bpm", 1 / 60)
