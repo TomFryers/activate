@@ -7,6 +7,7 @@ import PyQt5
 import PyQt5.uic
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 
 from activate.app import activity_list, charts, dialogs, maps, paths, settings
 from activate.core import (
@@ -34,10 +35,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.settings = settings.load_settings()
 
-        self.activity_list_table.set_units(self.unit_system)
-        self.split_table.set_units(self.unit_system)
-        self.info_table.set_units(self.unit_system)
-        self.curve_table.set_units(self.unit_system)
+        for table in (
+            self.activity_list_table,
+            self.split_table,
+            self.info_table,
+            self.curve_table,
+        ):
+            table.set_units(self.unit_system)
 
         self.update_activity_list()
 
@@ -75,10 +79,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity_types_list.add_all_row()
         self.activity_types_list.check_all()
 
-        self.action_import.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-open"))
-        self.action_add_manual.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-new"))
-        self.export_menu.setIcon(PyQt5.QtGui.QIcon.fromTheme("document-send"))
-        self.action_quit.setIcon(PyQt5.QtGui.QIcon.fromTheme("application-exit"))
+        self.action_import.setIcon(QIcon.fromTheme("document-open"))
+        self.action_add_manual.setIcon(QIcon.fromTheme("document-new"))
+        self.export_menu.setIcon(QIcon.fromTheme("document-send"))
+        self.action_quit.setIcon(QIcon.fromTheme("application-exit"))
 
         self.main_tab_switch(0)
 
@@ -151,9 +155,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_activity_list(self):
         """Make the activity list show the correct activities."""
         self.activity_list_table.setRowCount(len(self.activities))
-        for i, activity in enumerate(self.activities):
+        for i, activity_ in enumerate(self.activities):
             self.activity_list_table.set_id_row(
-                activity.activity_id, activity.list_row, i
+                activity_.activity_id, activity_.list_row, i
             )
         self.activity_list_table.resizeColumnsToContents()
         self.activity_list_table.default_sort()
@@ -169,70 +173,80 @@ class MainWindow(QtWidgets.QMainWindow):
         """Update the activity splits page."""
         self.split_table.update_data(data)
 
+    def switch_to_summary(self):
+        """Update labels, map and data box."""
+        self.activity_name_label.setText(self.activity.name)
+        self.flags_label.setText(" | ".join(self.activity.active_flags))
+        self.description_label.setText(markdown.markdown(self.activity.description))
+        self.date_time_label.setText(times.nice(self.activity.start_time))
+        self.activity_type_label.setText(self.activity.sport)
+        self.info_table.update_data(self.activity.stats)
+        if self.activity.track.has_position_data:
+            self.map_widget.setVisible(True)
+            self.map_widget.show(self.activity.track.lat_lon_list)
+        else:
+            self.map_widget.setVisible(False)
+
+    def switch_to_data(self):
+        """Update charts."""
+        if self.activity.track.has_altitude_data:
+            self.charts.update_show("ele", [self.activity.track.graph("ele")])
+        else:
+            self.charts.hide("ele")
+        self.charts.update_show("speed", [self.activity.track.graph("speed")])
+        if "heartrate" in self.activity.track:
+            self.charts.update_show(
+                "heartrate", [self.activity.track.graph("heartrate")]
+            )
+        else:
+            self.charts.hide("heartrate")
+        if "cadence" in self.activity.track:
+            self.charts.update_show("cadence", [self.activity.track.graph("cadence")])
+        else:
+            self.charts.hide("cadence")
+        if "power" in self.activity.track:
+            self.charts.update_show("power", [self.activity.track.graph("power")])
+        else:
+            self.charts.hide("power")
+
+    def switch_to_splits(self):
+        self.update_splits(
+            self.activity.track.splits(
+                splitlength=self.unit_system.units["distance"].size
+            )
+        )
+
+    def switch_to_zones(self):
+        zones = (
+            activity_types.ZONES[self.activity.sport]
+            if self.activity.sport in activity_types.ZONES
+            else activity_types.ZONES[None]
+        )
+        zones = [self.unit_system.decode(x, "speed") for x in zones]
+        self.zones_chart.set_zones(zones)
+        self.zones_chart.update(self.activity.track.get_zone_durations(zones))
+
+    def switch_to_curve(self):
+        good_distances = (
+            activity_types.SPECIAL_DISTANCES[self.activity.sport]
+            if self.activity.sport in activity_types.SPECIAL_DISTANCES
+            else activity_types.SPECIAL_DISTANCES[None]
+        )
+        table, graph = self.activity.track.get_curve(good_distances)
+        self.curve_chart.update([graph])
+        self.curve_table.update_data(list(good_distances.values()), table)
+
     def update_page(self, page):
         """Switch to a new activity tab page."""
         if page in self.updated:
             return
-        if page == 0:
-            # Update labels, map and data box
-            self.activity_name_label.setText(self.activity.name)
-            self.flags_label.setText(" | ".join(self.activity.active_flags))
-            self.description_label.setText(markdown.markdown(self.activity.description))
-            self.date_time_label.setText(times.nice(self.activity.start_time))
-            self.activity_type_label.setText(self.activity.sport)
-            self.info_table.update_data(self.activity.stats)
-            if self.activity.track.has_position_data:
-                self.map_widget.setVisible(True)
-                self.map_widget.show(self.activity.track.lat_lon_list)
-            else:
-                self.map_widget.setVisible(False)
-        elif page == 1:
-            # Update charts
-            if self.activity.track.has_altitude_data:
-                self.charts.update_show("ele", [self.activity.track.graph("ele")])
-            else:
-                self.charts.hide("ele")
-            self.charts.update_show("speed", [self.activity.track.graph("speed")])
-            if "heartrate" in self.activity.track:
-                self.charts.update_show(
-                    "heartrate", [self.activity.track.graph("heartrate")]
-                )
-            else:
-                self.charts.hide("heartrate")
-            if "cadence" in self.activity.track:
-                self.charts.update_show(
-                    "cadence", [self.activity.track.graph("cadence")]
-                )
-            else:
-                self.charts.hide("cadence")
-            if "power" in self.activity.track:
-                self.charts.update_show("power", [self.activity.track.graph("power")])
-            else:
-                self.charts.hide("power")
-        elif page == 2:
-            self.update_splits(
-                self.activity.track.splits(
-                    splitlength=self.unit_system.units["distance"].size
-                )
-            )
-        elif page == 3:
-            zones = (
-                activity_types.ZONES[self.activity.sport]
-                if self.activity.sport in activity_types.ZONES
-                else activity_types.ZONES[None]
-            )
-            zones = [self.unit_system.decode(x, "speed") for x in zones]
-            self.zones_chart.set_zones(zones)
-            self.zones_chart.update(self.activity.track.get_zone_durations(zones))
-        elif page == 4:
-            good_distances = (
-                activity_types.SPECIAL_DISTANCES[self.activity.sport]
-                if self.activity.sport in activity_types.SPECIAL_DISTANCES
-                else activity_types.SPECIAL_DISTANCES[None]
-            )
-            table, graph = self.activity.track.get_curve(good_distances)
-            self.curve_chart.update([graph])
-            self.curve_table.update_data(list(good_distances.values()), table)
+        (
+            self.switch_to_summary,
+            self.switch_to_data,
+            self.switch_to_splits,
+            self.switch_to_zones,
+            self.switch_to_curve,
+        )[page]()
         self.updated.add(page)
 
     def update_activity(self, selected):
@@ -244,11 +258,8 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         if self.activity.track.manual:
             self.activity_tabs.setCurrentIndex(0)
-            for page in range(1, 5):
-                self.activity_tabs.setTabEnabled(page, False)
-        else:
-            for page in range(1, 5):
-                self.activity_tabs.setTabEnabled(page, True)
+        for page in range(1, 5):
+            self.activity_tabs.setTabEnabled(page, not self.activity.track.manual)
         # Previously generated pages need refreshing
         self.updated = set()
         self.update_page(self.activity_tabs.currentIndex())
@@ -320,22 +331,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.progression_chart.update(
             [((d[0], "date"), (d[1], "distance")) for d in data]
         )
-        if self.summary_period == "All Time":
-            self.progression_chart.series()
-        else:
-            self.progression_chart.date_time_axis.setRange(
+        x_axis = self.progression_chart.date_time_axis
+        if self.summary_period != "All Time":
+            x_axis.setRange(
                 times.start_of(NOW, self.summary_period.casefold()),
                 times.end_of(NOW, self.summary_period.casefold()),
             )
         if self.summary_period == "Week":
-            self.progression_chart.date_time_axis.setTickCount(8)
-            self.progression_chart.date_time_axis.setFormat("dddd")
+            x_axis.setTickCount(8)
+            x_axis.setFormat("dddd")
         if self.summary_period == "Month":
-            self.progression_chart.date_time_axis.setTickCount(32)
-            self.progression_chart.date_time_axis.setFormat("d")
+            x_axis.setTickCount(32)
+            x_axis.setFormat("d")
         if self.summary_period == "Year":
-            self.progression_chart.date_time_axis.setTickCount(13)
-            self.progression_chart.date_time_axis.setFormat("MMMM")
+            x_axis.setTickCount(13)
+            x_axis.setFormat("MMMM")
 
     def get_allowed_for_summary(self):
         """Get the allowed activity types from the checklist."""
@@ -395,7 +405,7 @@ class MainWindow(QtWidgets.QMainWindow):
 def main():
     """Run the app and display the main window."""
     app = QtWidgets.QApplication(sys.argv)
-    app.setWindowIcon(PyQt5.QtGui.QIcon("resources/icons/icon.png"))
+    app.setWindowIcon(QIcon("resources/icons/icon.png"))
     main_window = MainWindow(activity_list.from_disk())
 
     main_window.show()
