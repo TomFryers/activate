@@ -109,6 +109,8 @@ YARD = Unit("yard", "yd", 0.9144)
 METRE_PER_SECOND = Unit("metre per second", "m ∕ s", 1)
 KM_PER_HOUR = Unit("kilometre per hour", "km ∕ h", 1 / 3.6)
 MILE_PER_HOUR = Unit("mile per hour", "mph", 1609.344 / 3600)
+FOOT_PER_MINUTE = Unit("foot per minute", "ft ∕ min", 0.3048 / 60)
+METRE_PER_MINUTE = Unit("metre per minute", "m ∕ min", 1 / 60)
 TIME = Unit("minutes and seconds", "", 1)
 SECOND = Unit("second", "s", 1)
 MINUTE = Unit("minute", "min", 60)
@@ -124,7 +126,8 @@ DATE = DateUnit()
 ALL = {
     "distance": (METRE, FOOT, YARD, KM, MILE),
     "altitude": (METRE, FOOT),
-    "speed": (METRE_PER_SECOND, KM_PER_HOUR, MILE_PER_HOUR),
+    "speed": (METRE_PER_SECOND, KM_PER_HOUR, MILE_PER_HOUR, METRE_PER_MINUTE),
+    "vertical_speed": (METRE_PER_SECOND, METRE_PER_MINUTE, FOOT_PER_MINUTE),
     "time": (TIME,),
     "pace": (MIN_PER_KM, MIN_PER_MILE),
     "date": (DATE,),
@@ -139,6 +142,7 @@ METRIC = {
     "distance": KM,
     "altitude": METRE,
     "speed": KM_PER_HOUR,
+    "vertical_speed": METRE_PER_MINUTE,
     "time": TIME,
     "pace": MIN_PER_KM,
     "date": DATE,
@@ -153,6 +157,7 @@ IMPERIAL = {
     "distance": MILE,
     "altitude": FOOT,
     "speed": MILE_PER_HOUR,
+    "vertical_speed": FOOT_PER_MINUTE,
     "time": TIME,
     "pace": MIN_PER_MILE,
     "date": DATE,

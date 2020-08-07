@@ -14,6 +14,7 @@ FIELD_DIMENSIONS = {
     "lon": "latlon",
     "ele": "altitude",
     "height_change": "altitude",
+    "vertical_speed": "vertical_speed",
     "climb": "altitude",
     "desc": "altitude",
     "gradient": None,
@@ -139,6 +140,8 @@ class Track:
                 self.calculate_climb_desc()
             elif field == "height_change":
                 self.calculate_height_change()
+            elif field == "vertical_speed":
+                self.calculate_vertical_speed()
             elif field == "gradient":
                 self.calculate_gradient()
             elif field == "angle":
@@ -155,7 +158,14 @@ class Track:
             return self.has_position_data
         if field in {"dist_to_last", "dist"}:
             return "dist" in self or "dist_to_last" in self or self.has_position_data
-        if field in {"climb", "desc", "height_change", "gradient", "angle"}:
+        if field in {
+            "climb",
+            "desc",
+            "height_change",
+            "vertical_speed",
+            "gradient",
+            "angle",
+        }:
             return self.has_altitude_data
         return False
 
@@ -235,6 +245,20 @@ class Track:
             last = current
             current = self["ele"][point]
             self.fields["height_change"].append(current - last)
+
+    def calculate_vertical_speed(self):
+        """Calculate vertical speed at each point."""
+        self.fields["vertical_speed"] = [None]
+        for point in range(1, len(self)):
+            height_change = self["height_change"][point]
+            time = self["time"][point]
+            last_time = self["time"][point - 1]
+            if None in {height_change, time, last_time}:
+                self.fields["vertical_speed"].append(None)
+            else:
+                self.fields["vertical_speed"].append(
+                    height_change / (time - last_time).total_seconds()
+                )
 
     def calculate_gradient(self):
         """Calculate the gradient at each point."""
