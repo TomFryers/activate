@@ -425,12 +425,11 @@ class Track:
                 time_values[last_point] - self.start_time
             ).total_seconds()
             first_point = 0
-            while last_point < len(distance_values) - 1:
-                last_point += 1
-                while True:
-                    dist = distance_values[last_point] - distance_values[first_point]
-                    if dist < distance:
-                        break
+            for last_point in range(last_point + 1, len(distance_values)):
+                first_point = max(0, first_point)
+                while (
+                    dist := distance_values[last_point] - distance_values[first_point]
+                ) >= distance:
                     first_point += 1
                 first_point -= 1
                 time_taken = (
