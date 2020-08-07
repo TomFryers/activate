@@ -16,13 +16,16 @@ def from_GPX(string):
 def to_string(time: datetime.timedelta, exact=False):
     """Convert a time to a nicely formatted string."""
     result = []
+    started = False
     if time.days:
         result += [str(time.days), " d "]
         time %= ONE_DAY
-    if time >= ONE_HOUR:
+        started = True
+    if time >= ONE_HOUR or started:
         result += [f"{time // ONE_HOUR:0>2d}", ":"]
         time %= ONE_HOUR
-    if time >= ONE_MINUTE:
+        started = True
+    if time >= ONE_MINUTE or started:
         result += [f"{time // ONE_MINUTE:0>2d}", ":"]
         time %= ONE_MINUTE
     secs = time.total_seconds()
