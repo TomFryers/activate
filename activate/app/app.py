@@ -93,23 +93,24 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_manual_activity(self):
         manual_window = dialogs.ManualActivityDialog()
         data = manual_window.exec({})
-        self.add_activity(
-            activity.Activity(
-                data["Name"],
-                data["Type"],
-                track.ManualTrack(
+        if data:
+            self.add_activity(
+                activity.Activity(
+                    data["Name"],
+                    data["Type"],
+                    track.ManualTrack(
+                        data["Start Time"],
+                        data["Distance"] * 1000,
+                        data["Ascent"],
+                        data["Duration"],
+                    ),
+                    "[manual]",
+                    data["Flags"],
                     data["Start Time"],
                     data["Distance"] * 1000,
-                    data["Ascent"],
-                    data["Duration"],
-                ),
-                "[manual]",
-                data["Flags"],
-                data["Start Time"],
-                data["Distance"] * 1000,
-                description=data["Description"],
+                    description=data["Description"],
+                )
             )
-        )
 
     def edit_activity_data(self):
         edit_activity_dialog = (
