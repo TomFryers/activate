@@ -172,6 +172,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 files.copy_to_location_renamed(filename, paths.PHOTOS)
             )
         self.activity.save(paths.ACTIVITIES)
+        if 0 in self.updated:
+            self.updated.remove(0)
+        self.update_page(0)
 
     def update_activity_list(self):
         """Make the activity list show the correct activities."""
