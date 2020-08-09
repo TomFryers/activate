@@ -1,13 +1,35 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
+from activate.app import paths
+
 
 class ClickablePhoto(QtWidgets.QLabel):
     clicked = QtCore.pyqtSignal(int)
+    deleted = QtCore.pyqtSignal(int)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.menu = QtWidgets.QMenu(self)
+        self.action_delete = QtWidgets.QAction("Delete")
+        self.action_delete.setIcon(QtGui.QIcon.fromTheme("edit-delete"))
+        self.action_delete.triggered.connect(self.delete)
+        self.menu.addAction(self.action_delete)
+
+    @property
+    def index(self):
+        return self.parent().layout().indexOf(self)
 
     def mouseReleaseEvent(self, event):
-        self.clicked.emit(self.parent().layout().indexOf(self))
-        super().mousePressEvent(event)
+        if event.button() == Qt.LeftButton:
+            self.clicked.emit(self.index)
+            super().mousePressEvent(event)
+
+    def contextMenuEvent(self, event):
+        self.menu.exec(event.globalPos())
+
+    def delete(self):
+        self.deleted.emit(self.index)
 
 
 class PhotoList(QtWidgets.QWidget):
@@ -49,6 +71,7 @@ class PhotoList(QtWidgets.QWidget):
         for photo in self.photos:
             label = ClickablePhoto(self)
             label.setPixmap(photo)
+            label.deleted.connect(self.delete)
             label.clicked.connect(self.show_photos)
             self.layout().addWidget(label)
             self.labels.append(label)
@@ -56,6 +79,17 @@ class PhotoList(QtWidgets.QWidget):
     def show_photos(self, index):
         viewer = PhotoViewer(self.filenames, index)
         viewer.exec()
+
+    def show_activity_photos(self, activity):
+        self.activity = activity
+        self.replace_photos(activity.photos)
+
+    def delete(self, index):
+        self.filenames.pop(index)
+        self.photos.pop(index)
+        self.replace_photos(self.filenames)
+        self.activity.photos = self.filenames
+        self.activity.save(paths.ACTIVITIES)
 
 
 class PhotoViewer(QtWidgets.QDialog):

@@ -207,7 +207,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.map_widget.show(self.activity.track.lat_lon_list)
         else:
             self.map_widget.setVisible(False)
-        self.photo_list.replace_photos(self.activity.photos)
+        self.photo_list.show_activity_photos(self.activity)
 
     def switch_to_data(self):
         """Update charts."""
