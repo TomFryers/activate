@@ -1,5 +1,5 @@
 """Classes inheriting from QTableWidgets or QTableWidgetItems."""
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 
 from activate.core import number_formats, times, units
@@ -168,6 +168,7 @@ class SplitTable(ValueColumnTable):
 class ActivityListTable(ValueColumnTable):
     headings = ["Name", "Type", "Start Time", "Distance"]
     dimensions = [None, None, None, "distance"]
+    right_clicked = QtCore.pyqtSignal(QtCore.QEvent)
 
     def set_units(self, *args, **kwargs):
         super().set_units(*args, **kwargs)
@@ -203,6 +204,12 @@ class ActivityListTable(ValueColumnTable):
 
     def default_sort(self):
         self.sortItems(2, Qt.DescendingOrder)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.RightButton:
+            self.right_clicked.emit(event)
+        else:
+            super().mouseReleaseEvent(event)
 
 
 class CurveTable(ValueColumnTable):

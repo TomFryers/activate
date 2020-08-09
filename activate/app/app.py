@@ -44,6 +44,7 @@ class MainWindow(QtWidgets.QMainWindow):
             table.set_units(self.unit_system)
 
         self.update_activity_list()
+        self.activity_list_table.right_clicked.connect(self.activity_list_menu)
 
         self.map_widget = maps.RouteMap(self.map_container)
         size_policy = self.map_widget.sizePolicy()
@@ -424,6 +425,9 @@ class MainWindow(QtWidgets.QMainWindow):
     @property
     def unit_system(self):
         return units.UNIT_SYSTEMS[self.settings.unit_system]
+
+    def activity_list_menu(self, event):
+        self.activity_menu.exec(event.globalPos())
 
     def closeEvent(self, event):
         self.activities.save()
