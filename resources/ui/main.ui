@@ -595,6 +595,9 @@
    <property name="text">
     <string>Add Manual</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
   </action>
   <action name="action_add_photos">
    <property name="text">
