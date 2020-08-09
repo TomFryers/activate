@@ -84,6 +84,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.action_import.setIcon(QIcon.fromTheme("document-open"))
         self.action_add_manual.setIcon(QIcon.fromTheme("document-new"))
+        self.action_add_photos.setIcon(QIcon.fromTheme("insert-image"))
         self.export_menu.setIcon(QIcon.fromTheme("document-send"))
         self.action_quit.setIcon(QIcon.fromTheme("application-exit"))
 
