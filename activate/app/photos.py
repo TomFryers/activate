@@ -26,7 +26,13 @@ class PhotoList(QtWidgets.QWidget):
             return
         self.photos = [QtGui.QPixmap(f) for f in filenames]
         total_aspect = sum(i.width() / i.height() for i in self.photos)
-        height = self.width / total_aspect
+        width = (
+            self.width
+            - self.layout().spacing() * (len(self.photos) - 1)
+            - self.layout().contentsMargins().left()
+            - self.layout().contentsMargins().right()
+        )
+        height = width / total_aspect
         self.photos = [
             p.scaledToHeight(height, Qt.SmoothTransformation) for p in self.photos
         ]
