@@ -327,9 +327,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.activity.export_original(filename)
 
     def main_tab_switch(self, tab):
-        if self.main_tabs.tabText(tab) == "Summary":
+        tab_name = self.main_tabs.tabText(tab)
+        for action in (self.export_menu, self.edit_menu):
+            action.setEnabled(tab_name == "Activities")
+        if tab_name == "Summary":
             self.summary_tab_switch()
-        elif self.main_tabs.tabText(tab) == "Activities":
+        elif tab_name == "Activities":
             if not self.activity_list_table.selectedItems():
                 self.activity_list_table.selectRow(0)
         else:
