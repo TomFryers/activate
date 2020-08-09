@@ -60,12 +60,14 @@ class PhotoList(QtWidgets.QWidget):
 
 class PhotoViewer(QtWidgets.QDialog):
     def __init__(self, photos, current_index, *args, **kwargs):
+        self.filenames = photos.copy()
         self.current_index = current_index
         self.photos = photos
         super().__init__(*args, **kwargs)
         self.label = QtWidgets.QLabel(self)
         self.main_layout = QtWidgets.QHBoxLayout(self)
-        self.main_layout.addWidget(self.label)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.addWidget(self.label, alignment=Qt.AlignCenter)
         self.show_photo()
 
     def show_photo(self):
@@ -73,7 +75,7 @@ class PhotoViewer(QtWidgets.QDialog):
         if not isinstance(photo, QtGui.QPixmap):
             photo = QtGui.QPixmap(photo)
             photo = photo.scaled(
-                self.height(), self.width(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+                self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation
             )
             self.photos[self.current_index] = photo
         self.label.setPixmap(photo)
@@ -92,3 +94,8 @@ class PhotoViewer(QtWidgets.QDialog):
             self.set_new_index(self.current_index - 1)
             return
         super().keyPressEvent(event)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.photos = self.filenames.copy()
+        self.show_photo()
