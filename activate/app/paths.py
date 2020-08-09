@@ -6,6 +6,7 @@ from PyQt5.QtCore import QStandardPaths
 DATA = f"{QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)}/activate/"
 ACTIVITIES = DATA + "activities/"
 TRACKS = DATA + "originals/"
+PHOTOS = DATA + "photos/"
 SAVE = DATA + "activity_list.pickle"
 SETTINGS = (
     QStandardPaths.writableLocation(QStandardPaths.ConfigLocation) + "/activate.pickle"
@@ -20,5 +21,5 @@ def ensure_exists(path):
 
 def ensure_all_present():
     """Create all the required directories."""
-    for path in (ACTIVITIES, TRACKS):
+    for path in (ACTIVITIES, TRACKS, PHOTOS):
         ensure_exists(path)

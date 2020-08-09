@@ -1,7 +1,4 @@
 """Functions for loading activities from files."""
-import glob
-import pathlib
-import shutil
 
 from activate.core import activity, files, filetypes, track
 
@@ -46,8 +43,5 @@ def load(filename) -> tuple:
 
 def import_and_load(filename, copy_to) -> activity.Activity:
     """Import an activity and copy it into the originals directory."""
-    filename = pathlib.Path(filename)
-    filenames = glob.glob(f"{copy_to}*")
-    out_name = files.encode_name(filename.name, filenames, copy_to)
-    shutil.copy2(filename, out_name)
-    return activity.from_track(*load(str(out_name)), str(out_name))
+    filename = files.copy_to_location_renamed(filename, copy_to)
+    return activity.from_track(*load(filename), filename)

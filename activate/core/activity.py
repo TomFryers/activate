@@ -21,6 +21,7 @@ class Activity:
         distance=None,
         activity_id=None,
         description="",
+        photos=None,
     ):
         self.name = name
         self.sport = sport
@@ -42,6 +43,10 @@ class Activity:
         else:
             self.activity_id = activity_id
         self.description = description
+        if photos is None:
+            self.photos = []
+        else:
+            self.photos = photos
 
     @property
     def stats(self):
@@ -104,6 +109,7 @@ class Activity:
             self.distance,
             self.activity_id,
             self.description,
+            self.photos,
         )
 
     def save(self, path):

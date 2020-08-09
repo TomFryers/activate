@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
-from activate.app import activity_list, charts, dialogs, maps, paths, settings
+from activate.app import activity_list, charts, dialogs, maps, paths, photos, settings
 from activate.core import (
     activity,
     activity_types,
@@ -49,6 +49,9 @@ class MainWindow(QtWidgets.QMainWindow):
         size_policy = self.map_widget.sizePolicy()
         size_policy.setRetainSizeWhenHidden(True)
         self.map_widget.setSizePolicy(size_policy)
+
+        self.photo_list = photos.PhotoList(self)
+        self.overview_tab_layout.addWidget(self.photo_list, 1, 1)
 
         # Set up charts
         self.charts = charts.LineChartSet(self.unit_system, self.graphs_layout)
@@ -152,6 +155,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_activity(row)
         self.activity_list_table.setSortingEnabled(True)
 
+    def add_photos(self):
+        filenames = QtWidgets.QFileDialog.getOpenFileNames(
+            self,
+            "Add photos",
+            paths.HOME,
+            "Image files (*.png *.jpg *.jpeg *.gif *.bmp *.ppm *.pgm *.xpm)",
+        )[0]
+        if not filenames:
+            return
+
+        for filename in filenames:
+            self.activity.photos.append(
+                files.copy_to_location_renamed(filename, paths.PHOTOS)
+            )
+        self.activity.save(paths.ACTIVITIES)
+
     def update_activity_list(self):
         """Make the activity list show the correct activities."""
         self.activity_list_table.setRowCount(len(self.activities))
@@ -186,6 +205,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.map_widget.show(self.activity.track.lat_lon_list)
         else:
             self.map_widget.setVisible(False)
+        self.photo_list.replace_photos(self.activity.photos)
 
     def switch_to_data(self):
         """Update charts."""

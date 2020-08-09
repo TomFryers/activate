@@ -1,4 +1,7 @@
 """Functions for manipulating files."""
+import glob
+import pathlib
+import shutil
 
 
 def has_extension(filename, extension) -> bool:
@@ -36,3 +39,16 @@ def decode_name(filename):
         return filename
     filename = filename[filename[1:].index("_") + 2 :]
     return filename
+
+
+def copy_to_location_renamed(filename, copy_to):
+    """
+    Copy a file to a location, renaming it if necessary.
+
+    Returns the new filename.
+    """
+    filename = pathlib.Path(filename)
+    filenames = glob.glob(f"{copy_to}*")
+    out_name = encode_name(filename.name, filenames, copy_to)
+    shutil.copy2(filename, out_name)
+    return out_name

@@ -280,6 +280,90 @@
             <string>Overview</string>
            </attribute>
            <layout class="QGridLayout" name="overview_tab_layout">
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="date_activity_type_area">
+              <item>
+               <widget class="QLabel" name="date_time_label">
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>[Date]</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="activity_type_label">
+                <property name="maximumSize">
+                 <size>
+                  <width>120</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>[Type]</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="1">
+             <widget class="InfoTable" name="info_table">
+              <property name="minimumSize">
+               <size>
+                <width>310</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>310</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="showGrid">
+               <bool>false</bool>
+              </property>
+              <property name="columnCount">
+               <number>3</number>
+              </property>
+              <attribute name="horizontalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>100</number>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <column/>
+              <column/>
+              <column/>
+             </widget>
+            </item>
             <item row="0" column="0">
              <layout class="QVBoxLayout" name="activity_text_area">
               <item>
@@ -330,92 +414,8 @@
               </item>
              </layout>
             </item>
-            <item row="0" column="1">
-             <layout class="QHBoxLayout" name="date_activity_type_area">
-              <item>
-               <widget class="QLabel" name="date_time_label">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>[Date]</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="activity_type_label">
-                <property name="maximumSize">
-                 <size>
-                  <width>120</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>[Type]</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="1" column="0">
+            <item row="1" column="0" rowspan="2">
              <layout class="QGridLayout" name="map_container"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="InfoTable" name="info_table">
-              <property name="minimumSize">
-               <size>
-                <width>310</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>310</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="horizontalScrollBarPolicy">
-               <enum>Qt::ScrollBarAlwaysOff</enum>
-              </property>
-              <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
-              </property>
-              <property name="selectionMode">
-               <enum>QAbstractItemView::SingleSelection</enum>
-              </property>
-              <property name="showGrid">
-               <bool>false</bool>
-              </property>
-              <property name="columnCount">
-               <number>3</number>
-              </property>
-              <attribute name="horizontalHeaderVisible">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="horizontalHeaderDefaultSectionSize">
-               <number>100</number>
-              </attribute>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="verticalHeaderVisible">
-               <bool>false</bool>
-              </attribute>
-              <column/>
-              <column/>
-              <column/>
-             </widget>
             </item>
            </layout>
           </widget>
@@ -556,6 +556,7 @@
      <string>Edit</string>
     </property>
     <addaction name="edit_activity"/>
+    <addaction name="action_add_photos"/>
    </widget>
    <addaction name="file_menu"/>
    <addaction name="edit_menu"/>
@@ -593,6 +594,11 @@
   <action name="action_add_manual">
    <property name="text">
     <string>Add Manual</string>
+   </property>
+  </action>
+  <action name="action_add_photos">
+   <property name="text">
+    <string>Add Photos</string>
    </property>
   </action>
  </widget>
@@ -839,6 +845,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_add_photos</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>add_photos()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -854,5 +876,6 @@
   <slot>summary_period_changed(QString)</slot>
   <slot>export_activity_original()</slot>
   <slot>add_manual_activity()</slot>
+  <slot>add_photos()</slot>
  </slots>
 </ui>
