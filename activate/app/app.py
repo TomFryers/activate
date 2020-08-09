@@ -328,7 +328,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def main_tab_switch(self, tab):
         tab_name = self.main_tabs.tabText(tab)
-        for action in (self.export_menu, self.edit_menu):
+        for action in (self.export_menu, self.activity_menu):
             action.setEnabled(tab_name == "Activities")
         if tab_name == "Summary":
             self.summary_tab_switch()
