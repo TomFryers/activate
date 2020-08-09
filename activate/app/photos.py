@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 class ClickablePhoto(QtWidgets.QLabel):
     clicked = QtCore.pyqtSignal(int)
 
-    def mousePressEvent(self, event):
+    def mouseReleaseEvent(self, event):
         self.clicked.emit(self.parent().layout().indexOf(self))
         super().mousePressEvent(event)
 
