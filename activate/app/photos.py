@@ -16,8 +16,8 @@ class PhotoList(QtWidgets.QWidget):
 
     def empty(self):
         """Remove all photos in the PhotoList."""
-        for photo in self.layout().findChildren(QtWidgets.QWidget):
-            del photo
+        for index in range(self.layout().count() - 1, -1, -1):
+            self.layout().itemAt(index).widget().setParent(None)
 
     def replace_photos(self, filenames):
         """Replace the photos with new ones."""
