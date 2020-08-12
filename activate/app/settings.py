@@ -22,4 +22,4 @@ class Settings:
     def save(self):
         """Save settings to a configuration file."""
         dict_version = dataclasses.asdict(self)
-        serialise.dump_file(dict_version, paths.SETTINGS)
+        serialise.dump_file(dict_version, paths.SETTINGS, readable=True)

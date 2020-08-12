@@ -116,7 +116,9 @@ class Activity:
         )
 
     def save(self, path):
-        serialise.dump_file(self.save_data, f"{path}{self.activity_id}.json")
+        serialise.dump_file(
+            self.save_data, f"{path}{self.activity_id}.json.gz", gz=True
+        )
 
     def export_original(self, filename):
         shutil.copy2(self.original_name, filename)

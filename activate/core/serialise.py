@@ -1,4 +1,5 @@
 import datetime
+import gzip
 import json
 
 
@@ -29,13 +30,25 @@ def decode(obj):
     return obj
 
 
-def dump_file(obj, filename):
-    """Save obj as a JSON file. Can store datetimes and timedeltas."""
-    with open(filename, "w") as f:
-        json.dump(obj, f, default=default)
+def dump_file(obj, filename, gz=False, readable=False):
+    """
+    Save obj as a JSON file. Can store datetimes and timedeltas.
+
+    Can be gzipped if gz is True.
+    """
+    with (gzip.open if gz else open)(filename, "wt") as f:
+        json.dump(
+            obj,
+            f,
+            default=default,
+            separators=None if readable else (",", ":"),
+            indent="\t" if readable else None,
+        )
 
 
-def load_file(filename):
+def load_file(filename, gz="auto"):
     """Load a JSON file. Can retrieve datetimes and timedeltas."""
-    with open(filename, "r") as f:
+    if gz == "auto":
+        gz = filename.casefold().endswith("gz")
+    with (gzip.open if gz else open)(filename, "rt") as f:
         return json.load(f, object_hook=decode)

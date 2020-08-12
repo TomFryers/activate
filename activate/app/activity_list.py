@@ -33,7 +33,7 @@ class UnloadedActivity:
 
     def load(self) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""
-        data = serialise.load_file(f"{paths.ACTIVITIES}/{self.activity_id}.json")
+        data = serialise.load_file(f"{paths.ACTIVITIES}/{self.activity_id}.json.gz")
         return activity.Activity(*data)
 
     @property
@@ -68,7 +68,7 @@ class ActivityList(list):
 
         This only stores the list data, not the actual activities.
         """
-        serialise.dump_file([dataclasses.asdict(a) for a in self], paths.SAVE)
+        serialise.dump_file([dataclasses.asdict(a) for a in self], paths.SAVE, gz=True)
 
     def add_activity(self, new_activity):
         """

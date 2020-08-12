@@ -7,7 +7,7 @@ DATA = f"{QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)}/activ
 ACTIVITIES = DATA + "activities/"
 TRACKS = DATA + "originals/"
 PHOTOS = DATA + "photos/"
-SAVE = DATA + "activity_list.json"
+SAVE = DATA + "activity_list.json.gz"
 SETTINGS = (
     QStandardPaths.writableLocation(QStandardPaths.ConfigLocation) + "/activate.json"
 )
