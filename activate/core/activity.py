@@ -1,7 +1,7 @@
-import pickle
 import random
 import shutil
 
+from activate.core import serialise, track
 from activate.core.units import DimensionValue
 
 
@@ -14,7 +14,7 @@ class Activity:
         self,
         name,
         sport,
-        track,
+        track_,
         original_name,
         flags=None,
         start_time=None,
@@ -25,7 +25,10 @@ class Activity:
     ):
         self.name = name
         self.sport = sport
-        self.track = track
+        if isinstance(track_, dict):
+            self.track = track.Track(track_)
+        else:
+            self.track = track_
         self.original_name = original_name
         if flags is None:
             self.flags = {}
@@ -102,7 +105,7 @@ class Activity:
         return (
             self.name,
             self.sport,
-            self.track,
+            self.track.save_data,
             self.original_name,
             self.flags,
             self.start_time,
@@ -113,8 +116,7 @@ class Activity:
         )
 
     def save(self, path):
-        with open(f"{path}{self.activity_id}.pickle", "wb") as f:
-            pickle.dump(self.save_data, f)
+        serialise.dump_file(self.save_data, f"{path}{self.activity_id}.json")
 
     def export_original(self, filename):
         shutil.copy2(self.original_name, filename)

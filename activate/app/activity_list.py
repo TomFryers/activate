@@ -3,24 +3,24 @@ Defines the activity list, which contains all of the user's real data.
 
 This is where computation of summary values should be done.
 """
+import dataclasses
 import datetime
-import pickle
-from dataclasses import dataclass
 
 from activate.app import paths
-from activate.core import activity, times, units
+from activate.core import activity, serialise, times, units
 
 
 def from_disk():
     """Load an activity list from disk, if it exists."""
     try:
-        with open(paths.SAVE, "rb") as f:
-            return ActivityList(pickle.load(f))
+        return ActivityList(
+            UnloadedActivity(**a) for a in serialise.load_file(paths.SAVE)
+        )
     except FileNotFoundError:
         return ActivityList([])
 
 
-@dataclass
+@dataclasses.dataclass
 class UnloadedActivity:
     name: str
     sport: str
@@ -33,8 +33,7 @@ class UnloadedActivity:
 
     def load(self) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""
-        with open(f"{paths.ACTIVITIES}/{self.activity_id}.pickle", "rb") as f:
-            data = pickle.load(f)
+        data = serialise.load_file(f"{paths.ACTIVITIES}/{self.activity_id}.json")
         return activity.Activity(*data)
 
     @property
@@ -69,8 +68,7 @@ class ActivityList(list):
 
         This only stores the list data, not the actual activities.
         """
-        with open(paths.SAVE, "wb") as f:
-            pickle.dump(self[:], f)
+        serialise.dump_file([dataclasses.asdict(a) for a in self], paths.SAVE)
 
     def add_activity(self, new_activity):
         """

@@ -451,3 +451,7 @@ class Track:
             bests_table,
             ((list(bests.keys()), "distance"), (speeds, "speed")),
         )
+
+    @property
+    def save_data(self):
+        return self.fields

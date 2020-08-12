@@ -1,16 +1,14 @@
 """Contains a class holding current user settings."""
 import dataclasses
-import pickle
 
 from activate.app import paths
-from activate.core import units
+from activate.core import serialise, units
 
 
 def load_settings():
     """Load settings from a configuration file."""
     try:
-        with open(paths.SETTINGS, "rb") as f:
-            return pickle.load(f)
+        return Settings(**serialise.load_file(paths.SETTINGS))
     except FileNotFoundError:
         return Settings(unit_system=units.DEFAULT)
 
@@ -23,5 +21,5 @@ class Settings:
 
     def save(self):
         """Save settings to a configuration file."""
-        with open(paths.SETTINGS, "wb") as f:
-            pickle.dump(self, f)
+        dict_version = dataclasses.asdict(self)
+        serialise.dump_file(dict_version, paths.SETTINGS)

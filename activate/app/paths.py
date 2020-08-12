@@ -7,9 +7,9 @@ DATA = f"{QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)}/activ
 ACTIVITIES = DATA + "activities/"
 TRACKS = DATA + "originals/"
 PHOTOS = DATA + "photos/"
-SAVE = DATA + "activity_list.pickle"
+SAVE = DATA + "activity_list.json"
 SETTINGS = (
-    QStandardPaths.writableLocation(QStandardPaths.ConfigLocation) + "/activate.pickle"
+    QStandardPaths.writableLocation(QStandardPaths.ConfigLocation) + "/activate.json"
 )
 HOME = QStandardPaths.writableLocation(QStandardPaths.HomeLocation) + "/"
 
