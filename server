@@ -1,0 +1,3 @@
+#!/usr/bin/env python3
+from activate.server import server
+server.app.run(debug=True)

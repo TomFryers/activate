@@ -8,7 +8,7 @@ from activate.core import serialise, units
 def load_settings():
     """Load settings from a configuration file."""
     try:
-        return Settings(**serialise.load_file(paths.SETTINGS))
+        return Settings(**serialise.load(paths.SETTINGS))
     except FileNotFoundError:
         return Settings(unit_system=units.DEFAULT)
 
@@ -22,4 +22,4 @@ class Settings:
     def save(self):
         """Save settings to a configuration file."""
         dict_version = dataclasses.asdict(self)
-        serialise.dump_file(dict_version, paths.SETTINGS, readable=True)
+        serialise.dump(dict_version, paths.SETTINGS, readable=True)

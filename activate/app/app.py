@@ -9,19 +9,30 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
-from activate.app import activity_list, charts, dialogs, maps, paths, photos, settings
+from activate.app import (
+    activity_list,
+    charts,
+    connect,
+    dialogs,
+    maps,
+    paths,
+    photos,
+    settings,
+)
 from activate.core import (
     activity,
     activity_types,
     files,
     load_activity,
     number_formats,
+    serialise,
     times,
     track,
     units,
 )
 
 NOW = datetime.datetime.now()
+TEST_SERVER = "http://localhost:5000"
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -77,6 +88,8 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         self.summary_period = "All Time"
+
+        self.social_activities = []
 
         # Set up activity types list for the summary page
         self.activity_types_list.row_names = list(activity_types.TYPES)
@@ -192,6 +205,11 @@ class MainWindow(QtWidgets.QMainWindow):
         activity_id = new_activity.activity_id
         activity_elements = new_activity.unload(activity_list.UnloadedActivity).list_row
         self.activities.add_activity(new_activity)
+        connect.post_data(
+            TEST_SERVER,
+            "send_activity",
+            {"activity": serialise.dump_bytes(new_activity.save_data)},
+        )
         self.activity_list_table.add_id_row(activity_id, activity_elements, position)
 
     def update_splits(self, data):
@@ -340,6 +358,8 @@ class MainWindow(QtWidgets.QMainWindow):
         elif tab_name == "Activities":
             if not self.activity_list_table.selectedItems():
                 self.activity_list_table.selectRow(0)
+        elif tab_name == "Social":
+            self.social_tab_update()
         else:
             raise ValueError("Invalid tab")
 
@@ -421,6 +441,24 @@ class MainWindow(QtWidgets.QMainWindow):
     def summary_period_changed(self, value):
         self.summary_period = value
         self.summary_tab_switch()
+
+    def social_tab_update(self):
+        social_ids = serialise.load_bytes(
+            connect.get_data(TEST_SERVER, "get_activities")
+        )
+        self.social_activities = [
+            activity.Activity(
+                *serialise.load_bytes(
+                    connect.get_data(TEST_SERVER, f"get_activity/{i}")
+                )
+            )
+            for i in social_ids
+        ]
+        self.social_list.setRowCount(len(self.social_activities))
+        for row, social_activity in enumerate(self.social_activities):
+            self.social_list.setItem(
+                row, 0, QtWidgets.QTableWidgetItem(social_activity.name)
+            )
 
     @property
     def unit_system(self):

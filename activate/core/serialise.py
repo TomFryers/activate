@@ -30,25 +30,42 @@ def decode(obj):
     return obj
 
 
-def dump_file(obj, filename, gz=False, readable=False):
+def dumps(obj, readable=False):
+    return json.dumps(
+        obj,
+        default=default,
+        separators=None if readable else (",", ":"),
+        indent="\t" if readable else None,
+    )
+
+
+def dump_bytes(obj, gz=False, readable=False):
+    data = dumps(obj, readable=readable).encode("utf-8")
+    return gzip.compress(data) if gz else data
+
+
+def loads(data):
+    return json.loads(data, object_hook=decode)
+
+
+def load_bytes(data, gz=False):
+    data = gzip.decompress(data) if gz else data
+    return loads(data.decode("utf-8"))
+
+
+def dump(obj, filename, *args, **kwargs):
     """
     Save obj as a JSON file. Can store datetimes and timedeltas.
 
     Can be gzipped if gz is True.
     """
-    with (gzip.open if gz else open)(filename, "wt") as f:
-        json.dump(
-            obj,
-            f,
-            default=default,
-            separators=None if readable else (",", ":"),
-            indent="\t" if readable else None,
-        )
+    with open(filename, "wb") as f:
+        f.write(dump_bytes(obj, *args, **kwargs))
 
 
-def load_file(filename, gz="auto"):
+def load(filename, gz="auto"):
     """Load a JSON file. Can retrieve datetimes and timedeltas."""
     if gz == "auto":
         gz = filename.casefold().endswith("gz")
-    with (gzip.open if gz else open)(filename, "rt") as f:
-        return json.load(f, object_hook=decode)
+    with open(filename, "rb") as f:
+        return load_bytes(f.read(), gz=gz)

@@ -20,6 +20,21 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
+      <widget class="QWidget" name="social_tab">
+       <attribute name="title">
+        <string>Social</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="social_tab_layout">
+        <item>
+         <widget class="QTableWidget" name="social_list">
+          <property name="columnCount">
+           <number>1</number>
+          </property>
+          <column/>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="summary_tab">
        <attribute name="title">
         <string>Summary</string>

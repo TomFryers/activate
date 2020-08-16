@@ -13,9 +13,7 @@ from activate.core import activity, serialise, times, units
 def from_disk():
     """Load an activity list from disk, if it exists."""
     try:
-        return ActivityList(
-            UnloadedActivity(**a) for a in serialise.load_file(paths.SAVE)
-        )
+        return ActivityList(UnloadedActivity(**a) for a in serialise.load(paths.SAVE))
     except FileNotFoundError:
         return ActivityList([])
 
@@ -33,7 +31,7 @@ class UnloadedActivity:
 
     def load(self) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""
-        data = serialise.load_file(f"{paths.ACTIVITIES}/{self.activity_id}.json.gz")
+        data = serialise.load(f"{paths.ACTIVITIES}/{self.activity_id}.json.gz")
         return activity.Activity(*data)
 
     @property
@@ -68,7 +66,7 @@ class ActivityList(list):
 
         This only stores the list data, not the actual activities.
         """
-        serialise.dump_file([dataclasses.asdict(a) for a in self], paths.SAVE, gz=True)
+        serialise.dump([dataclasses.asdict(a) for a in self], paths.SAVE, gz=True)
 
     def add_activity(self, new_activity):
         """
