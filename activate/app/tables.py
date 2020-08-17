@@ -3,6 +3,7 @@ import dataclasses
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 
 from activate.app import settings
 from activate.core import number_formats, times, units
@@ -275,6 +276,14 @@ class InfoTable(Table):
 class ServersTable(Table):
     headings = ["Address", "Name", "Username", "Password"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set up right click delete menu
+        self.menu = QtWidgets.QMenu(self)
+        self.action_delete = QtWidgets.QAction("Delete")
+        self.action_delete.setIcon(QIcon.fromTheme("edit-delete"))
+        self.menu.addAction(self.action_delete)
+
     def show(self):
         super().show()
 
@@ -296,3 +305,7 @@ class ServersTable(Table):
     def add_row(self):
         self.setRowCount(self.rowCount() + 1)
         self.set_columns()
+
+    def contextMenuEvent(self, event):
+        if self.menu.exec(event.globalPos()):
+            self.removeRow(self.row(self.itemAt(event.pos())))
