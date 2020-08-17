@@ -3,6 +3,7 @@ import datetime
 
 import PyQt5
 from PyQt5 import QtWidgets
+from PyQt5.QtGui import QIcon
 
 from activate.app import checklist, paths, settings
 from activate.core import activity_types, times
@@ -256,6 +257,9 @@ class SettingsDialog(QtWidgets.QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         PyQt5.uic.loadUi("resources/ui/settings.ui", self)
+        self.settings_tabs.setTabIcon(0, QIcon.fromTheme("measure"))
+        self.settings_tabs.setTabIcon(1, QIcon.fromTheme("network-server"))
+        self.add_server_button.setIcon(PyQt5.QtGui.QIcon.fromTheme("list-add"))
 
     def load_from_settings(self, current_settings: settings.Settings):
         """Load a Settings object to the UI widgets."""

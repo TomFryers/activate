@@ -99,6 +99,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_add_manual.setIcon(QIcon.fromTheme("document-new"))
         self.action_edit.setIcon(QIcon.fromTheme("document-edit"))
         self.action_add_photos.setIcon(QIcon.fromTheme("insert-image"))
+        self.action_units.setIcon(QIcon.fromTheme("measure"))
+        self.action_servers.setIcon(QIcon.fromTheme("network-server"))
         self.export_menu.setIcon(QIcon.fromTheme("document-send"))
         self.action_quit.setIcon(QIcon.fromTheme("application-exit"))
 
