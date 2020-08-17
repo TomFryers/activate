@@ -565,6 +565,7 @@
      <string>Settings</string>
     </property>
     <addaction name="action_units"/>
+    <addaction name="action_servers"/>
    </widget>
    <widget class="QMenu" name="activity_menu">
     <property name="title">
@@ -617,6 +618,16 @@
   <action name="action_add_photos">
    <property name="text">
     <string>Add Photos</string>
+   </property>
+  </action>
+  <action name="actionAdd">
+   <property name="text">
+    <string>Add</string>
+   </property>
+  </action>
+  <action name="action_servers">
+   <property name="text">
+    <string>Servers</string>
    </property>
   </action>
  </widget>
@@ -879,6 +890,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_servers</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>edit_server_settings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -895,5 +922,6 @@
   <slot>export_activity_original()</slot>
   <slot>add_manual_activity()</slot>
   <slot>add_photos()</slot>
+  <slot>edit_server_settings()</slot>
  </slots>
 </ui>

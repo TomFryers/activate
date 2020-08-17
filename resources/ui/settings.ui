@@ -50,10 +50,22 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="servers_tab">
       <attribute name="title">
-       <string>Tab 2</string>
+       <string>Servers</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="ServersTable" name="server_table"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="add_server_button">
+         <property name="text">
+          <string>Add Server</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
@@ -66,6 +78,16 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ServersTable</class>
+   <extends>QTableWidget</extends>
+   <header>activate/app/tables.h</header>
+   <slots>
+    <slot>add_row()</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -100,5 +122,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>add_server_button</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>server_table</receiver>
+   <slot>add_row()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>213</x>
+     <y>226</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>213</x>
+     <y>109</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>add_server()</slot>
+ </slots>
 </ui>

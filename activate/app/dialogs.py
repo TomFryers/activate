@@ -260,13 +260,18 @@ class SettingsDialog(QtWidgets.QDialog):
     def load_from_settings(self, current_settings: settings.Settings):
         """Load a Settings object to the UI widgets."""
         self.unit_system.setCurrentText(current_settings.unit_system)
+        self.server_table.set_servers(current_settings.servers)
 
     def get_settings(self) -> settings.Settings:
         """Get a Settings object from the UI widgets."""
-        return settings.Settings(unit_system=self.unit_system.currentText())
+        return settings.Settings(
+            unit_system=self.unit_system.currentText(),
+            servers=self.server_table.get_servers(),
+        )
 
     def exec(self, current_settings, page):
-        self.settings_tabs.setCurrentIndex(("Units",).index(page))
+        self.settings_tabs.setCurrentIndex(("Units", "Servers").index(page))
+        self.load_from_settings(current_settings)
         result = super().exec()
         if not result:
             return current_settings

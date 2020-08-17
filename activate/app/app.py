@@ -32,7 +32,6 @@ from activate.core import (
 )
 
 NOW = datetime.datetime.now()
-TEST_SERVER = "http://localhost:5000"
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -108,6 +107,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_unit_settings(self):
         settings_window = dialogs.SettingsDialog()
         self.settings = settings_window.exec(self.settings, "Units")
+
+    def edit_server_settings(self):
+        settings_window = dialogs.SettingsDialog()
+        self.settings = settings_window.exec(self.settings, "Servers")
 
     def add_manual_activity(self):
         manual_window = dialogs.ManualActivityDialog()
@@ -205,11 +208,15 @@ class MainWindow(QtWidgets.QMainWindow):
         activity_id = new_activity.activity_id
         activity_elements = new_activity.unload(activity_list.UnloadedActivity).list_row
         self.activities.add_activity(new_activity)
-        connect.post_data(
-            TEST_SERVER,
-            "send_activity",
-            {"activity": serialise.dump_bytes(new_activity.save_data)},
-        )
+        for server in self.settings.servers:
+            try:
+                connect.post_data(
+                    server.address,
+                    "send_activity",
+                    {"activity": serialise.dump_bytes(new_activity.save_data)},
+                )
+            except connect.requests.RequestsException:
+                continue
         self.activity_list_table.add_id_row(activity_id, activity_elements, position)
 
     def update_splits(self, data):
@@ -443,17 +450,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.summary_tab_switch()
 
     def social_tab_update(self):
-        social_ids = serialise.load_bytes(
-            connect.get_data(TEST_SERVER, "get_activities")
-        )
-        self.social_activities = [
-            activity.Activity(
-                *serialise.load_bytes(
-                    connect.get_data(TEST_SERVER, f"get_activity/{i}")
+        self.social_activities = []
+        for server in self.settings.servers:
+            try:
+                social_ids = serialise.load_bytes(
+                    connect.get_data(server.address, "get_activities")
                 )
-            )
-            for i in social_ids
-        ]
+            except connect.requests.RequestException:
+                continue
+            self.social_activities += [
+                activity.Activity(
+                    *serialise.load_bytes(
+                        connect.get_data(server.address, f"get_activity/{i}")
+                    )
+                )
+                for i in social_ids
+            ]
         self.social_list.setRowCount(len(self.social_activities))
         for row, social_activity in enumerate(self.social_activities):
             self.social_list.setItem(

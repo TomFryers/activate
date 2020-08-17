@@ -1,7 +1,10 @@
 """Classes inheriting from QTableWidgets or QTableWidgetItems."""
+import dataclasses
+
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 
+from activate.app import settings
 from activate.core import number_formats, times, units
 
 
@@ -57,6 +60,8 @@ class FormattableNumber(QtWidgets.QTableWidgetItem):
 
 
 class Table(QtWidgets.QTableWidget):
+    unit_system = None
+
     def resize_to_contents(self, direction="h"):
         """
         Set a header to auto-resize its items.
@@ -87,6 +92,13 @@ class Table(QtWidgets.QTableWidget):
             zip(values, formats, alignments)
         ):
             self.set_item(position, column, value, format, align)
+
+    def get_row_text(self, index) -> list:
+        result = []
+        for column in range(self.columnCount()):
+            item = self.item(column, index)
+            result.append(None if item is None else item.text())
+        return result
 
     @property
     def headings(self):
@@ -258,3 +270,29 @@ class InfoTable(Table):
                 self.unit_system.units[value.dimension].symbol,
                 align=Qt.AlignLeft | Qt.AlignVCenter,
             )
+
+
+class ServersTable(Table):
+    headings = ["Address", "Name", "Username", "Password"]
+
+    def show(self):
+        super().show()
+
+    def set_columns(self):
+        self.setColumnCount(len(self.headings))
+        self.setHorizontalHeaderLabels(self.headings)
+
+    def set_servers(self, servers):
+        self.setRowCount(len(servers))
+        self.set_columns()
+        for row, server in enumerate(servers):
+            self.set_row(
+                ("" if x is None else x for x in dataclasses.astuple(server)), row
+            )
+
+    def get_servers(self):
+        return [settings.Server(*self.get_row_text(r)) for r in range(self.rowCount())]
+
+    def add_row(self):
+        self.setRowCount(self.rowCount() + 1)
+        self.set_columns()
