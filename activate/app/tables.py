@@ -97,7 +97,7 @@ class Table(QtWidgets.QTableWidget):
     def get_row_text(self, index) -> list:
         result = []
         for column in range(self.columnCount()):
-            item = self.item(column, index)
+            item = self.item(index, column)
             result.append(None if item is None else item.text())
         return result
 
