@@ -2,23 +2,14 @@
 import datetime
 import sys
 
-import markdown
 import PyQt5
+import PyQt5.QtWebEngineWidgets
 import PyQt5.uic
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
-from activate.app import (
-    activity_list,
-    charts,
-    connect,
-    dialogs,
-    maps,
-    paths,
-    photos,
-    settings,
-)
+from activate.app import activity_list, charts, connect, dialogs, paths, settings
 from activate.core import (
     activity,
     activity_types,
@@ -40,47 +31,14 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         PyQt5.uic.loadUi("resources/ui/main.ui", self)
-        paths.ensure_all_present()
-        self.updated = set()
-
         self.settings = settings.load_settings()
+        self.activity_view.setup(self.unit_system)
+        paths.ensure_all_present()
 
-        for table in (
-            self.activity_list_table,
-            self.split_table,
-            self.info_table,
-            self.curve_table,
-        ):
-            table.set_units(self.unit_system)
+        self.activity_list_table.set_units(self.unit_system)
 
         self.update_activity_list()
         self.activity_list_table.right_clicked.connect(self.activity_list_menu)
-
-        self.map_widget = maps.RouteMap(self.map_container)
-        size_policy = self.map_widget.sizePolicy()
-        size_policy.setRetainSizeWhenHidden(True)
-        self.map_widget.setSizePolicy(size_policy)
-
-        self.photo_list = photos.PhotoList(self)
-        self.overview_tab_layout.addWidget(self.photo_list, 1, 1)
-
-        # Set up charts
-        self.charts = charts.LineChartSet(self.unit_system, self.graphs_layout)
-        self.charts.add("ele", area=True)
-        self.charts.add("speed")
-        self.charts.add("heartrate")
-        self.charts.add("cadence")
-        self.charts.add("power")
-
-        self.zones_chart = charts.Histogram([0], self.zones_graph, self.unit_system)
-
-        self.curve_chart = charts.LineChart(
-            self.curve_graph,
-            self.unit_system,
-            area=True,
-            vertical_ticks=12,
-            horizontal_log=True,
-        )
 
         self.progression_chart = charts.DateTimeLineChart(
             self.progression_graph, self.unit_system, series_count=5, vertical_ticks=8
@@ -135,6 +93,82 @@ class MainWindow(QtWidgets.QMainWindow):
                     description=data["Description"],
                 )
             )
+
+    def update_activity_list(self):
+        """Make the activity list show the correct activities."""
+        self.activity_list_table.setRowCount(len(self.activities))
+        for i, activity_ in enumerate(self.activities):
+            self.activity_list_table.set_id_row(
+                activity_.activity_id, activity_.list_row, i
+            )
+        self.activity_list_table.resizeColumnsToContents()
+        self.activity_list_table.default_sort()
+
+    def add_activity(self, new_activity, position=0):
+        """Add an activity to list."""
+        activity_id = new_activity.activity_id
+        activity_elements = new_activity.unload(activity_list.UnloadedActivity).list_row
+        self.activities.add_activity(new_activity)
+        for server in self.settings.servers:
+            try:
+                connect.post_data(
+                    server.address,
+                    "send_activity",
+                    {"activity": serialise.dump_bytes(new_activity.save_data)},
+                )
+            except connect.requests.RequestsException:
+                continue
+        self.activity_list_table.add_id_row(activity_id, activity_elements, position)
+
+    def update_activity(self, selected):
+        """Show a new activity on the right."""
+        # Find the correct activity
+        self.setUpdatesEnabled(False)
+        self.activity = self.activities.get_activity(
+            self.activity_list_table.item(selected, 0).activity_id
+        )
+        self.activity_view.show_activity(self.activity)
+        self.setUpdatesEnabled(True)
+
+    def import_activities(self):
+        """Import some user-given activities."""
+        # [1] gives file type chosen ("Activity Files (...)",
+        # "All Files" etc.)
+        filenames = QtWidgets.QFileDialog.getOpenFileNames(
+            self, "Import an activity", paths.HOME, "Activity Files (*.gpx *.fit)",
+        )[0]
+        if not filenames:
+            return
+        self.activity_list_table.setSortingEnabled(False)
+        import_progress_dialog = QtWidgets.QProgressDialog(
+            "Importing Activities", "Cancel", 0, len(filenames), self
+        )
+        import_progress_dialog.setWindowModality(Qt.WindowModal)
+        for completed, filename in enumerate(filenames):
+            import_progress_dialog.setValue(completed)
+            self.add_activity(load_activity.import_and_load(filename, paths.TRACKS))
+            if import_progress_dialog.wasCanceled():
+                break
+        else:
+            import_progress_dialog.setValue(len(filenames))
+        self.activity_list_table.setCurrentCell(0, 0)
+        self.activity_list_table.setSortingEnabled(True)
+
+    def export_activity(self):
+        if files.has_extension(self.activity.original_name, ".gpx"):
+            file_type = "GPX file (*.gpx)"
+        elif files.has_extension(self.activity.original_name, ".fit"):
+            file_type = "FIT file (*.fit)"
+        else:
+            file_type = ""
+        out_name = files.decode_name(self.activity.original_name)
+        filename = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Export Original Activity", f"{paths.HOME}/{out_name}", file_type,
+        )[0]
+
+        if not filename:
+            return
+        self.activity.export_original(filename)
 
     def edit_activity_data(self):
         edit_activity_dialog = (
@@ -191,172 +225,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 files.copy_to_location_renamed(filename, paths.PHOTOS)
             )
         self.activity.save(paths.ACTIVITIES)
-        if 0 in self.updated:
-            self.updated.remove(0)
-        self.update_page(0)
-
-    def update_activity_list(self):
-        """Make the activity list show the correct activities."""
-        self.activity_list_table.setRowCount(len(self.activities))
-        for i, activity_ in enumerate(self.activities):
-            self.activity_list_table.set_id_row(
-                activity_.activity_id, activity_.list_row, i
-            )
-        self.activity_list_table.resizeColumnsToContents()
-        self.activity_list_table.default_sort()
-
-    def add_activity(self, new_activity, position=0):
-        """Add an activity to list."""
-        activity_id = new_activity.activity_id
-        activity_elements = new_activity.unload(activity_list.UnloadedActivity).list_row
-        self.activities.add_activity(new_activity)
-        for server in self.settings.servers:
-            try:
-                connect.post_data(
-                    server.address,
-                    "send_activity",
-                    {"activity": serialise.dump_bytes(new_activity.save_data)},
-                )
-            except connect.requests.RequestsException:
-                continue
-        self.activity_list_table.add_id_row(activity_id, activity_elements, position)
-
-    def update_splits(self, data):
-        """Update the activity splits page."""
-        self.split_table.update_data(data)
-
-    def switch_to_summary(self):
-        """Update labels, map and data box."""
-        self.activity_name_label.setText(self.activity.name)
-        self.flags_label.setText(" | ".join(self.activity.active_flags))
-        self.description_label.setText(markdown.markdown(self.activity.description))
-        self.date_time_label.setText(times.nice(self.activity.start_time))
-        self.activity_type_label.setText(self.activity.sport)
-        self.info_table.update_data(self.activity.stats)
-        if self.activity.track.has_position_data:
-            self.map_widget.setVisible(True)
-            self.map_widget.show(self.activity.track.lat_lon_list)
-        else:
-            self.map_widget.setVisible(False)
-        self.photo_list.show_activity_photos(self.activity)
-
-    def switch_to_data(self):
-        """Update charts."""
-        if self.activity.track.has_altitude_data:
-            self.charts.update_show("ele", [self.activity.track.graph("ele")])
-        else:
-            self.charts.hide("ele")
-        self.charts.update_show("speed", [self.activity.track.graph("speed")])
-        if "heartrate" in self.activity.track:
-            self.charts.update_show(
-                "heartrate", [self.activity.track.graph("heartrate")]
-            )
-        else:
-            self.charts.hide("heartrate")
-        if "cadence" in self.activity.track:
-            self.charts.update_show("cadence", [self.activity.track.graph("cadence")])
-        else:
-            self.charts.hide("cadence")
-        if "power" in self.activity.track:
-            self.charts.update_show("power", [self.activity.track.graph("power")])
-        else:
-            self.charts.hide("power")
-
-    def switch_to_splits(self):
-        self.update_splits(
-            self.activity.track.splits(
-                splitlength=self.unit_system.units["distance"].size
-            )
-        )
-
-    def switch_to_zones(self):
-        zones = (
-            activity_types.ZONES[self.activity.sport]
-            if self.activity.sport in activity_types.ZONES
-            else activity_types.ZONES[None]
-        )
-        zones = [self.unit_system.decode(x, "speed") for x in zones]
-        self.zones_chart.set_zones(zones)
-        self.zones_chart.update(self.activity.track.get_zone_durations(zones))
-
-    def switch_to_curve(self):
-        good_distances = (
-            activity_types.SPECIAL_DISTANCES[self.activity.sport]
-            if self.activity.sport in activity_types.SPECIAL_DISTANCES
-            else activity_types.SPECIAL_DISTANCES[None]
-        )
-        table, graph = self.activity.track.get_curve(good_distances)
-        self.curve_chart.update([graph])
-        self.curve_table.update_data(list(good_distances.values()), table)
-
-    def update_page(self, page):
-        """Switch to a new activity tab page."""
-        if page in self.updated:
-            return
-        (
-            self.switch_to_summary,
-            self.switch_to_data,
-            self.switch_to_splits,
-            self.switch_to_zones,
-            self.switch_to_curve,
-        )[page]()
-        self.updated.add(page)
-
-    def update_activity(self, selected):
-        """Show a new activity on the right."""
-        # Find the correct activity
-        self.setUpdatesEnabled(False)
-        self.activity = self.activities.get_activity(
-            self.activity_list_table.item(selected, 0).activity_id
-        )
-        if self.activity.track.manual:
-            self.activity_tabs.setCurrentIndex(0)
-        for page in range(1, 5):
-            self.activity_tabs.setTabEnabled(page, not self.activity.track.manual)
-        # Previously generated pages need refreshing
-        self.updated = set()
-        self.update_page(self.activity_tabs.currentIndex())
-        self.setUpdatesEnabled(True)
-
-    def import_activities(self):
-        """Import some user-given activities."""
-        # [1] gives file type chosen ("Activity Files (...)",
-        # "All Files" etc.)
-        filenames = QtWidgets.QFileDialog.getOpenFileNames(
-            self, "Import an activity", paths.HOME, "Activity Files (*.gpx *.fit)",
-        )[0]
-        if not filenames:
-            return
-        self.activity_list_table.setSortingEnabled(False)
-        import_progress_dialog = QtWidgets.QProgressDialog(
-            "Importing Activities", "Cancel", 0, len(filenames), self
-        )
-        import_progress_dialog.setWindowModality(Qt.WindowModal)
-        for completed, filename in enumerate(filenames):
-            import_progress_dialog.setValue(completed)
-            self.add_activity(load_activity.import_and_load(filename, paths.TRACKS))
-            if import_progress_dialog.wasCanceled():
-                break
-        else:
-            import_progress_dialog.setValue(len(filenames))
-        self.activity_list_table.setCurrentCell(0, 0)
-        self.activity_list_table.setSortingEnabled(True)
-
-    def export_activity(self):
-        if files.has_extension(self.activity.original_name, ".gpx"):
-            file_type = "GPX file (*.gpx)"
-        elif files.has_extension(self.activity.original_name, ".fit"):
-            file_type = "FIT file (*.fit)"
-        else:
-            file_type = ""
-        out_name = files.decode_name(self.activity.original_name)
-        filename = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Export Original Activity", f"{paths.HOME}/{out_name}", file_type,
-        )[0]
-
-        if not filename:
-            return
-        self.activity.export_original(filename)
+        self.activity_view.force_update_page(0)
 
     def main_tab_switch(self, tab):
         tab_name = self.main_tabs.tabText(tab)
