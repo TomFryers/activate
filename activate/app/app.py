@@ -4,12 +4,12 @@ import sys
 
 import PyQt5
 import PyQt5.QtWebEngineWidgets
-import PyQt5.uic
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
 from activate.app import activity_list, charts, connect, dialogs, paths, settings
+from activate.app.ui.main import Ui_main_window
 from activate.core import (
     activity,
     activity_types,
@@ -25,12 +25,11 @@ from activate.core import (
 NOW = datetime.datetime.now()
 
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def __init__(self, activities, *args, **kwargs):
         self.activities = activities
-        super(MainWindow, self).__init__(*args, **kwargs)
-
-        PyQt5.uic.loadUi("resources/ui/main.ui", self)
+        super().__init__(*args, **kwargs)
+        self.setupUi(self)
         self.settings = settings.load_settings()
         self.activity_view.setup(self.unit_system)
         paths.ensure_all_present()

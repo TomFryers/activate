@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>activity_view</class>
+ <widget class="QWidget" name="activity_view">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -288,7 +288,7 @@
   <connection>
    <sender>activity_tabs</sender>
    <signal>currentChanged(int)</signal>
-   <receiver>Form</receiver>
+   <receiver>activity_view</receiver>
    <slot>update_page()</slot>
    <hints>
     <hint type="sourcelabel">

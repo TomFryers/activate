@@ -1,14 +1,15 @@
 import markdown
-from PyQt5 import QtWidgets, uic
 
+from PyQt5 import QtWidgets
 from activate.app import charts, maps, photos
+from activate.app.ui.activity_view import Ui_activity_view
 from activate.core import activity_types, times
 
 
-class ActivityView(QtWidgets.QWidget):
+class ActivityView(QtWidgets.QWidget, Ui_activity_view):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        uic.loadUi("resources/ui/activity_view.ui", self)
+        self.setupUi(self)
 
     def setup(self, unit_system):
         self.unit_system = unit_system

@@ -6,6 +6,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
 
 from activate.app import checklist, paths, settings
+from activate.app.ui.settings import Ui_settings
 from activate.core import activity_types, times
 
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
@@ -253,10 +254,10 @@ class EditManualActivityDialog(EditActivityDialog, ManualActivityDialog):
         return result
 
 
-class SettingsDialog(QtWidgets.QDialog):
+class SettingsDialog(QtWidgets.QDialog, Ui_settings):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        PyQt5.uic.loadUi("resources/ui/settings.ui", self)
+        self.setupUi(self)
         self.settings_tabs.setTabIcon(0, QIcon.fromTheme("measure"))
         self.settings_tabs.setTabIcon(1, QIcon.fromTheme("network-server"))
         self.add_server_button.setIcon(PyQt5.QtGui.QIcon.fromTheme("list-add"))
