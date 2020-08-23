@@ -115,7 +115,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                     "send_activity",
                     {"activity": serialise.dump_bytes(new_activity.save_data)},
                 )
-            except connect.requests.RequestsException:
+            except connect.requests.RequestException:
                 continue
         self.activity_list_table.add_id_row(activity_id, activity_elements, position)
 
