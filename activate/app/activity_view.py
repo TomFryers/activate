@@ -1,7 +1,7 @@
 import markdown
-
 from PyQt5 import QtWidgets
-from activate.app import charts, maps, photos
+
+from activate.app import charts, photos
 from activate.app.ui.activity_view import Ui_activity_view
 from activate.core import activity_types, times
 
