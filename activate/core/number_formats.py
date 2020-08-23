@@ -51,7 +51,7 @@ def split_format(entry: str):
 
 def list_format(entry: str):
     """Format a value for the splits table."""
-    if entry in {"Name", "Type"}:
+    if entry in {"Name", "Type", "Server"}:
         return None
     if entry == "Distance":
         return lambda value: f"{value:.2f}"

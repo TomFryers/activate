@@ -283,7 +283,16 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="ActivityListTable" name="social_activity_list">
+           <widget class="SocialTree" name="social_tree">
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+          <item>
+           <widget class="SocialActivityList" name="social_activity_list">
             <property name="minimumSize">
              <size>
               <width>500</width>
@@ -445,6 +454,16 @@
    <extends>QWidget</extends>
    <header>activate/app/activity_view.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SocialTree</class>
+   <extends>QTreeWidget</extends>
+   <header>activate/app/social_tree.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SocialActivityList</class>
+   <extends>QTableWidget</extends>
+   <header>activate/app/tables.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -689,6 +708,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>social_tree</sender>
+   <signal>itemChanged(QTreeWidgetItem*,int)</signal>
+   <receiver>main_window</receiver>
+   <slot>filter_social_activities()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>631</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -707,5 +742,6 @@
   <slot>add_photos()</slot>
   <slot>edit_server_settings()</slot>
   <slot>update_social_activity()</slot>
+  <slot>filter_social_activities()</slot>
  </slots>
 </ui>

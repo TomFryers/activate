@@ -249,6 +249,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             if not self.activity_list_table.selectedItems():
                 self.activity_list_table.selectRow(0)
         elif tab_name == "Social":
+            self.social_tree.set_servers(self.settings.servers)
             self.social_activity_view.show_map()
             self.social_tab_update()
         else:
@@ -343,23 +344,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             except connect.requests.RequestException:
                 continue
             for social_id in social_ids:
-                self.social_activities.add_activity(
-                    activity.Activity(
-                        *serialise.load_bytes(
-                            connect.get_data(
-                                server.address, f"get_activity/{social_id}"
-                            )
-                        )
+                activity_ = activity.Activity(
+                    *serialise.load_bytes(
+                        connect.get_data(server.address, f"get_activity/{social_id}")
                     )
                 )
+                self.social_activities.add_activity(activity_, server=server)
 
     def social_tab_update(self):
         self.get_social_activities()
         self.social_activity_list.setRowCount(len(self.social_activities))
         for row, activity_ in enumerate(self.social_activities):
             self.social_activity_list.set_id_row(
-                activity_.activity_id, activity_.list_row, row,
+                activity_.activity_id,
+                [activity_.server.name] + activity_.list_row,
+                row,
             )
+
+    def filter_social_activities(self):
+        self.social_activity_list.filter_by_server(
+            self.social_tree.get_enabled_servers()
+        )
 
     @property
     def unit_system(self):

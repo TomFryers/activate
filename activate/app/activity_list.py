@@ -68,14 +68,18 @@ class ActivityList(list):
         """
         serialise.dump([dataclasses.asdict(a) for a in self], paths.SAVE, gz=True)
 
-    def add_activity(self, new_activity):
+    def add_activity(self, new_activity, server=None):
         """
         Add a new activity.
 
         Also saves the activity to disk.
         """
+        if server is not None:
+            new_activity.server = server
         self._activities[new_activity.activity_id] = new_activity
         self.append(new_activity.unload(UnloadedActivity))
+        if server is not None:
+            self[-1].server = server
         new_activity.save(paths.ACTIVITIES)
 
     def update(self, activity_id):

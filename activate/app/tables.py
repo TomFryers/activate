@@ -155,6 +155,9 @@ class ValueColumnTable(QtWidgets.QTableWidget):
         for column, value in enumerate(values):
             self.set_item(position, column, value)
 
+    def __len__(self):
+        return self.rowCount()
+
 
 class SplitTable(ValueColumnTable):
     headings = ["Number", "Time", "Split", "Speed", "Net Climb", "Ascent"]
@@ -223,6 +226,15 @@ class ActivityListTable(ValueColumnTable):
             self.right_clicked.emit(event)
         else:
             super().mouseReleaseEvent(event)
+
+
+class SocialActivityList(ActivityListTable):
+    headings = ["Server", "Name", "Type", "Start Time", "Distance"]
+    dimensions = [None, None, None, None, "distance"]
+
+    def filter_by_server(self, allowed):
+        for row in range(len(self)):
+            self.setRowHidden(row, self.item(row, 0).text() not in allowed)
 
 
 class CurveTable(ValueColumnTable):
