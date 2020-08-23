@@ -32,7 +32,6 @@ class CircleMarker(L.circleMarker):
 class Map(pyqtlet.MapWidget):
     def __init__(self, parent):
         super().__init__()
-        parent.addWidget(self)
         self.setContextMenuPolicy(Qt.NoContextMenu)
         self.map = L.map(self, {"attributionControl": False})
         L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(self.map)
@@ -43,6 +42,9 @@ class RouteMap(Map):
 
     def __init__(self, parent):
         super().__init__(parent)
+        size_policy = self.sizePolicy()
+        size_policy.setRetainSizeWhenHidden(True)
+        self.setSizePolicy(size_policy)
         self.route_line = Polyline([], {"smoothFactor": 0, "color": "#802090"})
         self.start_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#10b020"})
         self.finish_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#e00000"})

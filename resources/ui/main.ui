@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="main_tabs">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="summary_tab">
        <attribute name="title">
@@ -272,6 +272,54 @@
         </item>
         <item>
          <widget class="ActivityView" name="activity_view" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="social_tab">
+       <attribute name="title">
+        <string>Social</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="ActivityListTable" name="social_activity_list">
+            <property name="minimumSize">
+             <size>
+              <width>500</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>600</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="horizontalScrollBarPolicy">
+             <enum>Qt::ScrollBarAlwaysOff</enum>
+            </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <property name="cornerButtonEnabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="ActivityView" name="social_activity_view" native="true"/>
         </item>
        </layout>
       </widget>
@@ -625,6 +673,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>social_activity_list</sender>
+   <signal>currentCellChanged(int,int,int,int)</signal>
+   <receiver>main_window</receiver>
+   <slot>update_social_activity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>529</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -642,5 +706,6 @@
   <slot>add_manual_activity()</slot>
   <slot>add_photos()</slot>
   <slot>edit_server_settings()</slot>
+  <slot>update_social_activity()</slot>
  </slots>
 </ui>

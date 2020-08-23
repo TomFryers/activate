@@ -11,13 +11,11 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
 
-    def setup(self, unit_system):
+    def setup(self, unit_system, map_widget):
         self.unit_system = unit_system
         self.updated = set()
-        self.map_widget = maps.RouteMap(self.map_container)
-        size_policy = self.map_widget.sizePolicy()
-        size_policy.setRetainSizeWhenHidden(True)
-        self.map_widget.setSizePolicy(size_policy)
+
+        self.map_widget = map_widget
 
         self.photo_list = photos.PhotoList(self)
         self.overview_tab_layout.addWidget(self.photo_list, 1, 1)
@@ -61,6 +59,7 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         if self.activity.track.has_position_data:
             self.map_widget.setVisible(True)
             self.map_widget.show(self.activity.track.lat_lon_list)
+            self.map_container.addWidget(self.map_widget)
         else:
             self.map_widget.setVisible(False)
         self.photo_list.show_activity_photos(self.activity)
@@ -141,3 +140,6 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         # Previously generated pages need refreshing
         self.updated = set()
         self.update_page(self.activity_tabs.currentIndex())
+
+    def show_map(self):
+        self.map_container.addWidget(self.map_widget)

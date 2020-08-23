@@ -8,7 +8,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
-from activate.app import activity_list, charts, connect, dialogs, paths, settings
+from activate.app import activity_list, charts, connect, dialogs, maps, paths, settings
 from activate.app.ui.main import Ui_main_window
 from activate.core import (
     activity,
@@ -31,10 +31,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
         self.settings = settings.load_settings()
-        self.activity_view.setup(self.unit_system)
+
+        self.map_widget = maps.RouteMap(self)
+
+        self.activity_view.setup(self.unit_system, self.map_widget)
+        self.social_activity_view.setup(self.unit_system, self.map_widget)
         paths.ensure_all_present()
 
         self.activity_list_table.set_units(self.unit_system)
+        self.social_activity_list.set_units(self.unit_system)
 
         self.update_activity_list()
         self.activity_list_table.right_clicked.connect(self.activity_list_menu)
@@ -121,12 +126,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
     def update_activity(self, selected):
         """Show a new activity on the right."""
-        # Find the correct activity
         self.setUpdatesEnabled(False)
         self.activity = self.activities.get_activity(
             self.activity_list_table.item(selected, 0).activity_id
         )
         self.activity_view.show_activity(self.activity)
+        self.setUpdatesEnabled(True)
+
+    def update_social_activity(self, selected):
+        self.setUpdatesEnabled(False)
+        self.social_activity = self.social_activities.get_activity(
+            self.social_activity_list.item(selected, 0).activity_id
+        )
+        self.social_activity_view.show_activity(self.social_activity)
         self.setUpdatesEnabled(True)
 
     def import_activities(self):
@@ -233,9 +245,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         if tab_name == "Summary":
             self.summary_tab_switch()
         elif tab_name == "Activities":
+            self.activity_view.show_map()
             if not self.activity_list_table.selectedItems():
                 self.activity_list_table.selectRow(0)
         elif tab_name == "Social":
+            self.social_activity_view.show_map()
             self.social_tab_update()
         else:
             raise ValueError("Invalid tab")
@@ -319,8 +333,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.summary_period = value
         self.summary_tab_switch()
 
-    def social_tab_update(self):
-        self.social_activities = []
+    def get_social_activities(self):
+        self.social_activities = activity_list.ActivityList([])
         for server in self.settings.servers:
             try:
                 social_ids = serialise.load_bytes(
@@ -328,18 +342,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 )
             except connect.requests.RequestException:
                 continue
-            self.social_activities += [
-                activity.Activity(
-                    *serialise.load_bytes(
-                        connect.get_data(server.address, f"get_activity/{i}")
+            for social_id in social_ids:
+                self.social_activities.add_activity(
+                    activity.Activity(
+                        *serialise.load_bytes(
+                            connect.get_data(
+                                server.address, f"get_activity/{social_id}"
+                            )
+                        )
                     )
                 )
-                for i in social_ids
-            ]
-        self.social_list.setRowCount(len(self.social_activities))
-        for row, social_activity in enumerate(self.social_activities):
-            self.social_list.setItem(
-                row, 0, QtWidgets.QTableWidgetItem(social_activity.name)
+
+    def social_tab_update(self):
+        self.get_social_activities()
+        self.social_activity_list.setRowCount(len(self.social_activities))
+        for row, activity_ in enumerate(self.social_activities):
+            self.social_activity_list.set_id_row(
+                activity_.activity_id, activity_.list_row, row,
             )
 
     @property
