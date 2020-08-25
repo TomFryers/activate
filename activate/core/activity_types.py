@@ -2,6 +2,7 @@
 from activate.core import units
 
 MARATHON = 42195
+# The distances shown in the Curve page
 SPECIAL_DISTANCES = {
     "Run": {
         60: "60 m",
@@ -115,6 +116,8 @@ SPECIAL_DISTANCES = {
         1000000: "1000 km",
     },
 }
+
+# The boundaries of the zones
 ZONES = {
     "Run": list(range(20)) + [float("inf")],
     "Ride": list(range(0, 60, 2)) + [float("inf")],
@@ -122,6 +125,7 @@ ZONES = {
     "Walk": [x / 2 for x in range(20)] + [float("inf")],
     None: list(range(20)) + [float("inf")],
 }
+
 TYPES = ("Run", "Ride", "Swim", "Walk", "Ski", "Row", "Other")
 FLAGS = {
     "Run": ("Race", "Long Run", "Workout", "Treadmill"),

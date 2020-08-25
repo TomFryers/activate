@@ -1,3 +1,4 @@
+"""Classes defining custom dialogs."""
 import collections
 import datetime
 

@@ -364,11 +364,20 @@ class DateTimeLineChart(LineChart):
             series.attachAxis(self.date_time_axis)
 
     def encode_data(self, data):
+        """
+        Convert the data provided to a more usable format.
+
+        Input format: ((x_values, "time"), (y_values, y_format))
+        Output format: (x_values, y_values)
+        The output values are in the correct units for display on the
+        chart.
+        """
         x_data = [self.unit_system.encode(x, data[0][1]) * 1000 for x in data[0][0]]
         y_data = [self.unit_system.encode(x, data[1][1]) for x in data[1][0]]
         return (x_data, y_data)
 
     def update_axis(self, direction, ticks, minimum, maximum):
+        """Resize the chart axes."""
         if direction == Qt.Horizontal:
             minimum = datetime.datetime.fromtimestamp(minimum / 1000)
             maximum = datetime.datetime.fromtimestamp(maximum / 1000)

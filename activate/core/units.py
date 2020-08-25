@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 @dataclass
 class DimensionValue:
+    """A value with a dimension attached."""
     value: float
     dimension: str
 

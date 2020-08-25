@@ -78,14 +78,17 @@ class PhotoList(QtWidgets.QWidget):
             self.labels.append(label)
 
     def show_photos(self, index):
+        """Open the photo viewer on a photo."""
         viewer = PhotoViewer(self.filenames, index)
         viewer.exec()
 
     def show_activity_photos(self, activity):
+        """Update to showing a new activity's photos."""
         self.activity = activity
         self.replace_photos(activity.photos)
 
     def delete(self, index):
+        """Remove a photo from an activity."""
         self.filenames.pop(index)
         self.photos.pop(index)
         self.replace_photos(self.filenames)
@@ -106,6 +109,7 @@ class PhotoViewer(QtWidgets.QDialog):
         self.show_photo()
 
     def show_photo(self):
+        """Display a new photo.."""
         photo = self.photos[self.current_index]
         if not isinstance(photo, QtGui.QPixmap):
             photo = QtGui.QPixmap(photo)
@@ -116,6 +120,7 @@ class PhotoViewer(QtWidgets.QDialog):
         self.label.setPixmap(photo)
 
     def set_new_index(self, index):
+        """Handle left and right keypresses."""
         self.current_index = index
         self.current_index %= len(self.photos)
         self.show_photo()

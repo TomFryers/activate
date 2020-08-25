@@ -1,3 +1,8 @@
+"""
+Functions for serialising and deserialising objects to JSON.
+
+The JSON can optionally be gzipped.
+"""
 import datetime
 import gzip
 import json
@@ -31,6 +36,7 @@ def decode(obj):
 
 
 def dumps(obj, readable=False):
+    """Convert an object to a JSON string."""
     return json.dumps(
         obj,
         default=default,
@@ -40,15 +46,18 @@ def dumps(obj, readable=False):
 
 
 def dump_bytes(obj, gz=False, readable=False):
+    """Convert an object to data."""
     data = dumps(obj, readable=readable).encode("utf-8")
     return gzip.compress(data) if gz else data
 
 
 def loads(data):
+    """Load an object from a string."""
     return json.loads(data, object_hook=decode)
 
 
 def load_bytes(data, gz=False):
+    """Load an object from data."""
     data = gzip.decompress(data) if gz else data
     return loads(data.decode("utf-8"))
 

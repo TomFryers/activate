@@ -30,6 +30,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.setupUi(self)
         self.settings = settings.load_settings()
 
+        # Create a global map widget to be used everywhere. This is
+        # necessary because pyqtlet doesn't support multiple L.map
+        # instances.
         self.map_widget = maps.RouteMap(self)
 
         self.activity_view.setup(self.unit_system, self.map_widget)
@@ -123,7 +126,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_list_table.add_id_row(activity_id, activity_elements, position)
 
     def update_activity(self, selected):
-        """Show a new activity on the right."""
+        """Show a new activity on the right on the Activities page."""
         self.setUpdatesEnabled(False)
         self.activity = self.activities.get_activity(
             self.activity_list_table.item(selected, 0).activity_id
@@ -132,6 +135,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.setUpdatesEnabled(True)
 
     def update_social_activity(self, selected):
+        """Show a new activity on the right on the Social page."""
         self.setUpdatesEnabled(False)
         self.social_activity = self.social_activities.get_activity(
             self.social_activity_list.item(selected, 0).activity_id
@@ -164,6 +168,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_list_table.setSortingEnabled(True)
 
     def export_activity(self):
+        """Export the original version of the activity."""
         if files.has_extension(self.activity.original_name, ".gpx"):
             file_type = "GPX file (*.gpx)"
         elif files.has_extension(self.activity.original_name, ".fit"):
@@ -180,6 +185,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity.export_original(filename)
 
     def edit_activity_data(self):
+        """
+        Open the Edit Activity dialog.
+
+        This then edits or deletes the activity as appropriate.
+        """
         edit_activity_dialog = (
             dialogs.EditManualActivityDialog()
             if self.activity.track.manual
@@ -220,6 +230,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_list_table.setSortingEnabled(True)
 
     def add_photos(self):
+        """Open the Add Photos dialog."""
         filenames = QtWidgets.QFileDialog.getOpenFileNames(
             self,
             "Add photos",
@@ -237,6 +248,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_view.force_update_page(0)
 
     def main_tab_switch(self, tab):
+        """
+        Switch between the main tabs at the top.
+
+        Triggers the opened tab to update.
+        """
         tab_name = self.main_tabs.tabText(tab)
         for action in (self.export_menu, self.activity_menu):
             action.setEnabled(tab_name == "Activities")
@@ -263,6 +279,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             raise ValueError("Invalid tab")
 
     def update_progression(self):
+        """Update the progression chart."""
         allowed_activity_types = self.get_allowed_for_summary()
         data = self.activities.get_progression_data(
             allowed_activity_types, self.summary_period, NOW, lambda a: a.distance
@@ -333,6 +350,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.summary_tab_switch()
 
     def get_social_activities(self):
+        """
+        Download all activities from each server.
+
+        Gets the activity list from the server, and then downloads each
+        activity.
+        """
         self.social_activities = activity_list.ActivityList([])
         for server in self.settings.servers:
             try:

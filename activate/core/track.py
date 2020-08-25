@@ -80,6 +80,8 @@ def get_nearby_indices(length, position, number=1) -> list:
 
 @dataclass
 class ManualTrack:
+    """A manual track with a few basic value."""
+
     start_time: datetime.datetime
     length: float
     ascent: float
@@ -408,6 +410,7 @@ class Track:
         return buckets
 
     def get_curve(self, table_distances):
+        """Get the curve and curve table for an activity."""
         table_distances = [x for x in table_distances if x <= self.length]
         distance_values = []
         time_values = []

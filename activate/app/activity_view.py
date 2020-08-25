@@ -1,3 +1,4 @@
+"""Display an individual activity's data."""
 import markdown
 from PyQt5 import QtWidgets
 
@@ -7,6 +8,8 @@ from activate.core import activity_types, times
 
 
 class ActivityView(QtWidgets.QWidget, Ui_activity_view):
+    """The statistics, graphs and map showing an activity."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
@@ -127,11 +130,13 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.updated.add(page)
 
     def force_update_page(self, page):
+        """Update a page even if it already appears up to date."""
         if page in self.updated:
             self.updated.remove(page)
         self.update_page(page)
 
     def show_activity(self, new_activity):
+        """Display a new activity."""
         self.activity = new_activity
         if self.activity.track.manual:
             self.activity_tabs.setCurrentIndex(0)
@@ -142,4 +147,11 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.update_page(self.activity_tabs.currentIndex())
 
     def show_map(self):
+        """
+        Take back the map widget.
+
+        This is necessary because the map widget must be shared between
+        all layouts, and a widget cannot be in multiple places at once.
+        Call this when the activity view becomes visible.
+        """
         self.map_container.addWidget(self.map_widget)

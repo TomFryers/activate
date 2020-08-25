@@ -3,14 +3,18 @@ import pathlib
 
 from PyQt5.QtCore import QStandardPaths
 
+# Locations for user data
 DATA = f"{QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)}/activate/"
 ACTIVITIES = DATA + "activities/"
 TRACKS = DATA + "originals/"
 PHOTOS = DATA + "photos/"
 SAVE = DATA + "activity_list.json.gz"
+
+# Location for configuration files
 SETTINGS = (
     QStandardPaths.writableLocation(QStandardPaths.ConfigLocation) + "/activate.json"
 )
+
 HOME = QStandardPaths.writableLocation(QStandardPaths.HomeLocation) + "/"
 
 
