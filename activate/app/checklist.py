@@ -22,6 +22,7 @@ def unmap_check_state(state):
 
 class CheckList(QtWidgets.QListWidget):
     """A QListWidget with checkboxes on items."""
+
     def __init__(self, *args, **kwargs):
         self.do_not_recurse = False
         self.all_row = False
