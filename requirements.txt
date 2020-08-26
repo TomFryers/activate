@@ -4,5 +4,5 @@ PyQtWebEngine==5.15.0
 pyqtlet==0.3.3
 Markdown=3.2.2
 fitparse==1.1.0
-requests=2.24.0
-flask=1.1.2
+requests==2.24.0
+flask==1.1.2
