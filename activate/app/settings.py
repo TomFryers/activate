@@ -1,7 +1,7 @@
 """Contains a class holding current user settings."""
 import dataclasses
 
-from activate.app import paths
+from activate.app import connect, paths
 from activate.core import serialise, units
 
 DEFAULTS = {"unit_system": units.DEFAULT, "servers": []}
@@ -15,16 +15,8 @@ def load_settings():
     except FileNotFoundError:
         pass
 
-    settings_data["servers"] = [Server(**s) for s in settings_data["servers"]]
+    settings_data["servers"] = [connect.Server(**s) for s in settings_data["servers"]]
     return Settings(**settings_data)
-
-
-@dataclasses.dataclass
-class Server:
-    address: str
-    name: str
-    username: str
-    password: str
 
 
 @dataclasses.dataclass

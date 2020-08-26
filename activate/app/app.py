@@ -116,8 +116,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activities.add_activity(new_activity)
         for server in self.settings.servers:
             try:
-                connect.post_data(
-                    server.address,
+                server.post_data(
                     "send_activity",
                     {"activity": serialise.dump_bytes(new_activity.save_data)},
                 )
@@ -359,16 +358,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.social_activities = activity_list.ActivityList([])
         for server in self.settings.servers:
             try:
-                social_ids = serialise.load_bytes(
-                    connect.get_data(server.address, "get_activities")
-                )
+                social_ids = serialise.load_bytes(server.get_data("get_activities"))
             except connect.requests.RequestException:
                 continue
             for social_id in social_ids:
                 activity_ = activity.Activity(
-                    *serialise.load_bytes(
-                        connect.get_data(server.address, f"get_activity/{social_id}")
-                    )
+                    *serialise.load_bytes(server.get_data(f"get_activity/{social_id}"))
                 )
                 self.social_activities.add_activity(activity_, server=server)
 

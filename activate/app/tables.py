@@ -5,7 +5,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
-from activate.app import settings
+from activate.app import connect
 from activate.core import number_formats, times, units
 
 
@@ -312,7 +312,7 @@ class ServersTable(Table):
             )
 
     def get_servers(self):
-        return [settings.Server(*self.get_row_text(r)) for r in range(self.rowCount())]
+        return [connect.Server(*self.get_row_text(r)) for r in range(self.rowCount())]
 
     def add_row(self):
         self.setRowCount(self.rowCount() + 1)
