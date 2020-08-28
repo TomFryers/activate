@@ -262,7 +262,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             if not self.activity_list_table.selectedItems():
                 self.activity_list_table.selectRow(0)
         elif tab_name == "Social":
-            self.social_tree.set_servers(self.settings.servers)
             self.social_activity_view.show_map()
             self.social_tab_update()
         else:
@@ -371,6 +370,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
     def social_tab_update(self):
         self.get_social_activities()
+        self.social_tree.set_servers(self.settings.servers, self.social_activities)
         self.social_activity_list.setRowCount(len(self.social_activities))
         for row, activity_ in enumerate(self.social_activities):
             self.social_activity_list.set_id_row(

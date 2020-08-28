@@ -234,7 +234,9 @@ class SocialActivityList(ActivityListTable):
 
     def filter_by_server(self, allowed):
         for row in range(len(self)):
-            self.setRowHidden(row, self.item(row, 0).text() not in allowed)
+            self.setRowHidden(
+                row, (self.item(row, 0).text(), self.item(row, 1).text()) not in allowed
+            )
 
 
 class CurveTable(ValueColumnTable):

@@ -2,18 +2,32 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
 
+def children(item: QtWidgets.QTreeWidgetItem):
+    for index in range(item.childCount()):
+        yield item.child(index)
+
+
 class SocialTree(QtWidgets.QTreeWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.header().setVisible(False)
 
-    def set_servers(self, servers):
+    def set_servers(self, servers, activities):
         self.servers = servers
         self.clear()
-        for server in self.servers:
+        structure = {s.name: set() for s in self.servers}
+        for activity in activities:
+            structure[activity.server].add(activity.username)
+
+        for server, users in structure.items():
             item = QtWidgets.QTreeWidgetItem()
-            item.setText(0, server.name)
+            item.setText(0, server)
             item.setCheckState(0, Qt.Checked)
+            for user in users:
+                sub_item = QtWidgets.QTreeWidgetItem()
+                sub_item.setText(0, user)
+                sub_item.setCheckState(0, Qt.Checked)
+                item.addChild(sub_item)
             self.addTopLevelItem(item)
 
     def get_enabled_servers(self):
@@ -21,7 +35,9 @@ class SocialTree(QtWidgets.QTreeWidget):
         for row in range(len(self)):
             item = self.topLevelItem(row)
             if item.checkState(0) == Qt.Checked:
-                enabled.append(item.text(0))
+                for sub_item in children(item):
+                    if sub_item.checkState(0) == Qt.Checked:
+                        enabled.append((item.text(0), sub_item.text(0)))
         return enabled
 
     def __len__(self):
