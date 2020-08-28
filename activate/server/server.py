@@ -1,5 +1,6 @@
 import hashlib
 import json
+from base64 import b64decode, b64encode
 
 from flask import Flask, abort, request
 
@@ -26,7 +27,11 @@ def save_users(users):
 
 
 def password_hash(password: str, salt):
-    return hashlib.scrypt(password.encode("utf-8"), salt=salt, n=16384, r=8, p=1)
+    return b64encode(
+        hashlib.scrypt(
+            password.encode("utf-8"), salt=b64decode(salt), n=16384, r=8, p=1
+        )
+    ).decode("utf-8")
 
 
 def verify_request():
