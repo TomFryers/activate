@@ -22,6 +22,8 @@ class Activity:
         activity_id=None,
         description="",
         photos=None,
+        server=None,
+        username=None,
     ):
         self.name = name
         self.sport = sport
@@ -30,6 +32,8 @@ class Activity:
         else:
             self.track = track_
         self.original_name = original_name
+        self.server = server
+        self.username = username
         if flags is None:
             self.flags = {}
         else:
@@ -98,22 +102,26 @@ class Activity:
             self.track.elapsed_time,
             self.track.ascent,
             self.activity_id,
+            self.server,
+            self.username,
         )
 
     @property
     def save_data(self):
-        return (
-            self.name,
-            self.sport,
-            self.track.save_data,
-            self.original_name,
-            self.flags,
-            self.start_time,
-            self.distance,
-            self.activity_id,
-            self.description,
-            self.photos,
-        )
+        return {
+            "name": self.name,
+            "sport": self.sport,
+            "track_": self.track.save_data,
+            "original_name": self.original_name,
+            "flags": self.flags,
+            "start_time": self.start_time,
+            "distance": self.distance,
+            "activity_id": self.activity_id,
+            "description": self.description,
+            "photos": self.photos,
+            "server": self.server,
+            "username": self.username,
+        }
 
     def save(self, path):
         serialise.dump(self.save_data, f"{path}{self.activity_id}.json.gz", gz=True)

@@ -28,20 +28,26 @@ class UnloadedActivity:
     duration: float
     climb: float
     activity_id: int
+    server: str = None
+    username: str = None
 
     def load(self) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""
-        data = serialise.load(f"{paths.ACTIVITIES}/{self.activity_id}.json.gz")
-        return activity.Activity(*data)
+        return activity.Activity(
+            **serialise.load(f"{paths.ACTIVITIES}/{self.activity_id}.json.gz")
+        )
 
     @property
     def list_row(self):
-        return [
+        result = [
             self.name,
             self.sport,
             self.start_time,
             units.DimensionValue(self.distance, "distance"),
         ]
+        if self.server is not None:
+            result = [self.server, self.username] + result
+        return result
 
 
 class ActivityList(list):
@@ -68,18 +74,14 @@ class ActivityList(list):
         """
         serialise.dump([dataclasses.asdict(a) for a in self], paths.SAVE, gz=True)
 
-    def add_activity(self, new_activity, server=None):
+    def add_activity(self, new_activity):
         """
         Add a new activity.
 
         Also saves the activity to disk.
         """
-        if server is not None:
-            new_activity.server = server
         self._activities[new_activity.activity_id] = new_activity
         self.append(new_activity.unload(UnloadedActivity))
-        if server is not None:
-            self[-1].server = server
         new_activity.save(paths.ACTIVITIES)
 
     def update(self, activity_id):

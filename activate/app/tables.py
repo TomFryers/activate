@@ -229,8 +229,8 @@ class ActivityListTable(ValueColumnTable):
 
 
 class SocialActivityList(ActivityListTable):
-    headings = ["Server", "Name", "Type", "Start Time", "Distance"]
-    dimensions = [None, None, None, None, "distance"]
+    headings = ["Server", "User", "Name", "Type", "Start Time", "Distance"]
+    dimensions = [None, None, None, None, None, "distance"]
 
     def filter_by_server(self, allowed):
         for row in range(len(self)):

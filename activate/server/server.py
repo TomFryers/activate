@@ -64,7 +64,9 @@ def index():
 @app.route("/send_activity", methods=["POST"])
 @requires_auth
 def upload():
-    new_activity = activity.Activity(*serialise.loads(request.form["activity"]))
+    data = serialise.loads(request.form["activity"])
+    data["username"] = request.authorization["username"]
+    new_activity = activity.Activity(**data)
     activities[new_activity.activity_id] = new_activity
     return "DONE"
 
@@ -79,9 +81,10 @@ def get_list():
 @requires_auth
 def get_activity(activity_id):
     try:
-        return serialise.dump_bytes(activities[activity_id].save_data)
+        activity_ = activities[activity_id]
     except KeyError:
         abort(404)
+    return serialise.dump_bytes(activity_.save_data)
 
 
 users = get_users()

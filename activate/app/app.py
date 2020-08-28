@@ -362,19 +362,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             except connect.requests.RequestException:
                 continue
             for social_id in social_ids:
-                activity_ = activity.Activity(
-                    *serialise.load_bytes(server.get_data(f"get_activity/{social_id}"))
+                data = serialise.load_bytes(
+                    server.get_data(f"get_activity/{social_id}")
                 )
-                self.social_activities.add_activity(activity_, server=server)
+                data["server"] = server.name
+                activity_ = activity.Activity(**data)
+                self.social_activities.add_activity(activity_)
 
     def social_tab_update(self):
         self.get_social_activities()
         self.social_activity_list.setRowCount(len(self.social_activities))
         for row, activity_ in enumerate(self.social_activities):
             self.social_activity_list.set_id_row(
-                activity_.activity_id,
-                [activity_.server.name] + activity_.list_row,
-                row,
+                activity_.activity_id, activity_.list_row, row,
             )
 
     def filter_social_activities(self):
