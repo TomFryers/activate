@@ -199,6 +199,16 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="records_tab">
+           <attribute name="title">
+            <string>Records</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="RecordsTable" name="records_table"/>
+            </item>
+           </layout>
+          </widget>
           <widget class="QWidget" name="progression_tab">
            <attribute name="title">
             <string>Progression</string>
@@ -462,6 +472,11 @@
   </customwidget>
   <customwidget>
    <class>SocialActivityList</class>
+   <extends>QTableWidget</extends>
+   <header>activate/app/tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RecordsTable</class>
    <extends>QTableWidget</extends>
    <header>activate/app/tables.h</header>
   </customwidget>

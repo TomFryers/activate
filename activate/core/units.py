@@ -17,6 +17,27 @@ class DimensionValue:
     def encode(self, unit_system):
         return unit_system.encode(self.value, self.dimension)
 
+    def __hash__(self):
+        return hash((self.value, self.dimension))
+
+    def __lt__(self, other):
+        return self.dimension == other.dimension and self.value < other.value
+
+    def __gt__(self, other):
+        return self.dimension == other.dimension and self.value > other.value
+
+    def __eq__(self, other):
+        return self.dimension == other.dimension and self.value == other.value
+
+    def __ne__(self, other):
+        return self.dimension == other.dimension and self.value != other.value
+
+    def __le__(self, other):
+        return self.dimension == other.dimension and self.value <= other.value
+
+    def __ge__(self, other):
+        return self.dimension == other.dimension and self.value >= other.value
+
 
 @dataclass
 class Unit:

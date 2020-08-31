@@ -39,6 +39,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.social_activity_view.setup(self.unit_system, self.map_widget)
         paths.ensure_all_present()
 
+        self.records_table.set_units(self.unit_system)
+
         self.activity_list_table.set_units(self.unit_system)
         self.social_activity_list.set_units(self.unit_system)
 
@@ -268,13 +270,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             raise ValueError("Invalid tab")
 
     def summary_tab_switch(self):
-        tab = self.summary_tabs.currentIndex()
-        if self.summary_tabs.tabText(tab) == "Totals":
-            self.update_totals()
-        elif self.summary_tabs.tabText(tab) == "Progression":
-            self.update_progression()
-        else:
-            raise ValueError("Invalid tab")
+        tab = self.summary_tabs.tabText(self.summary_tabs.currentIndex())
+        {
+            "Totals": self.update_totals,
+            "Records": self.update_records,
+            "Progression": self.update_progression,
+        }[tab]()
 
     def update_progression(self):
         """Update the progression chart."""
@@ -341,6 +342,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 allowed_activity_types, self.summary_period, NOW
             ),
             "altitude",
+        )
+
+    def update_records(self):
+        good_distances = {}
+        for sport in self.get_allowed_for_summary():
+            good_distances.update(
+                activity_types.SPECIAL_DISTANCES[sport]
+                if sport in activity_types.SPECIAL_DISTANCES
+                else activity_types.SPECIAL_DISTANCES[None]
+            )
+        good_distances = {k: good_distances[k] for k in sorted(good_distances)}
+        self.records_table.update_data(
+            list(good_distances.values()),
+            self.activities.get_records(
+                self.get_allowed_for_summary(),
+                self.summary_period,
+                NOW,
+                good_distances,
+            ),
         )
 
     def summary_period_changed(self, value):

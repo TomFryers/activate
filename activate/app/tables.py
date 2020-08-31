@@ -258,6 +258,19 @@ class CurveTable(ValueColumnTable):
             self.set_row(good_distance_names[index : index + 1] + list(row[1:]), index)
 
 
+class RecordsTable(CurveTable):
+    headings = CurveTable.headings + ["Activity"]
+    dimensions = CurveTable.dimensions + [None]
+
+    def set_units(self, *args, **kwargs):
+        super().set_units(*args, **kwargs)
+        self.define_columns(
+            self.headings,
+            self.dimensions,
+            [lambda x: x, times.to_string, lambda x: str(round(x, 1)), lambda x: x],
+        )
+
+
 class InfoTable(Table):
     """
     The table widget on the right.
