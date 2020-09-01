@@ -241,7 +241,7 @@ class SocialActivityList(ActivityListTable):
 
 class CurveTable(ValueColumnTable):
     headings = ["Distance", "Time", "Speed"]
-    dimensions = ["distance", "time", "speed"]
+    dimensions = [None, "time", "speed"]
 
     def set_units(self, *args, **kwargs):
         super().set_units(*args, **kwargs)
