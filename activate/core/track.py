@@ -422,7 +422,7 @@ class Track:
         bests = {}
         for distance in table_distances:
             for last_point in range(len(distance_values)):
-                if distance_values[last_point] > distance:
+                if distance_values[last_point] - distance_values[0] > distance:
                     break
             bests[distance] = (
                 time_values[last_point] - self.start_time
