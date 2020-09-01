@@ -419,40 +419,36 @@ class Track:
                 distance_values.append(dist)
                 time_values.append(time)
 
-        bests = {}
+        bests = []
         for distance in table_distances:
             for last_point in range(len(distance_values)):
                 if distance_values[last_point] - distance_values[0] > distance:
                     break
-            bests[distance] = (
-                time_values[last_point] - self.start_time
-            ).total_seconds()
+            best = (time_values[last_point] - self.start_time).total_seconds()
             first_point = 0
             for last_point in range(last_point + 1, len(distance_values)):
-                first_point = max(0, first_point)
                 while (
-                    dist := distance_values[last_point] - distance_values[first_point]
+                    distance_values[last_point] - distance_values[first_point + 1]
                 ) >= distance:
                     first_point += 1
-                first_point -= 1
                 time_taken = (
                     time_values[last_point] - time_values[first_point]
                 ).total_seconds()
-                if time_taken < bests[distance] and first_point > 0:
-                    bests[distance] = time_taken
+                best = min(best, time_taken)
+            bests.append(best)
 
-        speeds = [distance / bests[distance] for distance in bests]
+        speeds = [distance / time for distance, time in zip(table_distances, bests)]
         bests_table = [
             (
                 DimensionValue(distance, "distance"),
-                DimensionValue(datetime.timedelta(seconds=bests[distance]), "time"),
-                DimensionValue(distance / bests[distance], "speed"),
+                DimensionValue(datetime.timedelta(seconds=time), "time"),
+                DimensionValue(speed, "speed"),
             )
-            for distance in bests
+            for distance, time, speed in zip(table_distances, bests, speeds)
         ]
         return (
             bests_table,
-            ((list(bests.keys()), "distance"), (speeds, "speed")),
+            ((table_distances, "distance"), (speeds, "speed")),
         )
 
     @property
