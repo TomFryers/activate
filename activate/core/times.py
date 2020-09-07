@@ -84,7 +84,11 @@ def to_this_period(base, other, period: str) -> datetime.datetime:
     if period == "year":
         return other.replace(year=base.year)
     if period == "month":
-        return other.replace(year=base.year, month=base.month)
+        while True:
+            try:
+                return other.replace(year=base.year, month=base.month)
+            except ValueError:
+                other = other.replace(day=other.day - 1)
     if period == "week":
         return other.replace(year=base.year, month=base.month, day=base.day) + (
             other.weekday() - base.weekday()
