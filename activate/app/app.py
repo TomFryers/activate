@@ -289,8 +289,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         x_axis = self.progression_chart.date_time_axis
         if self.summary_period != "All Time":
             x_axis.setRange(
-                times.start_of(NOW, self.summary_period.casefold()),
-                times.end_of(NOW, self.summary_period.casefold()),
+                times.start_of(times.EPOCH, self.summary_period.casefold()),
+                times.end_of(times.EPOCH, self.summary_period.casefold()),
             )
         if self.summary_period == "Week":
             x_axis.setTickCount(8)

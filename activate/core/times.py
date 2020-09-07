@@ -5,6 +5,8 @@ ONE_DAY = datetime.timedelta(days=1)
 ONE_HOUR = datetime.timedelta(hours=1)
 ONE_MINUTE = datetime.timedelta(minutes=1)
 
+EPOCH = datetime.datetime.fromtimestamp(0)  # + datetime.timedelta(365)
+
 
 def from_GPX(string):
     """Load a time from a string in GPX format."""
@@ -79,17 +81,18 @@ def period_difference(base, other, period: str) -> int:
     raise ValueError('period must be "year", "month" or "week"')
 
 
-def to_this_period(base, other, period: str) -> datetime.datetime:
-    """Move other into base's period"""
+def since_start(base, period: str) -> float:
     if period == "year":
-        return other.replace(year=base.year)
+        return base - datetime.datetime(base.year, 1, 1)
     if period == "month":
-        return other.replace(year=base.year, month=base.month)
+        return base - datetime.datetime(base.year, base.month, 1)
     if period == "week":
-        return other.replace(year=base.year, month=base.month, day=base.day) + (
-            other.weekday() - base.weekday()
-        ) * datetime.timedelta(days=1)
-    raise ValueError('period must be "year", "month" or "week"')
+        return datetime.timedelta(days=base.weekday()) + datetime.timedelta(
+            hours=base.hour,
+            minutes=base.minute,
+            seconds=base.second,
+            microseconds=base.microsecond,
+        )
 
 
 def start_of(base, period: str) -> datetime.datetime:

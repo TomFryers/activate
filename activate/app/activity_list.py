@@ -169,24 +169,28 @@ class ActivityList(list):
             return [data]
 
         # Other time periods
+        # This is a bit of a hack: all dates are changed to around 1971
+        # so that DateTimeAxis can eventually handle them
         result = []
         for back in range(5):
-            data = ([times.start_of(now, time_period)], [0])
+            start = times.start_of(times.EPOCH, time_period)
+            data = ([start], [0])
             total = 0
             valid_sorted = sorted(
                 self.filtered(activity_types, time_period, now, back),
                 key=lambda x: x.start_time,
             )
             for a in valid_sorted:
-                data[0].append(times.to_this_period(now, a.start_time, time_period))
+                data[0].append(start + times.since_start(a.start_time, time_period))
+
                 data[1].append(total)
                 total += key(a)
                 data[0].append(
-                    times.to_this_period(now, a.start_time + a.duration, time_period)
+                    start + times.since_start(a.start_time + a.duration, time_period)
                 )
                 data[1].append(total)
             if back != 0:
-                data[0].append(times.end_of(now, time_period))
+                data[0].append(times.end_of(times.EPOCH, time_period))
                 data[1].append(total)
             result.append(data)
 
