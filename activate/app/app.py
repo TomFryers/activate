@@ -280,7 +280,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def update_progression(self):
         """Update the progression chart."""
         allowed_activity_types = self.get_allowed_for_summary()
-        data = self.activities.get_progression_data(
+        periods, data = self.activities.get_progression_data(
             allowed_activity_types, self.summary_period, NOW, lambda a: a.distance
         )
         self.progression_chart.update(
@@ -292,13 +292,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 times.start_of(times.EPOCH, self.summary_period.casefold()),
                 times.end_of(times.EPOCH, self.summary_period.casefold()),
             )
+            self.progression_chart.add_legend(periods)
+        else:
+            self.progression_chart.remove_legend()
+
         if self.summary_period == "Week":
             x_axis.setTickCount(8)
             x_axis.setFormat("dddd")
-        if self.summary_period == "Month":
+        elif self.summary_period == "Month":
             x_axis.setTickCount(32)
             x_axis.setFormat("d")
-        if self.summary_period == "Year":
+        elif self.summary_period == "Year":
             x_axis.setTickCount(13)
             x_axis.setFormat("MMMM")
 

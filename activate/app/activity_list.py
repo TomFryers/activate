@@ -166,11 +166,12 @@ class ActivityList(list):
                 data[0].append(a.start_time + a.duration)
                 data[1].append(total)
 
-            return [data]
+            return (None, [data])
 
         # Other time periods
         # This is a bit of a hack: all dates are changed to around 1971
         # so that DateTimeAxis can eventually handle them
+        periods = []
         result = []
         for back in range(5):
             start = times.start_of(times.EPOCH, time_period)
@@ -180,6 +181,8 @@ class ActivityList(list):
                 self.filtered(activity_types, time_period, now, back),
                 key=lambda x: x.start_time,
             )
+            if not valid_sorted:
+                continue
             for a in valid_sorted:
                 data[0].append(start + times.since_start(a.start_time, time_period))
 
@@ -193,8 +196,9 @@ class ActivityList(list):
                 data[0].append(times.end_of(times.EPOCH, time_period))
                 data[1].append(total)
             result.append(data)
+            periods.append(times.back_name(now, time_period, back))
 
-        return result
+        return (periods[::-1], result[::-1])
 
     def get_records(self, activity_types, time_period, now, distances):
         records = {}

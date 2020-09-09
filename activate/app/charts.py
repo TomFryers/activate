@@ -159,6 +159,14 @@ class Chart(QtChart.QChart):
             axis.setRange(minimum, maximum)
             axis.setTickCount(ticks)
 
+    def add_legend(self, names):
+        self.legend().show()
+        for name, series in zip(names, self.series()):
+            series.setName(name)
+
+    def remove_legend(self):
+        self.legend().hide()
+
 
 class LineChart(Chart):
     """A chart with 1+ QLineSeries on it."""

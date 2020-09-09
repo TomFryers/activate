@@ -7,6 +7,21 @@ ONE_MINUTE = datetime.timedelta(minutes=1)
 
 EPOCH = datetime.datetime.fromtimestamp(0)  # + datetime.timedelta(365)
 
+MONTHS = (
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+)
+
 
 def from_GPX(string):
     """Load a time from a string in GPX format."""
@@ -60,6 +75,17 @@ def to_number(value):
     if isinstance(value, datetime.timedelta):
         return value.total_seconds()
     return value
+
+
+def back_name(base, period: str, number=0):
+    """Get the name of a year, month or week number back."""
+    if period == "year":
+        return str(base.year - number)
+    elif period == "month":
+        return MONTHS[(base.month - number - 1) % 12]
+    elif period == "week":
+        return f"w/c {base.date() - number * datetime.timedelta(days=(7 + base.weekday())):%d %b}"
+    raise ValueError('period must be "year", "month" or "week"')
 
 
 def period_difference(base, other, period: str) -> int:
