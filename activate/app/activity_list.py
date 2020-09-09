@@ -165,6 +165,8 @@ class ActivityList(list):
                 total += key(a)
                 data[0].append(a.start_time + a.duration)
                 data[1].append(total)
+            data[0].append(now)
+            data[1].append(total)
 
             return (None, [data])
 
@@ -194,6 +196,9 @@ class ActivityList(list):
                 data[1].append(total)
             if back != 0:
                 data[0].append(times.end_of(times.EPOCH, time_period))
+                data[1].append(total)
+            else:
+                data[0].append(times.EPOCH + times.since_start(now, time_period))
                 data[1].append(total)
             result.append(data)
             periods.append(times.back_name(now, time_period, back))
