@@ -7,7 +7,7 @@ import PyQt5
 from PyQt5 import QtChart
 from PyQt5.QtCore import Qt
 
-from activate.core import number_formats, units
+from activate.core import number_formats, times, units
 
 
 def axis_number_format(axis):
@@ -71,6 +71,9 @@ class MinMax:
         if self.minimum is None:
             return None
         return self.maximum / self.minimum
+
+    def __bool__(self):
+        return self.minimum is not None and self.range > 0
 
     def __repr__(self):
         if self.minimum is None:
@@ -143,7 +146,9 @@ class Chart(QtChart.QChart):
     def update_axis(self, direction, ticks, minimum, maximum):
         """Change an axis range to fit minimum and maximum."""
         axis = self.axes(direction)[0]
-        if isinstance(axis, QtChart.QValueAxis):
+        if isinstance(axis, TimePeriodAxis):
+            axis.setRange(minimum, maximum)
+        elif isinstance(axis, QtChart.QValueAxis):
             fake_axis = QtChart.QValueAxis()
             fake_axis.setRange(minimum, maximum)
             fake_axis.setTickCount(ticks)
@@ -249,9 +254,19 @@ class LineChart(Chart):
                 series.replace(data_to_points(data_part))
 
         # Snap axis minima to zero
-        if not self.horizontal_log and x_range.minimum != 0 and x_range.ratio > 3:
+        if (
+            not self.horizontal_log
+            and x_range
+            and x_range.minimum != 0
+            and x_range.ratio > 3
+        ):
             x_range.minimum = 0
-        if not self.vertical_log and y_range.minimum != 0 and y_range.ratio > 3:
+        if (
+            not self.vertical_log
+            and y_range
+            and y_range.minimum != 0
+            and y_range.ratio > 3
+        ):
             y_range.minimum = 0
 
         self.update_axis(
@@ -360,16 +375,43 @@ class Histogram(Chart):
         self.update_axis(Qt.Vertical, 15, 0, units.MINUTE.encode(max(data.values())))
 
 
-class DateTimeLineChart(LineChart):
+class TimePeriodAxis(QtChart.QCategoryAxis):
+    def __init__(self, *args, **kwargs):
+        self.mode = "day"
+        super().__init__(*args, **kwargs)
+
+    def setRange(self, minimum, maximum):
+        super().setRange(minimum.timestamp(), maximum.timestamp())
+
+    def update_labels(self, minimum, maximum):
+        if self.mode == "auto":
+            if maximum - minimum > times.ONE_DAY * 500:
+                mode = "year"
+            elif maximum - minimum > times.ONE_DAY * 50:
+                mode = "month"
+            elif maximum - minimum > times.ONE_DAY * 10:
+                mode = "day"
+            else:
+                mode = "weekday"
+        else:
+            mode = self.mode
+        new_labels = times.get_periods(minimum, maximum, mode)
+        for label in self.categoriesLabels():
+            self.remove(label)
+        for position, label in new_labels:
+            self.append(label, position.timestamp())
+
+
+class TimePeriodLineChart(LineChart):
     """A line chart with datetimes on the x axis."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.removeAxis(self.axes(Qt.Horizontal)[0])
-        self.date_time_axis = QtChart.QDateTimeAxis()
-        self.addAxis(self.date_time_axis, Qt.AlignBottom)
+        self.period_axis = TimePeriodAxis()
+        self.addAxis(self.period_axis, Qt.AlignBottom)
         for series in self.series():
-            series.attachAxis(self.date_time_axis)
+            series.attachAxis(self.period_axis)
 
     def encode_data(self, data):
         """
@@ -380,17 +422,17 @@ class DateTimeLineChart(LineChart):
         The output values are in the correct units for display on the
         chart.
         """
-        x_data = [self.unit_system.encode(x, data[0][1]) * 1000 for x in data[0][0]]
+        x_data = [self.unit_system.encode(x, data[0][1]) for x in data[0][0]]
         y_data = [self.unit_system.encode(x, data[1][1]) for x in data[1][0]]
         return (x_data, y_data)
 
     def update_axis(self, direction, ticks, minimum, maximum):
         """Resize the chart axes."""
+        if minimum is None:
+            return
         if direction == Qt.Horizontal:
-            minimum = datetime.datetime.fromtimestamp(minimum / 1000)
-            maximum = datetime.datetime.fromtimestamp(maximum / 1000)
-            extra = (maximum - minimum) * 0.01
-            minimum -= extra
-            maximum += extra
-            self.date_time_axis.setFormat(date_axis_format(maximum - minimum))
+            minimum = datetime.datetime.fromtimestamp(minimum)
+            maximum = datetime.datetime.fromtimestamp(maximum)
+            # self.period_axis.setFormat(axis_format(maximum - minimum))
+            self.period_axis.update_labels(minimum, maximum)
         super().update_axis(direction, ticks, minimum, maximum)

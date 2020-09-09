@@ -47,7 +47,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.update_activity_list()
         self.activity_list_table.right_clicked.connect(self.activity_list_menu)
 
-        self.progression_chart = charts.DateTimeLineChart(
+        self.progression_chart = charts.TimePeriodLineChart(
             self.progression_graph, self.unit_system, series_count=5, vertical_ticks=8
         )
 
@@ -283,28 +283,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         periods, data = self.activities.get_progression_data(
             allowed_activity_types, self.summary_period, NOW, lambda a: a.distance
         )
+        if self.summary_period == "All Time":
+            self.progression_chart.period_axis.mode = "auto"
+            self.progression_chart.remove_legend()
+        else:
+            self.progression_chart.period_axis.mode = {
+                "Year": "month",
+                "Month": "day",
+                "Week": "weekday",
+            }[self.summary_period]
+            self.progression_chart.add_legend(periods)
         self.progression_chart.update(
             [((d[0], "date"), (d[1], "distance")) for d in data]
         )
-        x_axis = self.progression_chart.date_time_axis
-        if self.summary_period != "All Time":
-            x_axis.setRange(
-                times.start_of(times.EPOCH, self.summary_period.casefold()),
-                times.end_of(times.EPOCH, self.summary_period.casefold()),
-            )
-            self.progression_chart.add_legend(periods)
-        else:
-            self.progression_chart.remove_legend()
-
-        if self.summary_period == "Week":
-            x_axis.setTickCount(8)
-            x_axis.setFormat("dddd")
-        elif self.summary_period == "Month":
-            x_axis.setTickCount(32)
-            x_axis.setFormat("d")
-        elif self.summary_period == "Year":
-            x_axis.setTickCount(13)
-            x_axis.setFormat("MMMM")
 
     def get_allowed_for_summary(self):
         """Get the allowed activity types from the checklist."""

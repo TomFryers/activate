@@ -86,6 +86,10 @@ def back_name(base, period: str, number=0):
         return MONTHS[(base.month - number - 1) % 12]
     elif period == "week":
         return f"w/c {base.date() - number * ONE_WEEK - timedelta(days=base.weekday()):%d %b}"
+    elif period == "day":
+        return str((base - ONE_DAY * number).day)
+    elif period == "weekday":
+        return f"{base - ONE_DAY * number:%A}"
     raise ValueError('period must be "year", "month" or "week"')
 
 
@@ -105,6 +109,8 @@ def period_difference(base, other, period: str) -> int:
         if other.weekday() > base.weekday():
             value += 1
         return value
+    if "day" in period:
+        return (base.date() - other.date()).days
     raise ValueError('period must be "year", "month" or "week"')
 
 
@@ -123,7 +129,9 @@ def start_of(base, period: str) -> datetime:
             datetime(year=base.year, month=base.month, day=base.day)
             - base.weekday() * ONE_DAY
         )
-    raise ValueError('period must be "year", "month" or "week"')
+    if "day" in period:
+        return datetime(year=base.year, month=base.month, day=base.day)
+    raise ValueError('period must be "year", "month", "week" or "day"')
 
 
 def end_of(base, period: str) -> datetime:
@@ -132,14 +140,14 @@ def end_of(base, period: str) -> datetime:
         return start_of(base.replace(year=base.year + 1), period)
     if period == "month":
         if base.month == 12:
-            return start_of(
-                base.replace(year=base.year + 1, month=base.month + 1), period
-            )
+            return start_of(base.replace(year=base.year + 1, month=1), period)
         else:
             return start_of(base.replace(month=base.month + 1), period)
 
     if period == "week":
         return start_of(base + ONE_WEEK, period)
+    if "day" in period:
+        return start_of(base + ONE_DAY, period)
 
     raise ValueError('period must be "year", "month" or "week"')
 
@@ -147,3 +155,12 @@ def end_of(base, period: str) -> datetime:
 def hours_minutes_seconds(time: timedelta) -> tuple:
     time = time.total_seconds()
     return (time // 3600, *divmod(time % 3600, 60))
+
+
+def get_periods(minimum, maximum, period: str):
+    current = end_of(minimum, period)
+    periods = [(current, back_name(current, period, 1))]
+    while current <= end_of(maximum, period):
+        current = end_of(current, period)
+        periods.append((current, back_name(current, period, 1)))
+    return periods
