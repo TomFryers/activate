@@ -1,11 +1,12 @@
 """Functions for dealing with datetimes and timedeltas."""
-import datetime
+from datetime import datetime, timedelta
 
-ONE_DAY = datetime.timedelta(days=1)
-ONE_HOUR = datetime.timedelta(hours=1)
-ONE_MINUTE = datetime.timedelta(minutes=1)
+ONE_WEEK = timedelta(days=7)
+ONE_DAY = timedelta(days=1)
+ONE_HOUR = timedelta(hours=1)
+ONE_MINUTE = timedelta(minutes=1)
 
-EPOCH = datetime.datetime.fromtimestamp(0)  # + datetime.timedelta(365)
+EPOCH = datetime.fromtimestamp(0)  # + timedelta(365)
 
 MONTHS = (
     "January",
@@ -27,10 +28,10 @@ def from_GPX(string):
     """Load a time from a string in GPX format."""
     if string is None:
         return None
-    return datetime.datetime.fromisoformat(string.rstrip("Z"))
+    return datetime.fromisoformat(string.rstrip("Z"))
 
 
-def to_string(time: datetime.timedelta, exact=False):
+def to_string(time: timedelta, exact=False):
     """Convert a time to a nicely formatted string."""
     result = []
     started = False
@@ -58,12 +59,12 @@ def to_string(time: datetime.timedelta, exact=False):
     return "".join(result).lstrip("0").strip()
 
 
-def nice(time: datetime.datetime):
+def nice(time: datetime):
     """Format a time on two lines neatly."""
     return time.strftime("%A %d %B %Y\n%H:%M")
 
 
-def round_time(time: datetime.datetime) -> datetime.datetime:
+def round_time(time: datetime) -> datetime:
     """Round a time to the nearest second."""
     return time.replace(
         microsecond=0, second=round(time.second + time.microsecond / 1000000)
@@ -72,7 +73,7 @@ def round_time(time: datetime.datetime) -> datetime.datetime:
 
 def to_number(value):
     """Convert a timedelta to seconds, leaving other values untouched."""
-    if isinstance(value, datetime.timedelta):
+    if isinstance(value, timedelta):
         return value.total_seconds()
     return value
 
@@ -84,7 +85,9 @@ def back_name(base, period: str, number=0):
     elif period == "month":
         return MONTHS[(base.month - number - 1) % 12]
     elif period == "week":
-        return f"w/c {base.date() - number * datetime.timedelta(days=(7 + base.weekday())):%d %b}"
+        return (
+            f"w/c {base.date() - number * timedelta(days=(7 + base.weekday())):%d %b}"
+        )
     raise ValueError('period must be "year", "month" or "week"')
 
 
@@ -107,34 +110,25 @@ def period_difference(base, other, period: str) -> int:
     raise ValueError('period must be "year", "month" or "week"')
 
 
-def since_start(base, period: str) -> float:
-    if period == "year":
-        return base - datetime.datetime(base.year, 1, 1)
-    if period == "month":
-        return base - datetime.datetime(base.year, base.month, 1)
-    if period == "week":
-        return datetime.timedelta(days=base.weekday()) + datetime.timedelta(
-            hours=base.hour,
-            minutes=base.minute,
-            seconds=base.second,
-            microseconds=base.microsecond,
-        )
+def since_start(base, period: str) -> datetime:
+    return base - start_of(base, period)
 
 
-def start_of(base, period: str) -> datetime.datetime:
+def start_of(base, period: str) -> datetime:
     """Get the start of the current period."""
     if period == "year":
-        return datetime.datetime(year=base.year, month=1, day=1)
+        return datetime(year=base.year, month=1, day=1)
     if period == "month":
-        return datetime.datetime(year=base.year, month=base.month, day=1)
+        return datetime(year=base.year, month=base.month, day=1)
     if period == "week":
-        return datetime.datetime(
-            year=base.year, month=base.month, day=base.day
-        ) - base.weekday() * datetime.timedelta(days=1)
+        return (
+            datetime(year=base.year, month=base.month, day=base.day)
+            - base.weekday() * ONE_DAY
+        )
     raise ValueError('period must be "year", "month" or "week"')
 
 
-def end_of(base, period: str) -> datetime.datetime:
+def end_of(base, period: str) -> datetime:
     """Get the end of the current period."""
     if period == "year":
         return start_of(base.replace(year=base.year + 1), period)
@@ -147,11 +141,11 @@ def end_of(base, period: str) -> datetime.datetime:
             return start_of(base.replace(month=base.month + 1), period)
 
     if period == "week":
-        return start_of(base + datetime.timedelta(days=7), period)
+        return start_of(base + ONE_WEEK, period)
 
     raise ValueError('period must be "year", "month" or "week"')
 
 
-def hours_minutes_seconds(time: datetime.timedelta) -> tuple:
+def hours_minutes_seconds(time: timedelta) -> tuple:
     time = time.total_seconds()
     return (time // 3600, *divmod(time % 3600, 60))
