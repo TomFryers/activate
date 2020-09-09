@@ -6,7 +6,7 @@ ONE_DAY = timedelta(days=1)
 ONE_HOUR = timedelta(hours=1)
 ONE_MINUTE = timedelta(minutes=1)
 
-EPOCH = datetime.fromtimestamp(0)  # + timedelta(365)
+EPOCH = datetime.fromtimestamp(0) + timedelta(365)
 
 MONTHS = (
     "January",
