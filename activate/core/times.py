@@ -85,7 +85,8 @@ def back_name(base, period: str, number=0):
     elif period == "month":
         return MONTHS[(base.month - number - 1) % 12]
     elif period == "week":
-        return f"w/c {base.date() - number * ONE_WEEK - timedelta(days=base.weekday()):%d %b}"
+        date = base.date() - number * ONE_WEEK - timedelta(days=base.weekday())
+        return f"w/c {date:%d %b}"
     elif period == "day":
         return str((base - ONE_DAY * number).day)
     elif period == "weekday":

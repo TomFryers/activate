@@ -31,17 +31,25 @@ def convert_activity_type(activity_type: str, name) -> str:
     return ACTIVITY_TYPE_NAMES[activity_type.casefold()]
 
 
-def load(filename) -> tuple:
-    """Get a (name, sport, Track) tuple by loading from a file."""
+def load(filename) -> dict:
+    """
+    Get {"name": name, "sport": sport, "track": Track} by loading a file.
+
+    Uses the appropriate track loader from the filetypes module.
+    """
     if files.has_extension(filename, "gpx"):
         data = filetypes.gpx.load_gpx(filename)
     elif files.has_extension(filename, "fit"):
         data = filetypes.fit.load_fit(filename)
 
-    return (data[0], convert_activity_type(data[1], data[0]), track.Track(data[2]))
+    return {
+        "name": data[0],
+        "sport": convert_activity_type(data[1], data[0]),
+        "track": track.Track(data[2]),
+    }
 
 
 def import_and_load(filename, copy_to) -> activity.Activity:
     """Import an activity and copy it into the originals directory."""
     filename = files.copy_to_location_renamed(filename, copy_to)
-    return activity.from_track(*load(filename), filename)
+    return activity.from_track(**load(filename), original_name=filename)
