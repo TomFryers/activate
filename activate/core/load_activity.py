@@ -52,4 +52,4 @@ def load(filename) -> dict:
 def import_and_load(filename, copy_to) -> activity.Activity:
     """Import an activity and copy it into the originals directory."""
     filename = files.copy_to_location_renamed(filename, copy_to)
-    return activity.from_track(**load(filename), original_name=filename)
+    return activity.from_track(**load(filename), filename=filename)
