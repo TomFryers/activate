@@ -1,7 +1,7 @@
 import random
 import shutil
 
-from activate.core import serialise, track
+from activate.core import serialise, track as track_
 from activate.core.units import DimensionValue
 
 
@@ -14,7 +14,7 @@ class Activity:
         self,
         name,
         sport,
-        track_,
+        track,
         original_name,
         flags=None,
         start_time=None,
@@ -27,10 +27,10 @@ class Activity:
     ):
         self.name = name
         self.sport = sport
-        if isinstance(track_, dict):
-            self.track = track.Track(track_)
+        if isinstance(track, dict):
+            self.track = track_.Track(track)
         else:
-            self.track = track_
+            self.track = track
         self.original_name = original_name
         self.server = server
         self.username = username
@@ -111,7 +111,7 @@ class Activity:
         return {
             "name": self.name,
             "sport": self.sport,
-            "track_": self.track.save_data,
+            "track": self.track.save_data,
             "original_name": self.original_name,
             "flags": self.flags,
             "start_time": self.start_time,
