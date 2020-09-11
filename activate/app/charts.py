@@ -238,6 +238,10 @@ class LineChart(Chart):
 
     def update(self, data):
         """Change a line chart's data."""
+        if not data:
+            for series in self.data_series:
+                series.setVisible(False)
+            return
         x_dimension = data[0][0][1]
         y_dimension = data[0][1][1]
         self.set_axis_dimensions(x_dimension, y_dimension)
