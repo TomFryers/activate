@@ -30,6 +30,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.setupUi(self)
         self.settings = settings.load_settings()
 
+        self.main_tabs.setTabVisible(2, bool(self.settings.servers))
+
         # Create a global map widget to be used everywhere. This is
         # necessary because pyqtlet doesn't support multiple L.map
         # instances.
@@ -78,6 +80,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def edit_server_settings(self):
         settings_window = dialogs.SettingsDialog()
         self.settings = settings_window.exec(self.settings, "Servers")
+
+        self.main_tabs.setTabVisible(2, bool(self.settings.servers))
 
     def add_manual_activity(self):
         manual_window = dialogs.ManualActivityDialog()
