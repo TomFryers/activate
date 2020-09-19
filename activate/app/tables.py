@@ -256,7 +256,6 @@ class CurveTable(ValueColumnTable):
             self.dimensions,
             [lambda x: x, times.to_string, lambda x: str(round(x, 1))],
         )
-        # self.resize_to_contents()
 
     def update_data(self, good_distance_names, table):
         self.setRowCount(len(table))
@@ -281,6 +280,7 @@ class RecordsTable(CurveTable):
             self.dimensions,
             [lambda x: x, times.to_string, lambda x: str(round(x, 1)), lambda x: x],
         )
+        self.resize_to_contents()
 
     def update_data(self, good_distance_names, table, activity_ids):
         super().update_data(good_distance_names, table)
