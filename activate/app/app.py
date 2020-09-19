@@ -55,6 +55,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
         self.summary_period = "All Time"
 
+        self.records_table.gone_to.connect(self.show_activity)
+
         self.social_activities = []
 
         # Set up activity types list for the summary page
@@ -153,7 +155,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         # [1] gives file type chosen ("Activity Files (...)",
         # "All Files" etc.)
         filenames = QtWidgets.QFileDialog.getOpenFileNames(
-            self, "Import an activity", paths.HOME, "Activity Files (*.gpx *.fit, *.tcx)",
+            self,
+            "Import an activity",
+            paths.HOME,
+            "Activity Files (*.gpx *.fit, *.tcx)",
         )[0]
         if not filenames:
             return
@@ -253,6 +258,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             )
         self.activity.save(paths.ACTIVITIES)
         self.activity_view.force_update_page(0)
+
+    def show_activity(self, activity_id):
+        self.main_tabs.setCurrentIndex(1)
+        self.activity_list_table.select(activity_id)
 
     def main_tab_switch(self, tab):
         """
@@ -354,14 +363,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 else activity_types.SPECIAL_DISTANCES[None]
             )
         good_distances = {k: good_distances[k] for k in sorted(good_distances)}
+        records, activity_ids = self.activities.get_records(
+            self.get_allowed_for_summary(), self.summary_period, NOW, good_distances,
+        )
+
         self.records_table.update_data(
-            list(good_distances.values()),
-            self.activities.get_records(
-                self.get_allowed_for_summary(),
-                self.summary_period,
-                NOW,
-                good_distances,
-            ),
+            list(good_distances.values()), records, activity_ids
         )
 
     def summary_period_changed(self, value):

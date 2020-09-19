@@ -207,11 +207,16 @@ class ActivityList(list):
 
     def get_records(self, activity_types, time_period, now, distances):
         records = {}
+        activity_ids = {}
         for activity_ in self.filtered(activity_types, time_period, now, 0):
             for record in activity_.load().track.get_curve(distances)[0]:
                 if record[0] not in records or records[record[0]][0] > record[1]:
                     records[record[0]] = record[1:] + (activity_.name,)
-        return [(distance,) + record for distance, record in records.items()]
+                    activity_ids[record[0]] = activity_.activity_id
+        return (
+            [(distance,) + record for distance, record in records.items()],
+            activity_ids.values(),
+        )
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {super().__repr__()} _activities={self._activities!r}>"

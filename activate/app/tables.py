@@ -227,6 +227,12 @@ class ActivityListTable(ValueColumnTable):
         else:
             super().mouseReleaseEvent(event)
 
+    def select(self, activity_id):
+        for row in range(len(self)):
+            if self.item(row, 0).activity_id == activity_id:
+                self.selectRow(row)
+                return
+
 
 class SocialActivityList(ActivityListTable):
     headings = ["Server", "User", "Name", "Type", "Start Time", "Distance"]
@@ -261,6 +267,12 @@ class CurveTable(ValueColumnTable):
 class RecordsTable(CurveTable):
     headings = CurveTable.headings + ["Activity"]
     dimensions = CurveTable.dimensions + [None]
+    # An int results in an overflow issue
+    gone_to = QtCore.pyqtSignal(object)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.itemDoubleClicked.connect(self.go_to)
 
     def set_units(self, *args, **kwargs):
         super().set_units(*args, **kwargs)
@@ -269,6 +281,15 @@ class RecordsTable(CurveTable):
             self.dimensions,
             [lambda x: x, times.to_string, lambda x: str(round(x, 1)), lambda x: x],
         )
+
+    def update_data(self, good_distance_names, table, activity_ids):
+        super().update_data(good_distance_names, table)
+        for row, activity_id in enumerate(activity_ids):
+            self.item(row, self.headings.index("Activity")).activity_id = activity_id
+
+    def go_to(self, item):
+        if self.headings[item.column()] == "Activity":
+            self.gone_to.emit(item.activity_id)
 
 
 class InfoTable(Table):
