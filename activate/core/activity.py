@@ -1,7 +1,8 @@
 import random
 import shutil
 
-from activate.core import serialise, track as track_
+from activate.core import serialise
+from activate.core import track as track_
 from activate.core.units import DimensionValue
 
 
