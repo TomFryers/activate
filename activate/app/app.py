@@ -153,7 +153,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         # [1] gives file type chosen ("Activity Files (...)",
         # "All Files" etc.)
         filenames = QtWidgets.QFileDialog.getOpenFileNames(
-            self, "Import an activity", paths.HOME, "Activity Files (*.gpx *.fit)",
+            self, "Import an activity", paths.HOME, "Activity Files (*.gpx *.fit, *.tcx)",
         )[0]
         if not filenames:
             return
@@ -178,6 +178,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             file_type = "GPX file (*.gpx)"
         elif files.has_extension(self.activity.original_name, ".fit"):
             file_type = "FIT file (*.fit)"
+        elif files.has_extension(self.activity.original_name, ".tcx"):
+            file_type = "TCX file (*.TCX)"
         else:
             file_type = ""
         out_name = files.decode_name(self.activity.original_name)

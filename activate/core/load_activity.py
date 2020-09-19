@@ -41,6 +41,8 @@ def load(filename) -> dict:
         data = filetypes.gpx.load_gpx(filename)
     elif files.has_extension(filename, "fit"):
         data = filetypes.fit.load_fit(filename)
+    elif files.has_extension(filename, "tcx"):
+        data = filetypes.tcx.load_tcx(filename)
 
     return {
         "name": data[0],
