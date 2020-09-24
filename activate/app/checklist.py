@@ -1,23 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
-
-def map_check_state(state) -> float:
-    if state == Qt.Unchecked:
-        return 0.0
-    if state == Qt.PartiallyChecked:
-        return 0.5
-    if state == Qt.Checked:
-        return 1.0
-    raise ValueError(f"Invalid check state: {state!r}")
-
-
-def unmap_check_state(state):
-    if state == 0:
-        return Qt.Unchecked
-    if state == 0.5:
-        return Qt.PartiallyChecked
-    return Qt.Checked
+Unchecked, PartiallyChecked, Checked = Qt.Unchecked, Qt.PartiallyChecked, Qt.Checked
 
 
 class CheckList(QtWidgets.QListWidget):
@@ -31,6 +15,8 @@ class CheckList(QtWidgets.QListWidget):
         self.itemDoubleClicked.connect(self.item_double_clicked)
 
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            return [x for x in self][index]
         result = self.item(index)
         if result is None:
             raise IndexError(f"{self.__class__.__name__} index out of range")
@@ -45,11 +31,11 @@ class CheckList(QtWidgets.QListWidget):
         self.clear()
         self.addItems(new_items)
         for row in self:
-            row.setCheckState(Qt.Unchecked)
+            row.setCheckState(Unchecked)
 
     @property
     def states(self):
-        return {row.text(): map_check_state(row.checkState()) for row in self}
+        return {row.text(): row.checkState() for row in self}
 
     @states.setter
     def states(self, new_states):
@@ -67,58 +53,54 @@ class CheckList(QtWidgets.QListWidget):
         return row
 
     def set_check_state(self, row, state):
-        row = self.get_row(row)
-        if not isinstance(state, Qt.CheckState):
-            state = unmap_check_state(state)
-        row.setCheckState(state)
+        self.get_row(row).setCheckState(state)
 
     def check_state(self, row):
-        return map_check_state(self.get_row(row).checkState())
+        return self.get_row(row).checkState()
 
     @property
     def checked_rows(self):
-        return [r.text() for r in self if r.checkState() == Qt.Checked]
+        return [r.text() for r in self if r.checkState() == Checked]
 
     def item_changed(self, item):
-        if self.do_not_recurse:
+        if self.do_not_recurse or not self.all_row:
             return
         self.do_not_recurse = True
-        if (
-            self.all_row
-            and item.text() == "All"
-            and item.checkState() != Qt.PartiallyChecked
-        ):
-            for i in range(1, len(self)):
-                self.set_check_state(i, item.checkState())
+        if self.is_all(item):
+            for item_ in self[1:]:
+                item_.setCheckState(item.checkState())
         else:
-            states = set(
-                self.check_state(i) for i in range(1 if self.all_row else 0, len(self))
+            states = set(i.checkState() for i in self[1:])
+            self.set_all_state(
+                next(iter(states)) if len(states) == 1 else PartiallyChecked
             )
-            if self.all_row:
-                if len(states) == 1:
-                    new_state = next(iter(states))
-                else:
-                    new_state = 0.5
-                self.set_check_state(0, new_state)
         self.do_not_recurse = False
 
     def item_double_clicked(self, item):
-        if self.all_row and item.text() == "All":
-            self.set_check_state(0, 1.0)
+        if self.is_all(item):
+            self.set_all_state(Checked)
             return
         self.do_not_recurse = True
+
         if self.all_row and len(self) > 2:
-            self.set_check_state(0, 0.5)
+            self.set_all_state(PartiallyChecked)
 
         for item_ in self:
-            if not (self.all_row and item_.text() == "All"):
-                item_.setCheckState(Qt.Checked if item_ is item else Qt.Unchecked)
+            if not self.is_all(item_):
+                item_.setCheckState(Checked if item_ is item else Unchecked)
         self.do_not_recurse = False
 
     def check_all(self):
         for row in self:
-            row.setCheckState(Qt.Checked)
+            row.setCheckState(Checked)
 
     def add_all_row(self):
         self.insertItem(0, "All")
         self.all_row = True
+
+    def is_all(self, item):
+        return self.all_row and self.row(item) == 0
+
+    def set_all_state(self, state):
+        if self.all_row:
+            self.set_check_state(0, state)
