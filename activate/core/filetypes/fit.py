@@ -15,17 +15,17 @@ NORMAL_FIELDS = {
     **{
         "lat": lambda p: p["position_lat"] * CONVERSION_FACTOR,
         "lon": lambda p: p["position_long"] * CONVERSION_FACTOR,
-        "ele": lambda p: p["altitude"] / 5 - 500,
+        "ele": lambda p: p["altitude"],
         "cadence": lambda p: p["cadence"] / 60,
         "heartrate": lambda p: p["heart_rate"] / 60,
-        "speed": lambda p: p["speed"] / 1000,
+        "speed": lambda p: p["speed"],
         "power": lambda p: p["power"],
     },
 }
 
 LENGTH_SWIM_FIELDS = {
     **UNIVERSAL_FIELDS,
-    **{"speed": lambda p: p["speed"] / 1000, "stroke": lambda p: p["swim_stroke"]},
+    **{"speed": lambda p: p["speed"], "stroke": lambda p: p["swim_stroke"]},
 }
 
 
