@@ -19,3 +19,11 @@ The Python dependencies are:
 Run `make` to build the app.
 
 Run `./app` to launch Activate.
+
+## Basic Usage
+
+When you first open Activate, you will see a mostly empty screen with
+your total distance, time, number of activities and climb (which are all
+zero). To add your activities, go to File/Import or press Ctrl-I. Select
+the activities you wish to import, and wait for the import to finish. If
+you switch to the 'Activities' tab, you can see individual activities.
