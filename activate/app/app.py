@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import datetime
 import sys
+from collections import Counter
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
@@ -58,10 +59,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
         self.social_activities = []
 
-        # Set up activity types list for the summary page
-        self.activity_types_list.row_names = list(activity_types.TYPES)
-        self.activity_types_list.add_all_row()
-        self.activity_types_list.check_all()
+        self.update_activity_types_list()
 
         self.action_import.setIcon(QIcon.fromTheme("document-open"))
         self.action_add_manual.setIcon(QIcon.fromTheme("document-new"))
@@ -73,6 +71,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.action_quit.setIcon(QIcon.fromTheme("application-exit"))
 
         self.main_tab_switch(0)
+
+    def update_activity_types_list(self):
+        """Set up activity types list for the summary page."""
+        self.activity_types_list.row_names = [
+            x[0] for x in Counter(a.sport for a in self.activities).most_common()
+        ]
+        self.activity_types_list.add_all_row()
+        self.activity_types_list.check_all()
 
     def edit_unit_settings(self):
         settings_window = dialogs.SettingsDialog()
@@ -201,6 +207,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
         This then edits or deletes the activity as appropriate.
         """
+        previous_sport = self.activity.sport
         edit_activity_dialog = (
             dialogs.EditManualActivityDialog()
             if self.activity.track.manual
@@ -239,6 +246,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activities.update(self.activity.activity_id)
         self.update_activity(row)
         self.activity_list_table.setSortingEnabled(True)
+        if self.activity.sport != previous_sport:
+            self.update_activity_types_list()
 
     def add_photos(self):
         """Open the Add Photos dialog."""
