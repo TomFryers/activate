@@ -178,7 +178,7 @@ class Track:
         self.fields["z"] = []
         for point in range(len(self)):
             x, y, z = geometry.to_cartesian(
-                self["lat"][point], self["lon"][point], self["ele"][point],
+                self["lat"][point], self["lon"][point], self["ele"][point]
             )
             self.fields["x"].append(x)
             self.fields["y"].append(y)

@@ -11,7 +11,7 @@ FIELDS = {
     "distance": lambda p: float(p.find("./extensions/distance").text),
     "cadence": lambda p: float(
         load_xml.try_multi(
-            p, ("./extensions/cadence", "./extensions/TrackPointExtension/cad",),
+            p, ("./extensions/cadence", "./extensions/TrackPointExtension/cad")
         )
     )
     / 60,

@@ -194,7 +194,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             file_type = ""
         out_name = files.decode_name(self.activity.original_name)
         filename = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Export Original Activity", f"{paths.HOME}/{out_name}", file_type,
+            self, "Export Original Activity", f"{paths.HOME}/{out_name}", file_type
         )[0]
 
         if not filename:
@@ -372,7 +372,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             )
         good_distances = {k: good_distances[k] for k in sorted(good_distances)}
         records, activity_ids = self.activities.get_records(
-            self.get_allowed_for_summary(), self.summary_period, NOW, good_distances,
+            self.get_allowed_for_summary(), self.summary_period, NOW, good_distances
         )
 
         self.records_table.update_data(
@@ -410,7 +410,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.social_activity_list.setRowCount(len(self.social_activities))
         for row, activity_ in enumerate(self.social_activities):
             self.social_activity_list.set_id_row(
-                activity_.activity_id, activity_.list_row, row,
+                activity_.activity_id, activity_.list_row, row
             )
 
     def filter_social_activities(self):
