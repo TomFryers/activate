@@ -26,10 +26,19 @@ FIELD_DIMENSIONS = {
     "cadence": "cadence",
     "heartrate": "heartrate",
     "power": "power",
-    "x": "distance",
-    "y": "distance",
-    "z": "distance",
+    "xyz": "distance^3",
 }
+
+
+def lerp(value1, value2, ratio):
+    """
+    Interpolate between value1 and value2.
+
+    lerp(x, y, 0) = x
+    lerp(x, y, 0.5) = (x + y) / 2
+    lerp(x, y, 1) = y
+    """
+    return value1 * (1 - ratio) + value2 * ratio
 
 
 def infer_nones(data):
@@ -49,38 +58,38 @@ def infer_nones(data):
                     data[index - write_back] = value
                 # Nones in middle
                 else:
-                    data[index - write_back] = (
-                        value * (gap_size - write_back) + last_good * (write_back)
-                    ) / gap_size
+                    data[index - write_back] = lerp(
+                        value, last_good, write_back / gap_size
+                    )
+
             none_count = 0
         last_good = value
-    if none_count:
-        if last_good is None:
-            raise ValueError("Cannot interpolate from all Nones")
-        # Nones at end
-        for write_back in range(0, none_count + 1):
-            data[index - write_back] = last_good
-    return data
+    if not none_count:
+        return data
+    # Nones at end
+    if last_good is None:
+        raise ValueError("Cannot interpolate from all Nones")
+    for write_back in range(none_count + 1):
+        data[index - write_back] = last_good
 
 
-def get_nearby_indices(length, position, number=1) -> list:
+def get_nearby_indices(length, position, number=1) -> range:
     """
     Return numbers around position, with at most number either side.
 
     If position is too close to 0 or length, the excess points are
     removed.
     """
-    relevant_points = [position + i for i in range(-number, number + 1)]
-    while relevant_points[0] < 0:
-        relevant_points.pop(0)
-    while relevant_points[-1] >= length:
-        relevant_points.pop(-1)
-    return relevant_points
+    return range(max(position - number, 0), min(position + number + 1, length))
+
+
+def distance(point1, point2):
+    return math.sqrt(sum((c1 - c2) ** 2 for c1, c2 in zip(point1, point2)))
 
 
 @dataclass
 class ManualTrack:
-    """A manual track with a few basic value."""
+    """A manual track with a few basic values."""
 
     start_time: datetime.datetime
     length: float
@@ -130,7 +139,7 @@ class Track:
         try:
             return self.fields[field]
         except KeyError:
-            if field in {"x", "y", "z"}:
+            if field == "xyz":
                 self.calculate_cartesian()
             elif field == "dist_to_last":
                 self.calculate_dist_to_last()
@@ -154,9 +163,7 @@ class Track:
         self.fields[field] = value
 
     def __contains__(self, field):
-        if field in self.fields.keys():
-            return True
-        if field in {"x", "y", "z"}:
+        if field == "xyz":
             return self.has_position_data
         if field in {"dist_to_last", "dist"}:
             return "dist" in self or "dist_to_last" in self or self.has_position_data
@@ -169,20 +176,14 @@ class Track:
             "angle",
         }:
             return self.has_altitude_data
-        return False
+        return field in self.fields
 
     def calculate_cartesian(self):
         """Calculate cartesian coordinates for each point"""
-        self.fields["x"] = []
-        self.fields["y"] = []
-        self.fields["z"] = []
-        for point in range(len(self)):
-            x, y, z = geometry.to_cartesian(
-                self["lat"][point], self["lon"][point], self["ele"][point]
-            )
-            self.fields["x"].append(x)
-            self.fields["y"].append(y)
-            self.fields["z"].append(z)
+        self.fields["xyz"] = [
+            geometry.to_cartesian(*point)
+            for point in zip(self["lat"], self["lon"], self["ele"])
+        ]
 
     def calculate_dist_to_last(self):
         """Calculate distances between adjacent points"""
@@ -190,24 +191,19 @@ class Track:
         if "dist" in self.fields:
             for point in range(1, len(self)):
                 relevant = self.fields["dist"][point - 1 : point + 1]
-                if None in relevant:
-                    value = None
-                else:
-                    value = relevant[1] - relevant[0]
-                self.fields["dist_to_last"].append(value)
-        else:
-            for point in range(1, len(self)):
                 self.fields["dist_to_last"].append(
-                    math.sqrt(
-                        sum((self[i][point] - self[i][point - 1]) ** 2 for i in "xyz")
-                    )
+                    None if None in relevant else relevant[1] - relevant[0]
                 )
+        else:
+            self.fields["dist_to_last"] += [
+                distance(self["xyz"][point], self["xyz"][point - 1])
+                for point in range(1, len(self))
+            ]
 
     def calculate_climb_desc(self):
         self.fields["climb"] = [None]
         self.fields["desc"] = [None]
-        for point in range(1, len(self)):
-            height_change = self["height_change"][point]
+        for height_change in self["height_change"][1:]:
             self.fields["climb"].append(max(height_change, 0))
             self.fields["desc"].append(max(-height_change, 0))
 
@@ -215,15 +211,15 @@ class Track:
         """Calculate cumulative distances"""
         total_dist = 0
         new_dist = [0]
-        for point in range(1, len(self)):
-            total_dist += self["dist_to_last"][point]
+        for dist in self["dist_to_last"][1:]:
+            total_dist += dist
             new_dist.append(total_dist)
         self.fields["dist"] = new_dist
 
     def calculate_speed(self):
         """Calculate speeds at each point"""
         speeds = []
-        for point_index in range(0, len(self)):
+        for point_index in range(len(self)):
             relevant_points = get_nearby_indices(
                 len(self), point_index, number=SPEED_RANGE
             )
@@ -242,11 +238,10 @@ class Track:
     def calculate_height_change(self):
         """Calculate differences in elevation between adjacent points."""
         self.fields["height_change"] = [None]
-        current = self["ele"][0]
-        for point in range(1, len(self)):
-            last = current
-            current = self["ele"][point]
+        last = self["ele"][0]
+        for current in self["ele"][1:]:
             self.fields["height_change"].append(current - last)
+            last = current
 
     def calculate_vertical_speed(self):
         """Calculate vertical speed at each point."""
@@ -265,10 +260,9 @@ class Track:
     def calculate_gradient(self):
         """Calculate the gradient at each point."""
         self.fields["gradient"] = [None]
-        for point in range(1, len(self)):
-            distance = self["dist_to_last"][point]
-            if distance is not None and distance > 0:
-                self.fields["gradient"].append(self["height_change"][point] / distance)
+        for dist, height_change in zip(self["dist_to_last"], self["height_change"])[1:]:
+            if dist is not None and dist > 0:
+                self.fields["gradient"].append(height_change / dist)
             else:
                 self.fields["gradient"].append(None)
 
@@ -288,8 +282,7 @@ class Track:
     def average(self, field):
         """Get the mean value of a field, ignoring missing values."""
         if field == "speed":
-            duration = self.elapsed_time.total_seconds()
-            return self.length / duration
+            return self.length / self.elapsed_time.total_seconds()
 
         valid = list(self.without_nones(field))
         return sum(valid) / len(valid)
