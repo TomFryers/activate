@@ -71,6 +71,7 @@ def infer_nones(data):
         raise ValueError("Cannot interpolate from all Nones")
     for write_back in range(none_count + 1):
         data[index - write_back] = last_good
+    return data
 
 
 def get_nearby_indices(length, position, number=1) -> range:
