@@ -7,7 +7,9 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
-from activate.app import activity_list, charts, connect, dialogs, maps, paths, settings
+import activate.app.dialogs.activity
+import activate.app.dialogs.settings
+from activate.app import activity_list, charts, connect, maps, paths, settings
 from activate.app.ui.main import Ui_main_window
 from activate.core import (
     activity,
@@ -81,17 +83,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_types_list.check_all()
 
     def edit_unit_settings(self):
-        settings_window = dialogs.SettingsDialog()
+        settings_window = activate.app.dialogs.settings.SettingsDialog()
         self.settings = settings_window.exec(self.settings, "Units")
 
     def edit_server_settings(self):
-        settings_window = dialogs.SettingsDialog()
+        settings_window = activate.app.dialogs.settings.SettingsDialog()
         self.settings = settings_window.exec(self.settings, "Servers")
 
         self.main_tabs.setTabVisible(2, bool(self.settings.servers))
 
     def add_manual_activity(self):
-        manual_window = dialogs.ManualActivityDialog()
+        manual_window = activate.app.dialogs.activity.ManualActivityDialog()
         data = manual_window.exec({})
         if data:
             self.add_activity(
@@ -209,15 +211,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         """
         previous_sport = self.activity.sport
         edit_activity_dialog = (
-            dialogs.EditManualActivityDialog()
+            activate.app.dialogs.activity.EditManualActivityDialog()
             if self.activity.track.manual
-            else dialogs.EditActivityDialog()
+            else activate.app.dialogs.activity.EditActivityDialog()
         )
         return_value = edit_activity_dialog.exec(self.activity)
         if not return_value:
             return
         # Delete activity
-        if return_value == dialogs.DELETE_ACTIVITY:
+        if return_value == activate.app.dialogs.activity.DELETE_ACTIVITY:
             # Must be saved to another variable because self.activity
             # changes when the row is removed
             to_delete = self.activity
@@ -428,7 +430,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
     @property
     def unit_system(self):
-        return units.UNIT_SYSTEMS[self.settings.unit_system]
+        system = units.UNIT_SYSTEMS[self.settings.unit_system]
+        for dimension, unit in self.settings.custom_units.items():
+            unit = units.UNIT_NAMES[unit]
+            system.units[dimension] = unit
+        return system
 
     def activity_list_menu(self, event):
         self.activity_menu.exec(event.globalPos())

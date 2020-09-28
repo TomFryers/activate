@@ -147,9 +147,11 @@ MIN_PER_KM = PaceUnit(KM)
 MIN_PER_MILE = PaceUnit(MILE)
 BEAT_PER_MINUTE = Unit("beat per minute", "bpm", 1 / 60)
 CYCLES_PER_MINUTE = Unit("cycles per minute", "rpm", 1 / 60)
+HERTZ = Unit("hertz", "Hz", 1)
 WATT = Unit("watt", "W", 1)
 HORSE_POWER = Unit("horsepower", "hp", 745.6998715822702)
 DEGREE = Unit("degree", "°", math.tau / 360)
+RADIAN = Unit("radian", "", 1)
 UNITLESS = Unit("", "", 1)
 DATE = DateUnit()
 ALL = {
@@ -164,7 +166,7 @@ ALL = {
     "cadence": (CYCLES_PER_MINUTE,),
     "power": (WATT,),
     "angle": (DEGREE,),
-    None: UNITLESS,
+    None: (UNITLESS,),
 }
 
 METRIC = {
@@ -200,4 +202,38 @@ IMPERIAL = {
 
 DEFAULT = "Metric"
 
-UNIT_SYSTEMS = {"Metric": UnitConfig(METRIC), "Imperial": UnitConfig(IMPERIAL)}
+UNIT_SYSTEMS = {
+    "Metric": UnitConfig(METRIC),
+    "Imperial": UnitConfig(IMPERIAL),
+}
+
+UNIT_NAMES = {
+    u.name: u
+    for u in (
+        KM,
+        MILE,
+        METRE,
+        FOOT,
+        YARD,
+        SECOND,
+        MINUTE,
+        HOUR,
+        METRE_PER_SECOND,
+        KM_PER_HOUR,
+        MILE_PER_HOUR,
+        FOOT_PER_MINUTE,
+        METRE_PER_MINUTE,
+        TIME,
+        MIN_PER_KM,
+        MIN_PER_MILE,
+        BEAT_PER_MINUTE,
+        CYCLES_PER_MINUTE,
+        HERTZ,
+        WATT,
+        HORSE_POWER,
+        DEGREE,
+        RADIAN,
+        UNITLESS,
+        DATE,
+    )
+}
