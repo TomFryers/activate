@@ -28,6 +28,8 @@ FIELD_DIMENSIONS = {
     "power": "power",
 }
 
+NON_SAVED = {"vertical_speed", "climb", "desc", "gradient", "angle"}
+
 
 def lerp(value1, value2, ratio):
     """
@@ -438,4 +440,6 @@ class Track:
 
     @property
     def save_data(self):
-        return self.fields
+        return {
+            key: value for key, value in self.fields.items() if key not in NON_SAVED
+        }
