@@ -8,17 +8,25 @@ class ClickablePhoto(QtWidgets.QLabel):
     clicked = QtCore.pyqtSignal(int)
     deleted = QtCore.pyqtSignal(int)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, deletable=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.menu = QtWidgets.QMenu(self)
-        self.action_delete = QtWidgets.QAction("Delete")
-        self.action_delete.setIcon(QtGui.QIcon.fromTheme("edit-delete"))
-        self.action_delete.triggered.connect(self.delete)
-        self.menu.addAction(self.action_delete)
+        self._index = None
+        if deletable:
+            self.action_delete = QtWidgets.QAction("Delete")
+            self.action_delete.setIcon(QtGui.QIcon.fromTheme("edit-delete"))
+            self.action_delete.triggered.connect(self.delete)
+            self.menu.addAction(self.action_delete)
 
     @property
     def index(self):
-        return self.parent().layout().indexOf(self)
+        if self._index is None:
+            return self.parent().layout().indexOf(self)
+        return self._index
+
+    @index.setter
+    def index(self, value):
+        self._index = value
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -30,6 +38,69 @@ class ClickablePhoto(QtWidgets.QLabel):
 
     def delete(self):
         self.deleted.emit(self.index)
+
+
+class Gallery(QtWidgets.QWidget):
+    """A multi-row container for photos."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setLayout = QtWidgets.QVBoxLayout(self)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.width = event.size().width()
+        self.height = event.size().height()
+
+    def empty(self):
+        """Remove all photos in the PhotoList."""
+        for index in range(self.layout().count() - 1, -1, -1):
+            self.layout().itemAt(index).widget().setParent(None)
+
+    def replace_photos(self, filenames):
+        """Replace the photos with new ones."""
+        self.filenames = filenames
+        self.empty()
+        row_height = 120
+        self.photos = [
+            QtGui.QPixmap(f).scaledToHeight(row_height, Qt.SmoothTransformation)
+            for f in filenames
+        ]
+        row = QtWidgets.QWidget(self)
+        row.setLayout(QtWidgets.QHBoxLayout(row))
+        width = self.space(row, 0)
+        for index, photo in enumerate(self.photos):
+            next_photo_width = photo.width()
+            width += next_photo_width + row.layout().spacing()
+            if width > self.width:
+                self.layout().addWidget(row)
+                row = QtWidgets.QWidget(self)
+                row.setLayout(QtWidgets.QHBoxLayout(row))
+                width = self.space(row, 1) + next_photo_width
+            photo = self.create_label(photo)
+            photo.index = index
+            row.layout().addWidget(photo)
+        self.layout().addWidget(row)
+
+    def create_label(self, photo):
+        label = ClickablePhoto(self, deletable=False)
+        label.setPixmap(photo)
+        label.clicked.connect(self.show_photos)
+        return label
+
+    def space(self, row, photo_count):
+        return (
+            row.layout().spacing() * (photo_count - 1)
+            + self.layout().contentsMargins().left()
+            + self.layout().contentsMargins().right()
+            + row.layout().contentsMargins().left()
+            + row.layout().contentsMargins().right()
+        )
+
+    def show_photos(self, index):
+        """Open the photo viewer on a photo."""
+        viewer = PhotoViewer(self.filenames, index)
+        viewer.exec()
 
 
 class PhotoList(QtWidgets.QWidget):
@@ -58,24 +129,29 @@ class PhotoList(QtWidgets.QWidget):
         self.photos = [QtGui.QPixmap(f) for f in filenames]
         total_aspect = sum(i.width() / i.height() for i in self.photos)
         total_aspect = max(total_aspect, 2)
-        width = (
-            self.width
-            - self.layout().spacing() * (len(self.photos) - 1)
-            - self.layout().contentsMargins().left()
-            - self.layout().contentsMargins().right()
-        )
+        width = self.width - self.space(len(self.photos))
         height = width / total_aspect
         self.photos = [
             p.scaledToHeight(height, Qt.SmoothTransformation) for p in self.photos
         ]
         self.labels = []
         for photo in self.photos:
-            label = ClickablePhoto(self)
-            label.setPixmap(photo)
-            label.deleted.connect(self.delete)
-            label.clicked.connect(self.show_photos)
-            self.layout().addWidget(label)
-            self.labels.append(label)
+            self.add_photo(photo)
+
+    def add_photo(self, photo):
+        label = ClickablePhoto(self, deletable=True)
+        label.setPixmap(photo)
+        label.deleted.connect(self.delete)
+        label.clicked.connect(self.show_photos)
+        self.layout().addWidget(label)
+        self.labels.append(label)
+
+    def space(self, photo_count):
+        return (
+            self.layout().spacing() * (photo_count - 1)
+            + self.layout().contentsMargins().left()
+            + self.layout().contentsMargins().right()
+        )
 
     def show_photos(self, index):
         """Open the photo viewer on a photo."""

@@ -218,5 +218,12 @@ class ActivityList(list):
             activity_ids.values(),
         )
 
+    def get_all_photos(self, activity_types, time_period, now):
+        return [
+            p
+            for a in self.filtered(activity_types, time_period, now)
+            for p in a.load().photos
+        ]
+
     def __repr__(self):
         return f"<{self.__class__.__name__} {super().__repr__()} _activities={self._activities!r}>"

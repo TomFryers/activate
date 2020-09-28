@@ -298,6 +298,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             "Totals": self.update_totals,
             "Records": self.update_records,
             "Progression": self.update_progression,
+            "Gallery": self.update_gallery,
         }[tab]()
 
     def update_progression(self):
@@ -377,6 +378,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
         self.records_table.update_data(
             list(good_distances.values()), records, activity_ids
+        )
+
+    def update_gallery(self):
+        self.gallery.replace_photos(
+            self.activities.get_all_photos(
+                self.get_allowed_for_summary(), self.summary_period, NOW
+            )
         )
 
     def summary_period_changed(self, value):
