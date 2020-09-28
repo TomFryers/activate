@@ -196,8 +196,8 @@ class Track:
         self.fields["climb"] = [None]
         self.fields["desc"] = [None]
         for height_change in self["height_change"][1:]:
-            self.fields["climb"].append(max(height_change, 0))
-            self.fields["desc"].append(max(-height_change, 0))
+            self.fields["climb"].append(0 if height_change <= 0 else height_change)
+            self.fields["desc"].append(0 if height_change >= 0 else -height_change)
 
     def calculate_dist(self):
         """Calculate cumulative distances"""
