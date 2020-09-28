@@ -26,7 +26,6 @@ FIELD_DIMENSIONS = {
     "cadence": "cadence",
     "heartrate": "heartrate",
     "power": "power",
-    "xyz": "distance^3",
 }
 
 
@@ -140,9 +139,7 @@ class Track:
         try:
             return self.fields[field]
         except KeyError:
-            if field == "xyz":
-                self.calculate_cartesian()
-            elif field == "dist_to_last":
+            if field == "dist_to_last":
                 self.calculate_dist_to_last()
             elif field == "dist":
                 self.calculate_dist()
@@ -164,8 +161,6 @@ class Track:
         self.fields[field] = value
 
     def __contains__(self, field):
-        if field == "xyz":
-            return self.has_position_data
         if field in {"dist_to_last", "dist"}:
             return "dist" in self or "dist_to_last" in self or self.has_position_data
         if field in {
@@ -179,13 +174,6 @@ class Track:
             return self.has_altitude_data
         return field in self.fields
 
-    def calculate_cartesian(self):
-        """Calculate cartesian coordinates for each point"""
-        self.fields["xyz"] = [
-            geometry.to_cartesian(*point)
-            for point in zip(self["lat"], self["lon"], self["ele"])
-        ]
-
     def calculate_dist_to_last(self):
         """Calculate distances between adjacent points"""
         self.fields["dist_to_last"] = [None]
@@ -196,9 +184,12 @@ class Track:
                     None if None in relevant else relevant[1] - relevant[0]
                 )
         else:
+            xyz = [
+                geometry.to_cartesian(*point)
+                for point in zip(self["lat"], self["lon"], self["ele"])
+            ]
             self.fields["dist_to_last"] += [
-                distance(self["xyz"][point], self["xyz"][point - 1])
-                for point in range(1, len(self))
+                distance(xyz[point], xyz[point - 1]) for point in range(1, len(self))
             ]
 
     def calculate_climb_desc(self):
