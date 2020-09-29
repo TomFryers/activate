@@ -1,4 +1,4 @@
-import random
+import uuid
 import shutil
 
 from activate.core import serialise
@@ -47,7 +47,7 @@ class Activity:
             distance = self.track.length
         self.distance = distance
         if activity_id is None:
-            self.activity_id = random.getrandbits(128)
+            self.activity_id = uuid.uuid4()
         else:
             self.activity_id = activity_id
         self.description = description

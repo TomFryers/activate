@@ -6,6 +6,7 @@ The JSON can optionally be gzipped.
 import datetime
 import gzip
 import json
+import uuid
 
 
 def default(obj):
@@ -21,6 +22,8 @@ def default(obj):
         return {"__DATETIME": obj.isoformat()}
     if isinstance(obj, datetime.timedelta):
         return {"__TIMEDELTA": obj.total_seconds()}
+    if isinstance(obj, uuid.UUID):
+        return {"__ID": str(obj)}
     raise TypeError(f"Cannot serialise {obj.__class__.__qualname__}")
 
 
@@ -32,6 +35,8 @@ def decode(obj):
             return datetime.datetime.fromisoformat(obj["__DATETIME"])
         if first_key == "__TIMEDELTA":
             return datetime.timedelta(seconds=obj["__TIMEDELTA"])
+        if first_key == "__ID":
+            return uuid.UUID(obj["__ID"])
     return obj
 
 
