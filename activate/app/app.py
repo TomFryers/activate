@@ -23,6 +23,11 @@ from activate.core import (
 )
 
 NOW = datetime.datetime.now()
+PROGRESSION_Y_OPTIONS = {
+    "Distance": (lambda a: a.distance, "distance"),
+    "Time": (lambda a: a.duration.total_seconds(), "real_time"),
+    "Climb": (lambda a: a.climb, "altitude"),
+}
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
@@ -51,17 +56,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.update_activity_list()
         self.activity_list_table.right_clicked.connect(self.activity_list_menu)
 
+        self.summary_period = "All Time"
+
         self.progression_chart = charts.TimePeriodLineChart(
-            self.progression_graph, self.unit_system, series_count=5, vertical_ticks=8
+            self.progression_graph,
+            self.unit_system,
+            series_count=5,
+            vertical_ticks=8,
+            y_axis_label=False,
         )
 
-        self.summary_period = "All Time"
+        self.y_axis_box.addItems(
+            [
+                self.unit_system.format_name_unit(
+                    PROGRESSION_Y_OPTIONS[option][1], name=option
+                )
+                for option in PROGRESSION_Y_OPTIONS
+            ]
+        )
+
+        self.update_activity_types_list()
 
         self.records_table.gone_to.connect(self.show_activity)
 
         self.social_activities = []
-
-        self.update_activity_types_list()
 
         self.action_import.setIcon(QIcon.fromTheme("document-open"))
         self.action_add_manual.setIcon(QIcon.fromTheme("document-new"))
@@ -307,7 +325,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         """Update the progression chart."""
         allowed_activity_types = self.get_allowed_for_summary()
         periods, data = self.activities.get_progression_data(
-            allowed_activity_types, self.summary_period, NOW, lambda a: a.distance
+            allowed_activity_types,
+            self.summary_period,
+            NOW,
+            PROGRESSION_Y_OPTIONS[self.progression_y_option][0],
         )
         if self.summary_period == "All Time":
             self.progression_chart.period_axis.mode = "auto"
@@ -320,8 +341,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             }[self.summary_period]
             self.progression_chart.add_legend(periods)
         self.progression_chart.update(
-            [((d[0], "date"), (d[1], "distance")) for d in data]
+            [
+                (
+                    (d[0], "date"),
+                    (d[1], PROGRESSION_Y_OPTIONS[self.progression_y_option][1]),
+                )
+                for d in data
+            ]
         )
+
+    def change_progression_y(self, new_value):
+        for option in PROGRESSION_Y_OPTIONS:
+            if option in new_value:
+                self.progression_y_option = option
+        self.update_progression()
 
     def get_allowed_for_summary(self):
         """Get the allowed activity types from the checklist."""

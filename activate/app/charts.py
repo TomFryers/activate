@@ -111,6 +111,8 @@ class Chart(QtChart.QChart):
         vertical_ticks=5,
         horizontal_log=False,
         vertical_log=False,
+        x_axis_label=True,
+        y_axis_label=True,
     ):
         """Create a new chart."""
         self.unit_system = unit_system
@@ -118,6 +120,8 @@ class Chart(QtChart.QChart):
         self.vertical_ticks = vertical_ticks
         self.horizontal_log = horizontal_log
         self.vertical_log = vertical_log
+        self.x_axis_label = x_axis_label
+        self.y_axis_label = y_axis_label
         super().__init__()
         self.setAnimationOptions(self.SeriesAnimations)
         widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
@@ -136,12 +140,15 @@ class Chart(QtChart.QChart):
             self.setTitle(title)
 
     def set_axis_dimensions(self, x_axis_dimension, y_axis_dimension):
-        self.axes(Qt.Horizontal)[0].setTitleText(
-            self.unit_system.format_name_unit(x_axis_dimension)
-        )
-        self.axes(Qt.Vertical)[0].setTitleText(
-            self.unit_system.format_name_unit(y_axis_dimension)
-        )
+        if x_axis_dimension and self.x_axis_label:
+            self.axes(Qt.Horizontal)[0].setTitleText(
+                self.unit_system.format_name_unit(x_axis_dimension)
+            )
+
+        if y_axis_dimension and self.y_axis_label:
+            self.axes(Qt.Vertical)[0].setTitleText(
+                self.unit_system.format_name_unit(y_axis_dimension)
+            )
 
     def update_axis(self, direction, ticks, minimum, maximum):
         """Change an axis range to fit minimum and maximum."""
@@ -176,18 +183,7 @@ class Chart(QtChart.QChart):
 class LineChart(Chart):
     """A chart with 1+ QLineSeries on it."""
 
-    def __init__(
-        self,
-        widget,
-        unit_system,
-        title=None,
-        area=False,
-        series_count=1,
-        horizontal_ticks=12,
-        vertical_ticks=5,
-        horizontal_log=False,
-        vertical_log=False,
-    ):
+    def __init__(self, widget, unit_system, area=False, series_count=1, **kwargs):
         """Add a line chart to widget."""
         seriess = []
         for _ in range(series_count):
@@ -199,16 +195,7 @@ class LineChart(Chart):
                 series_gc_prevent.append(series)
                 series = area
             seriess.append(series)
-        super().__init__(
-            seriess,
-            widget,
-            unit_system,
-            title,
-            horizontal_ticks,
-            vertical_ticks,
-            horizontal_log,
-            vertical_log,
-        )
+        super().__init__(seriess, widget, unit_system, **kwargs)
 
     def encode_data(self, data):
         """Convert data with a dimension to floats with correct units."""

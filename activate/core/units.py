@@ -84,7 +84,7 @@ class UnitConfig:
     def format(self, value, dimension):
         return self.units[dimension].format(value)
 
-    def format_name_unit(self, dimension, symbol=None) -> str:
+    def format_name_unit(self, dimension, symbol=None, name=None) -> str:
         """
         Get 'Distance (m)' or similar string.
 
@@ -95,7 +95,7 @@ class UnitConfig:
                 return dimension
             symbol = self.units[dimension].symbol
         if symbol:
-            return f"{dimension.title()} ({symbol})"
+            return f"{dimension.title() if name is None else name} ({symbol})"
         return dimension.title()
 
 
@@ -159,6 +159,7 @@ ALL = {
     "altitude": (METRE, FOOT),
     "speed": (METRE_PER_SECOND, KM_PER_HOUR, MILE_PER_HOUR, METRE_PER_MINUTE),
     "vertical_speed": (METRE_PER_SECOND, METRE_PER_MINUTE, FOOT_PER_MINUTE),
+    "real_time": (SECOND, MINUTE, HOUR),
     "time": (TIME,),
     "pace": (MIN_PER_KM, MIN_PER_MILE),
     "date": (DATE,),
@@ -174,6 +175,7 @@ METRIC = {
     "altitude": METRE,
     "speed": KM_PER_HOUR,
     "vertical_speed": METRE_PER_MINUTE,
+    "real_time": MINUTE,
     "time": TIME,
     "pace": MIN_PER_KM,
     "date": DATE,
@@ -189,6 +191,7 @@ IMPERIAL = {
     "altitude": FOOT,
     "speed": MILE_PER_HOUR,
     "vertical_speed": FOOT_PER_MINUTE,
+    "real_time": MINUTE,
     "time": TIME,
     "pace": MIN_PER_MILE,
     "date": DATE,

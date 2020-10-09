@@ -215,6 +215,9 @@
            </attribute>
            <layout class="QHBoxLayout" name="progression_tab_layout">
             <item>
+             <widget class="QComboBox" name="y_axis_box"/>
+            </item>
+            <item>
              <widget class="QtCharts::QChartView" name="progression_graph"/>
             </item>
            </layout>
@@ -770,6 +773,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>y_axis_box</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>main_window</receiver>
+   <slot>change_progression_y(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>696</x>
+     <y>389</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -789,5 +808,6 @@
   <slot>edit_server_settings()</slot>
   <slot>update_social_activity()</slot>
   <slot>filter_social_activities()</slot>
+  <slot>change_progression_y(QString)</slot>
  </slots>
 </ui>

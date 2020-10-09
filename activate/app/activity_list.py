@@ -154,19 +154,23 @@ class ActivityList(list):
         time_period = time_period.casefold()
         if time_period == "all time":
             data = ([], [])
-            total = 0
+            total = None
             valid_sorted = sorted(
                 self.filtered(activity_types, time_period, now, 0),
                 key=lambda x: x.start_time,
             )
             for a in valid_sorted:
+                value = key(a)
+                if total is None:
+                    total = value - value
                 data[0].append(a.start_time)
                 data[1].append(total)
-                total += key(a)
+                total += value
                 data[0].append(a.start_time + a.duration)
                 data[1].append(total)
-            data[0].append(now)
-            data[1].append(total)
+            if total is not None:
+                data[0].append(now)
+                data[1].append(total)
 
             return (None, [data])
 
@@ -178,7 +182,7 @@ class ActivityList(list):
         for back in range(5):
             start = times.start_of(times.EPOCH, time_period)
             data = ([start], [0])
-            total = 0
+            total = None
             valid_sorted = sorted(
                 self.filtered(activity_types, time_period, now, back),
                 key=lambda x: x.start_time,
@@ -186,10 +190,12 @@ class ActivityList(list):
             if not valid_sorted:
                 continue
             for a in valid_sorted:
+                value = key(a)
+                if total is None:
+                    total = value - value
                 data[0].append(start + times.since_start(a.start_time, time_period))
-
                 data[1].append(total)
-                total += key(a)
+                total += value
                 data[0].append(
                     start + times.since_start(a.start_time + a.duration, time_period)
                 )
