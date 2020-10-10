@@ -44,6 +44,7 @@ class CheckList(QtWidgets.QListWidget):
                 self.set_check_state(index, new_states[item])
 
     def get_row(self, row):
+        """Get a row from a string, index or row."""
         if isinstance(row, str):
             for real_row in self:
                 if real_row.text() == row:
@@ -99,6 +100,7 @@ class CheckList(QtWidgets.QListWidget):
         self.all_row = True
 
     def is_all(self, item):
+        """Check if a row is the 'All' row."""
         return self.all_row and self.row(item) == 0
 
     def set_all_state(self, state):

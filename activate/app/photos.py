@@ -5,6 +5,12 @@ from activate.app import paths
 
 
 class ClickablePhoto(QtWidgets.QLabel):
+    """
+    A photo that can be clicked.
+
+    It may also have a right-click menu for deleting itself.
+    """
+
     clicked = QtCore.pyqtSignal(int)
     deleted = QtCore.pyqtSignal(int)
 
@@ -89,6 +95,7 @@ class Gallery(QtWidgets.QWidget):
         return label
 
     def space(self, row, photo_count):
+        """Get the required empty space for photo_count photos in row."""
         return (
             row.layout().spacing() * (photo_count - 1)
             + self.layout().contentsMargins().left()
@@ -139,6 +146,7 @@ class PhotoList(QtWidgets.QWidget):
             self.add_photo(photo)
 
     def add_photo(self, photo):
+        """Add a new photo to the list."""
         label = ClickablePhoto(self, deletable=True)
         label.setPixmap(photo)
         label.deleted.connect(self.delete)
@@ -147,6 +155,7 @@ class PhotoList(QtWidgets.QWidget):
         self.labels.append(label)
 
     def space(self, photo_count):
+        """Get the required empty space for photo_count photos."""
         return (
             self.layout().spacing() * (photo_count - 1)
             + self.layout().contentsMargins().left()

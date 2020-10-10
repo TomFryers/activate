@@ -4,6 +4,8 @@ from PyQt5 import QtWidgets
 
 
 class FormDialog(QtWidgets.QDialog):
+    """A dialog consisiting of a form with OK and Cancel buttons."""
+
     def __init__(self, form, *args, **kwargs):
         self.form = form
         super().__init__(*args, **kwargs)

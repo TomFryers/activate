@@ -23,6 +23,7 @@ def get_tree(filename):
 
 
 def default_name(filename):
+    """Generate a default activity name from a file name."""
     return files.decode_name(pathlib.Path(filename).stem)
 
 

@@ -355,5 +355,6 @@ class ServersTable(Table):
         self.set_columns()
 
     def contextMenuEvent(self, event):
+        """Open a context menu to remove a server."""
         if self.menu.exec(event.globalPos()):
             self.removeRow(self.row(self.itemAt(event.pos())))

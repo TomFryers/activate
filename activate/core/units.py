@@ -108,7 +108,7 @@ class PaceUnit(Unit):
         self.size = 1 / distance.size
         self.symbol = "∕ " + distance.symbol
 
-    def encode(self, value):
+    def encode(self, value) -> datetime.timedelta:
         return datetime.timedelta(seconds=super().encode(value))
 
     def __repr__(self):

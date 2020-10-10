@@ -115,7 +115,8 @@ def period_difference(base, other, period: str) -> int:
     raise ValueError('period must be "year", "month" or "week"')
 
 
-def since_start(base, period: str) -> datetime:
+def since_start(base, period: str) -> timedelta:
+    """Return the time since the start of the current period."""
     return base - start_of(base, period)
 
 
@@ -158,7 +159,12 @@ def hours_minutes_seconds(time: timedelta) -> tuple:
     return (time // 3600, *divmod(time % 3600, 60))
 
 
-def get_periods(minimum, maximum, period: str):
+def get_periods(minimum, maximum, period: str) -> list:
+    """
+    Get the periods between minimum and maximum (exclusive).
+
+    Returns a list of (end datetime, name) tuples.
+    """
     current = end_of(minimum, period)
     periods = [(current, back_name(current, period, 1))]
     while current <= end_of(maximum, period):

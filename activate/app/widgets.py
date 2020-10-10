@@ -17,6 +17,8 @@ class ActivityFlagEdit(checklist.CheckList):
 
 
 class DurationEdit(QtWidgets.QFormLayout):
+    """A widget to allow editing an hours minute seconds duration."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hours_widget = QtWidgets.QSpinBox()
