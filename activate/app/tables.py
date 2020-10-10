@@ -9,6 +9,30 @@ from activate.app import connect
 from activate.core import number_formats, times, units
 
 
+def aligned(horizontal="c", vertical="c"):
+    """
+    Get a Qt Alignment from a string.
+
+    The first argument gives the horizontal alignment:
+    Left, Centre, Right or Justified.
+    The second argument gives the vertical alignment:
+    Bottom, Centre, Top or bAseline.
+    """
+    return {
+        "l": Qt.AlignLeft,
+        "c": Qt.AlignHCenter,
+        "r": Qt.AlignRight,
+        "v": Qt.AlignJustify,
+    }[horizontal.casefold()] | {
+        "b": Qt.AlignBottom,
+        "c": Qt.AlignVCenter,
+        "t": Qt.AlignTop,
+        "a": Qt.AlignBaseline,
+    }[
+        vertical.casefold()
+    ]
+
+
 def iterablise(obj):
     """If obj is not already iterable, form an endless iterator of it."""
     try:
@@ -33,7 +57,7 @@ def create_table_item(
 
     if format_function is not None:
         widget = FormattableNumber(item, format_function(item))
-        widget.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        widget.setTextAlignment(aligned("r"))
     # Format as string
     else:
         widget = QtWidgets.QTableWidgetItem(str(item))
@@ -169,7 +193,7 @@ class SplitTable(ValueColumnTable):
             self.headings,
             self.dimensions,
             [number_formats.split_format(h) for h in self.headings],
-            alignments=[Qt.AlignRight | Qt.AlignVCenter for _ in self.headings],
+            alignments=[aligned("r") for _ in self.headings],
         )
 
         self.resize_to_contents()
@@ -307,17 +331,13 @@ class InfoTable(Table):
         for row, (field, value) in enumerate(info.items()):
             self.set_item(row, 0, field)
             self.set_item(
-                row,
-                1,
-                value,
-                number_formats.info_format(field),
-                align=Qt.AlignRight | Qt.AlignVCenter,
+                row, 1, value, number_formats.info_format(field), align=aligned("r")
             )
             self.set_item(
                 row,
                 2,
                 self.unit_system.units[value.dimension].symbol,
-                align=Qt.AlignLeft | Qt.AlignVCenter,
+                align=aligned("l"),
             )
 
 

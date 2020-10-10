@@ -180,10 +180,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         # [1] gives file type chosen ("Activity Files (...)",
         # "All Files" etc.)
         filenames = QtWidgets.QFileDialog.getOpenFileNames(
-            self,
-            "Import an activity",
-            paths.HOME,
-            "Activity Files (*.gpx *.fit *.tcx)",
+            self, "Import an activity", paths.HOME, "Activity Files (*.gpx *.fit *.tcx)"
         )[0]
         if not filenames:
             return

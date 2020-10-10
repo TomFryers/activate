@@ -49,6 +49,7 @@ class CheckList(QtWidgets.QListWidget):
             for real_row in self:
                 if real_row.text() == row:
                     return real_row
+            raise ValueError(f"{row} is not a row.")
         elif isinstance(row, int):
             return self[row]
         return row

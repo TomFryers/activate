@@ -2,6 +2,12 @@
 from activate.core import times
 from activate.core.filetypes import load_xml
 
+CADENCE_FIELDS = ("./extensions/cadence", "./extensions/TrackPointExtension/cad")
+HEART_RATE_FIELDS = (
+    "./extensions/heartrate",
+    "./extensions/hr",
+    "./extensions/TrackPointExtension/hr",
+)
 FIELDS = {
     "lat": lambda p: float(p.get("lat")),
     "lon": lambda p: float(p.get("lon")),
@@ -9,23 +15,8 @@ FIELDS = {
     "time": lambda p: times.from_GPX(p.find("./time").text),
     "speed": lambda p: float(p.find("./extensions/speed").text),
     "distance": lambda p: float(p.find("./extensions/distance").text),
-    "cadence": lambda p: float(
-        load_xml.try_multi(
-            p, ("./extensions/cadence", "./extensions/TrackPointExtension/cad")
-        )
-    )
-    / 60,
-    "heartrate": lambda p: float(
-        load_xml.try_multi(
-            p,
-            (
-                "./extensions/heartrate",
-                "./extensions/hr",
-                "./extensions/TrackPointExtension/hr",
-            ),
-        )
-    )
-    / 60,
+    "cadence": lambda p: float(load_xml.try_multi(p, CADENCE_FIELDS)) / 60,
+    "heartrate": lambda p: float(load_xml.try_multi(p, HEART_RATE_FIELDS)) / 60,
     "power": lambda p: float(p.find("./extensions/power").text),
 }
 
