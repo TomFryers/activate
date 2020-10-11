@@ -23,13 +23,13 @@ def maybe_as_int(value) -> str:
 
 def info_format(entry: str):
     """Format an value for the info box."""
-    if entry in {"Average Speed", "Distance"}:
+    if entry in {"Average Speed", "Mov. Av. Speed", "Distance"}:
         return lambda value: f"{value:.2f}"
     if entry in {"Max. Speed", "Average Power", "Average HR", "Avg. Cadence"}:
         return lambda value: f"{value:.1f}"
     if entry in {"Ascent", "Descent", "Highest Point", "Max. Power"}:
         return lambda value: as_int(value)
-    if entry in {"Elapsed Time", "Moving Time", "Pace"}:
+    if entry in {"Elapsed Time", "Moving Time", "Pace", "Pace (mov.)"}:
         return lambda value: times.to_string(value)
     if entry is None:
         return lambda value: value

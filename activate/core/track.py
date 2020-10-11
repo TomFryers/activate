@@ -336,6 +336,10 @@ class Track:
 
         return total_time
 
+    @cached_property
+    def average_speed_moving(self):
+        return self.length / self.moving_time.total_seconds()
+
     def graph(self, y_data, x_data="dist") -> tuple:
         """Get x and y data as (data, dimension) tuples."""
         return (

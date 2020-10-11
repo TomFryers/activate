@@ -68,8 +68,17 @@ class Activity:
             result["Descent"] = DimensionValue(self.track.descent, "altitude")
         average_speed = self.track.average("speed")
         if average_speed > 0:
+            average_speed_moving = self.track.average_speed_moving
+            if average_speed_moving / average_speed < 1.01:
+                average_speed_moving = None
             result["Average Speed"] = DimensionValue(average_speed, "speed")
+            if average_speed_moving is not None:
+                result["Mov. Av. Speed"] = DimensionValue(
+                    average_speed_moving, "speed"
+                )
             result["Pace"] = DimensionValue(1 / average_speed, "pace")
+            if average_speed_moving is not None:
+                result["Pace (mov.)"] = DimensionValue(1 / average_speed_moving, "pace")
         if not self.track.manual:
             result["Max. Speed"] = DimensionValue(self.track.maximum("speed"), "speed")
         if self.track.has_altitude_data:
