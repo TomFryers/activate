@@ -29,7 +29,7 @@ def info_format(entry: str):
         return lambda value: f"{value:.1f}"
     if entry in {"Ascent", "Descent", "Highest Point", "Max. Power"}:
         return lambda value: as_int(value)
-    if entry in {"Elapsed Time", "Pace"}:
+    if entry in {"Elapsed Time", "Moving Time", "Pace"}:
         return lambda value: times.to_string(value)
     if entry is None:
         return lambda value: value

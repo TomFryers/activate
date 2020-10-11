@@ -61,6 +61,8 @@ class Activity:
         result = {}
         result["Distance"] = DimensionValue(self.distance, "distance")
         result["Elapsed Time"] = DimensionValue(self.track.elapsed_time, "time")
+        if self.track.moving_time > self.track.elapsed_time:
+            result["Moving Time"] = DimensionValue(self.track.moving_time, "time")
         if self.track.has_altitude_data:
             result["Ascent"] = DimensionValue(self.track.ascent, "altitude")
             result["Descent"] = DimensionValue(self.track.descent, "altitude")

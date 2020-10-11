@@ -318,6 +318,24 @@ class Track:
         end_time = self["time"][-1]
         return end_time - self.start_time
 
+    @cached_property
+    def moving_time(self):
+        total_time = datetime.timedelta(0)
+        last_distance = 0
+        last_time = self.start_time
+        for distance, time in zip(self["dist"][1:], self["time"][1:]):
+            if distance is None:
+                continue
+            time_difference = time - last_time
+            if (distance - last_distance) / time_difference.total_seconds() > 0.1:
+                total_time += time_difference
+            elif distance < last_distance:
+                raise ValueError("Distance increase")
+            last_distance = distance
+            last_time = time
+
+        return total_time
+
     def graph(self, y_data, x_data="dist") -> tuple:
         """Get x and y data as (data, dimension) tuples."""
         return (
