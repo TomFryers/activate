@@ -387,6 +387,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self.activities.total_climb(allowed_activities),
             "altitude",
         )
+        eddington = self.activities.eddington(
+            allowed_activities, self.unit_system.units["distance"].size
+        )
+        self.total_eddington_label.setText(
+            f"{eddington} {self.unit_system.units['distance'].symbol}"
+        )
 
     def update_records(self):
         good_distances = {}

@@ -3,6 +3,7 @@ Defines the activity list, which contains all of the user's real data.
 
 This is where computation of summary values should be done.
 """
+from collections import Counter
 import dataclasses
 import datetime
 
@@ -135,6 +136,13 @@ class ActivityList(list):
     def total_climb(self, activities):
         return sum(a.climb for a in activities if a.climb is not None)
 
+    def eddington(self, activities, unit):
+        days = sum((Counter(a.load().track.distance_in_days) for a in activities), Counter())
+        eddington = 0
+        while True:
+            if sum(1 for dist in days.values() if dist > eddington * unit) < eddington:
+                return eddington - 1
+            eddington += 1
 
     def get_progression_data(self, activity_types, time_period, now, key):
         """

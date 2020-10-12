@@ -340,6 +340,28 @@ class Track:
     def average_speed_moving(self):
         return self.length / self.moving_time.total_seconds()
 
+    @cached_property
+    def distance_in_days(self) -> dict:
+        if self.start_time.date() == self["time"][-1].date():
+            return {self.start_time.date(): self.length}
+        totals = {}
+        last_time = self.start_time
+        last_date = last_time.date()
+
+        for dist_to_last, time in zip(self["dist_to_last"][1:], self["time"][1:]):
+            date = time.date()
+            if time == last_date:
+                totals[last_date] += dist_to_last
+
+            totals[last_date] += times.end_of(last_time, "day") - last_time
+            for days in range(1, (date - last_date).days()):
+                totals[last_date + datetime.timedelta(days)]
+            totals[date] += time - times.start_of(time, "day")
+
+            last_time = time
+            last_date = date
+        return totals
+
     def graph(self, y_data, x_data="dist") -> tuple:
         """Get x and y data as (data, dimension) tuples."""
         return (
