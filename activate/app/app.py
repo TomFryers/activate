@@ -366,32 +366,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def update_totals(self):
         """Update the summary page totals."""
         allowed_activity_types = self.get_allowed_for_summary()
+        allowed_activities = list(
+            self.activities.filtered(allowed_activity_types, self.summary_period, NOW)
+        )
         self.set_formatted_number_label(
             self.total_distance_label,
-            self.activities.total_distance(
-                allowed_activity_types, self.summary_period, NOW
-            ),
+            self.activities.total_distance(allowed_activities),
             "distance",
         )
         self.set_formatted_number_label(
             self.total_time_label,
-            self.activities.total_time(
-                allowed_activity_types, self.summary_period, NOW
-            ),
+            self.activities.total_time(allowed_activities),
             "time",
         )
         self.total_activities_label.setText(
-            str(
-                self.activities.total_activities(
-                    allowed_activity_types, self.summary_period, NOW
-                )
-            )
+            str(self.activities.total_activities(allowed_activities))
         )
         self.set_formatted_number_label(
             self.total_climb_label,
-            self.activities.total_climb(
-                allowed_activity_types, self.summary_period, NOW
-            ),
+            self.activities.total_climb(allowed_activities),
             "altitude",
         )
 

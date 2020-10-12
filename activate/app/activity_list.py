@@ -123,26 +123,18 @@ class ActivityList(list):
             )
         )
 
-    def total_distance(self, activity_types, time_period, now, back=0):
-        return sum(
-            a.distance for a in self.filtered(activity_types, time_period, now, back)
-        )
+    def total_distance(self, activities):
+        return sum(a.distance for a in activities)
 
-    def total_time(self, activity_types, time_period, now, back=0):
-        return sum(
-            (a.duration for a in self.filtered(activity_types, time_period, now, back)),
-            datetime.timedelta(),
-        )
+    def total_time(self, activities):
+        return sum((a.duration for a in activities), datetime.timedelta())
 
-    def total_climb(self, activity_types, time_period, now, back=0):
-        return sum(
-            a.climb
-            for a in self.filtered(activity_types, time_period, now, back)
-            if a.climb is not None
-        )
+    def total_activities(self, activities):
+        return sum(1 for _ in activities)
 
-    def total_activities(self, activity_types, time_period, now, back=0):
-        return sum(1 for _ in self.filtered(activity_types, time_period, now, back))
+    def total_climb(self, activities):
+        return sum(a.climb for a in activities if a.climb is not None)
+
 
     def get_progression_data(self, activity_types, time_period, now, key):
         """
