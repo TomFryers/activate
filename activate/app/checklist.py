@@ -67,7 +67,7 @@ class CheckList(QtWidgets.QListWidget):
     def item_changed(self, item):
         if self.do_not_recurse or not self.all_row:
             return
-        self.do_not_recurse = True
+        self.stop_updates()
         if self.is_all(item):
             for item_ in self[1:]:
                 item_.setCheckState(item.checkState())
@@ -76,13 +76,13 @@ class CheckList(QtWidgets.QListWidget):
             self.set_all_state(
                 next(iter(states)) if len(states) == 1 else PartiallyChecked
             )
-        self.do_not_recurse = False
+        self.start_updates()
 
     def item_double_clicked(self, item):
         if self.is_all(item):
             self.set_all_state(Checked)
             return
-        self.do_not_recurse = True
+        self.stop_updates()
 
         if self.all_row and len(self) > 2:
             self.set_all_state(PartiallyChecked)
@@ -90,7 +90,7 @@ class CheckList(QtWidgets.QListWidget):
         for item_ in self:
             if not self.is_all(item_):
                 item_.setCheckState(Checked if item_ is item else Unchecked)
-        self.do_not_recurse = False
+        self.start_updates()
 
     def check_all(self):
         for row in self:
@@ -107,3 +107,11 @@ class CheckList(QtWidgets.QListWidget):
     def set_all_state(self, state):
         if self.all_row:
             self.set_check_state(0, state)
+
+    def stop_updates(self):
+        self.do_not_recurse = True
+        self.blockSignals(True)
+
+    def start_updates(self):
+        self.do_not_recurse = False
+        self.blockSignals(False)
