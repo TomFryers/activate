@@ -2,10 +2,11 @@
 import datetime
 import itertools
 import math
+from collections import namedtuple
 
 import PyQt5
-from PyQt5 import QtChart
-from PyQt5.QtCore import Qt
+from PyQt5 import QtChart, QtWidgets
+from PyQt5.QtCore import Qt, pyqtSignal
 
 from activate.core import number_formats, times, units
 
@@ -427,3 +428,72 @@ class TimePeriodLineChart(LineChart):
             # self.period_axis.setFormat(axis_format(maximum - minimum))
             self.period_axis.update_labels(minimum, maximum)
         super().update_axis(direction, ticks, minimum, maximum)
+
+
+class ProgressionChart(TimePeriodLineChart):
+    """A chart to show total distance, time or climbing over time."""
+
+    YOption = namedtuple("YOption", ("function", "unit"))
+    Y_OPTIONS = {
+        "Distance": YOption(lambda a: a.distance, "distance"),
+        "Time": YOption(lambda a: a.duration.total_seconds(), "real_time"),
+        "Climb": YOption(lambda a: a.climb, "altitude"),
+    }
+
+    def update(self, summary_period, allowed_activity_types, y_mode, now, activities):
+        periods, data = activities.get_progression_data(
+            allowed_activity_types, summary_period, now, self.Y_OPTIONS[y_mode].function
+        )
+        if summary_period == "All Time":
+            self.period_axis.mode = "auto"
+            self.remove_legend()
+        else:
+            self.period_axis.mode = {
+                "Year": "month",
+                "Month": "day",
+                "Week": "weekday",
+            }[summary_period]
+            self.add_legend(periods)
+        super().update(
+            [((d[0], "date"), (d[1], self.Y_OPTIONS[y_mode].unit)) for d in data]
+        )
+
+
+class FullProgressionChart(QtWidgets.QWidget):
+    y_changed = pyqtSignal()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.main_layout = QtWidgets.QHBoxLayout(self)
+        self.box = QtWidgets.QComboBox(self)
+        self.box.currentTextChanged.connect(self.change_y)
+        self.main_layout.addWidget(self.box)
+        self.chart_view = QtChart.QChartView(self)
+        self.main_layout.addWidget(self.chart_view)
+
+    def set_units(self, unit_system):
+        self.unit_system = unit_system
+        self.chart = ProgressionChart(
+            self.chart_view,
+            self.unit_system,
+            series_count=5,
+            vertical_ticks=8,
+            y_axis_label=False,
+        )
+        self.box.addItems(
+            [
+                self.unit_system.format_name_unit(
+                    self.chart.Y_OPTIONS[option].unit, name=option
+                )
+                for option in self.chart.Y_OPTIONS
+            ]
+        )
+
+    def change_y(self, new_value):
+        for option in self.chart.Y_OPTIONS:
+            if option in new_value:
+                self.y_option = option
+        self.y_changed.emit()
+
+    def update(self, *args, **kwargs):
+        self.chart.update(*args, y_mode=self.y_option, **kwargs)

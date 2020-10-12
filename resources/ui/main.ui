@@ -241,12 +241,9 @@
            <attribute name="title">
             <string>Progression</string>
            </attribute>
-           <layout class="QHBoxLayout" name="progression_tab_layout">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <widget class="QComboBox" name="y_axis_box"/>
-            </item>
-            <item>
-             <widget class="QtCharts::QChartView" name="progression_graph"/>
+             <widget class="FullProgressionChart" name="progression_chart" native="true"/>
             </item>
            </layout>
           </widget>
@@ -500,12 +497,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QtCharts::QChartView</class>
-   <extends>QGraphicsView</extends>
-   <header location="global">QtCharts/QChartView&gt;
-#include &lt;QtCharts/chartsnamespace.h</header>
-  </customwidget>
-  <customwidget>
    <class>ActivityListTable</class>
    <extends>QTableWidget</extends>
    <header>activate/app/tables.h</header>
@@ -541,6 +532,15 @@
    <extends>QWidget</extends>
    <header>activate/app/photos.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FullProgressionChart</class>
+   <extends>QWidget</extends>
+   <header>activate/app/charts.h</header>
+   <container>1</container>
+   <slots>
+    <signal>y_changed()</signal>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -802,14 +802,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>y_axis_box</sender>
-   <signal>currentTextChanged(QString)</signal>
+   <sender>progression_chart</sender>
+   <signal>y_changed()</signal>
    <receiver>main_window</receiver>
-   <slot>change_progression_y(QString)</slot>
+   <slot>summary_tab_switch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>696</x>
-     <y>389</y>
+     <x>953</x>
+     <y>390</y>
     </hint>
     <hint type="destinationlabel">
      <x>639</x>
