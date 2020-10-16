@@ -9,7 +9,7 @@ from PyQt5.QtGui import QIcon
 
 import activate.app.dialogs.activity
 import activate.app.dialogs.settings
-from activate.app import activity_list, charts, connect, maps, paths, settings
+from activate.app import activity_list, connect, maps, paths, settings
 from activate.app.ui.main import Ui_main_window
 from activate.core import (
     activity,
