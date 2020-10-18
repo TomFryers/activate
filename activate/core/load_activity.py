@@ -1,21 +1,24 @@
 """Functions for loading activities from files."""
 
 from activate.core import activity, files, filetypes, track
+from collections import defaultdict
 
-ACTIVITY_TYPE_NAMES = {
-    "running": "Run",
-    "cycling": "Ride",
-    "run": "Run",
-    "ride": "Ride",
-    "hiking": "Walk",
-    "alpine_skiing": "Ski",
-    "swimming": "Swim",
-    "rowing": "Row",
-    "driving": "Other",
-    "9": "Run",
-    "1": "Ride",
-    "16": "Swim",
-}
+ACTIVITY_TYPE_NAMES = defaultdict(
+    lambda: "Other",
+    {
+        "running": "Run",
+        "cycling": "Ride",
+        "run": "Run",
+        "ride": "Ride",
+        "hiking": "Walk",
+        "alpine_skiing": "Ski",
+        "swimming": "Swim",
+        "rowing": "Row",
+        "9": "Run",
+        "1": "Ride",
+        "16": "Swim",
+    },
+)
 
 
 def convert_activity_type(activity_type: str, name) -> str:
