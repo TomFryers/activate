@@ -323,11 +323,15 @@ class Track:
         total_time = datetime.timedelta(0)
         last_distance = 0
         last_time = self.start_time
+        print(self["dist"])
         for distance, time in zip(self["dist"][1:], self["time"][1:]):
             if distance is None:
                 continue
             time_difference = time - last_time
-            if (distance - last_distance) / time_difference.total_seconds() > 0.1:
+            distance_difference = distance - last_distance
+            if distance_difference < 1:
+                continue
+            if distance_difference / time_difference.total_seconds() > 0.2:
                 total_time += time_difference
             elif distance < last_distance:
                 raise ValueError("Distance increase")
