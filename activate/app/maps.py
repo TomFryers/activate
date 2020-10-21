@@ -33,8 +33,13 @@ class Map(pyqtlet.MapWidget):
     def __init__(self, parent):
         super().__init__()
         self.setContextMenuPolicy(Qt.NoContextMenu)
-        self.map = L.map(self, {"attributionControl": False})
-        L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(self.map)
+        self.map = L.map(self)
+        L.tileLayer(
+            "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+            {"attribution": "&copy; OpenStreetMap contributors"},
+        ).addTo(self.map)
+
+        self.map.runJavaScript(f"{self.map.jsName}.attributionControl.setPrefix('');")
 
 
 class RouteMap(Map):
