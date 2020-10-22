@@ -211,7 +211,6 @@ class PhotoViewer(QtWidgets.QDialog):
         self.show_photo()
 
     def keyPressEvent(self, event):
-        print(event.key())
         if event.key() in {Qt.Key_Right, Qt.Key_Space}:
             self.set_new_index(self.current_index + 1)
             return

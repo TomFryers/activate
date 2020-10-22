@@ -323,7 +323,6 @@ class Track:
         total_time = datetime.timedelta(0)
         last_distance = 0
         last_time = self.start_time
-        print(self["dist"])
         for distance, time in zip(self["dist"][1:], self["time"][1:]):
             if distance is None:
                 continue
