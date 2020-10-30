@@ -233,7 +233,11 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="RecordsTable" name="records_table"/>
+             <widget class="RecordsTable" name="records_table">
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
