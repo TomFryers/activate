@@ -30,13 +30,13 @@ def default(obj):
 def decode(obj):
     """Undo encoding done by default."""
     if len(obj) == 1:
-        first_key = next(iter(obj.keys()))
-        if first_key == "__DATETIME":
-            return datetime.datetime.fromisoformat(obj["__DATETIME"])
-        if first_key == "__TIMEDELTA":
-            return datetime.timedelta(seconds=obj["__TIMEDELTA"])
-        if first_key == "__ID":
-            return uuid.UUID(obj["__ID"])
+        ((key, value),) = obj.items()
+        if key == "__DATETIME":
+            return datetime.datetime.fromisoformat(value)
+        if key == "__TIMEDELTA":
+            return datetime.timedelta(seconds=value)
+        if key == "__ID":
+            return uuid.UUID(value)
     return obj
 
 
