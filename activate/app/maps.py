@@ -53,23 +53,28 @@ class MapWidget(Map):
         self.route_lines = []
         self.start_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#10b020"})
         self.finish_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#e00000"})
+        self.mode = None
 
     def show_route(self, route: list):
         """Display a list of points on the map."""
         self.map.fitBounds(get_bounds(route))
-        self.clear_route_lines()
-        self.route_lines = [self.add_route_line()]
+        if self.mode != "route":
+            self.clear_route_lines()
+            self.route_lines = [self.add_route_line()]
         self.route_lines[0].setLatLngs(route)
         self.start_icon.setLatLng(route[0])
         self.finish_icon.setLatLng(route[-1])
         self.start_icon.addTo(self.map)
         self.finish_icon.addTo(self.map)
+        self.mode = "route"
 
     def show_heatmap(self, routes: list):
         """Display lists of points on the map as a heatmap."""
         self.map.fitBounds(get_bounds(*routes))
         self.start_icon.removeFrom(self.map)
         self.finish_icon.removeFrom(self.map)
+        if self.mode != "heatmap":
+            self.clear_route_lines()
         new_lines = []
         for route in routes:
             if self.route_lines:
@@ -79,6 +84,7 @@ class MapWidget(Map):
             new_lines[-1].setLatLngs(route)
         self.clear_route_lines()
         self.route_lines = new_lines
+        self.mode = "heatmap"
 
     def add_route_line(self, colour="#802090"):
         line = Polyline([], {"smoothFactor": 0, "color": colour})
