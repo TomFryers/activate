@@ -75,7 +75,7 @@ class MapWidget(Map):
             if self.route_lines:
                 new_lines.append(self.route_lines.pop())
             else:
-                new_lines.append(self.add_route_line("#80209030"))
+                new_lines.append(self.add_route_line("#80209040"))
             new_lines[-1].setLatLngs(route)
         self.clear_route_lines()
         self.route_lines = new_lines
