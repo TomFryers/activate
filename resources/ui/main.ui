@@ -262,19 +262,17 @@
                <bool>true</bool>
               </property>
               <widget class="Gallery" name="gallery">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>597</width>
-                 <height>557</height>
-                </rect>
-               </property>
                <layout class="QVBoxLayout" name="verticalLayout_3"/>
               </widget>
              </widget>
             </item>
            </layout>
+          </widget>
+          <widget class="QWidget" name="heatmap_tab">
+           <attribute name="title">
+            <string>Heatmap</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="heatmap_layout"/>
           </widget>
          </widget>
         </item>

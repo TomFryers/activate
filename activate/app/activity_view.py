@@ -61,8 +61,8 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.info_table.update_data(self.activity.stats)
         if self.activity.track.has_position_data:
             self.map_widget.setVisible(True)
-            self.map_widget.show(self.activity.track.lat_lon_list)
-            self.map_container.addWidget(self.map_widget)
+            self.map_widget.show_route(self.activity.track.lat_lon_list)
+            self.show_map()
         else:
             self.map_widget.setVisible(False)
         self.photo_list.show_activity_photos(self.activity)

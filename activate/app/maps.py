@@ -3,11 +3,11 @@ from PyQt5.QtCore import Qt
 from pyqtlet import L
 
 
-def get_bounds(route):
+def get_bounds(*routes):
     """Find the area of the map."""
     return [
-        [min(p[0] for p in route), min(p[1] for p in route)],
-        [max(p[0] for p in route), max(p[1] for p in route)],
+        [min(p[0] for r in routes for p in r), min(p[1] for r in routes for p in r)],
+        [max(p[0] for r in routes for p in r), max(p[1] for r in routes for p in r)],
     ]
 
 
@@ -32,6 +32,9 @@ class CircleMarker(L.circleMarker):
 class Map(pyqtlet.MapWidget):
     def __init__(self, parent):
         super().__init__()
+        size_policy = self.sizePolicy()
+        size_policy.setRetainSizeWhenHidden(True)
+        self.setSizePolicy(size_policy)
         self.setContextMenuPolicy(Qt.NoContextMenu)
         self.map = L.map(self)
         L.tileLayer(
@@ -42,24 +45,46 @@ class Map(pyqtlet.MapWidget):
         self.map.runJavaScript(f"{self.map.jsName}.attributionControl.setPrefix('');")
 
 
-class RouteMap(Map):
-    """A map for displaying a route."""
+class MapWidget(Map):
+    """A map for displaying a route or heatmap"""
 
     def __init__(self, parent):
         super().__init__(parent)
-        size_policy = self.sizePolicy()
-        size_policy.setRetainSizeWhenHidden(True)
-        self.setSizePolicy(size_policy)
-        self.route_line = Polyline([], {"smoothFactor": 0, "color": "#802090"})
+        self.route_lines = []
         self.start_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#10b020"})
         self.finish_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#e00000"})
-        self.start_icon.addTo(self.map)
-        self.finish_icon.addTo(self.map)
-        self.route_line.addTo(self.map)
 
-    def show(self, route: list):
+    def show_route(self, route: list):
         """Display a list of points on the map."""
         self.map.fitBounds(get_bounds(route))
-        self.route_line.setLatLngs(route)
+        self.clear_route_lines()
+        self.route_lines = [self.add_route_line()]
+        self.route_lines[0].setLatLngs(route)
         self.start_icon.setLatLng(route[0])
         self.finish_icon.setLatLng(route[-1])
+        self.start_icon.addTo(self.map)
+        self.finish_icon.addTo(self.map)
+
+    def show_heatmap(self, routes: list):
+        """Display lists of points on the map as a heatmap."""
+        self.map.fitBounds(get_bounds(*routes))
+        self.start_icon.removeFrom(self.map)
+        self.finish_icon.removeFrom(self.map)
+        new_lines = []
+        for route in routes:
+            if self.route_lines:
+                new_lines.append(self.route_lines.pop())
+            else:
+                new_lines.append(self.add_route_line("#80209030"))
+            new_lines[-1].setLatLngs(route)
+        self.clear_route_lines()
+        self.route_lines = new_lines
+
+    def add_route_line(self, colour="#802090"):
+        line = Polyline([], {"smoothFactor": 0, "color": colour})
+        line.addTo(self.map)
+        return line
+
+    def clear_route_lines(self):
+        while self.route_lines:
+            self.route_lines.pop().removeFrom(self.map)

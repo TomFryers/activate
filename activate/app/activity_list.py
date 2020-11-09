@@ -137,7 +137,9 @@ class ActivityList(list):
         return sum(a.climb for a in activities if a.climb is not None)
 
     def eddington(self, activities, unit):
-        days = sum((Counter(a.load().track.distance_in_days) for a in activities), Counter())
+        days = sum(
+            (Counter(a.load().track.distance_in_days) for a in activities), Counter()
+        )
         eddington = 0
         while True:
             if sum(1 for dist in days.values() if dist > eddington * unit) < eddington:
@@ -225,10 +227,16 @@ class ActivityList(list):
         )
 
     def get_all_photos(self, activity_types, time_period, now):
-        return [
+        return (
             p
             for a in self.filtered(activity_types, time_period, now)
             for p in a.load().photos
+        )
+
+    def get_all_routes(self, activity_types, time_period, now):
+        return [
+            a.load().track.lat_lon_list
+            for a in self.filtered(activity_types, time_period, now)
         ]
 
     def __repr__(self):

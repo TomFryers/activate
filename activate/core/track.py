@@ -220,7 +220,11 @@ class Track:
             time_diff = (
                 self["time"][relevant_points[-1]] - self["time"][relevant_points[0]]
             ).total_seconds()
-            distance = sum(self["dist_to_last"][p] for p in relevant_points[1:])
+            distance = sum(
+                self["dist_to_last"][p]
+                for p in relevant_points[1:]
+                if self["dist_to_last"][p] is not None
+            )
             if time_diff:
                 speeds.append(distance / time_diff)
             elif speeds:

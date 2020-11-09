@@ -37,7 +37,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         # Create a global map widget to be used everywhere. This is
         # necessary because pyqtlet doesn't support multiple L.map
         # instances.
-        self.map_widget = maps.RouteMap(self)
+        self.map_widget = maps.MapWidget(self)
+
+        # This has to be added here so when the heatmap is switched to,
+        # the widget is already 'there', so it has a size. This lets
+        # fitBounds work properly.
+        self.heatmap_layout.addWidget(self.map_widget)
 
         self.activity_view.setup(self.unit_system, self.map_widget)
         self.social_activity_view.setup(self.unit_system, self.map_widget)
@@ -295,6 +300,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             "Records": self.update_records,
             "Progression": self.update_progression,
             "Gallery": self.update_gallery,
+            "Heatmap": self.update_heatmap,
         }[tab]()
 
     def update_progression(self):
@@ -367,6 +373,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def update_gallery(self):
         self.gallery.replace_photos(
             self.activities.get_all_photos(
+                self.get_allowed_for_summary(), self.summary_period, NOW
+            )
+        )
+
+    def update_heatmap(self):
+        self.heatmap_layout.addWidget(self.map_widget)
+        self.map_widget.show_heatmap(
+            self.activities.get_all_routes(
                 self.get_allowed_for_summary(), self.summary_period, NOW
             )
         )
