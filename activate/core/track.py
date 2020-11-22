@@ -351,22 +351,30 @@ class Track:
     def distance_in_days(self) -> dict:
         if self.start_time.date() == self["time"][-1].date():
             return {self.start_time.date(): self.length}
-        totals = {}
         last_time = self.start_time
         last_date = last_time.date()
+        totals = {last_date: 0}
 
         for dist_to_last, time in zip(self["dist_to_last"][1:], self["time"][1:]):
+            if dist_to_last is None:
+                continue
             date = time.date()
-            if time == last_date:
+            if date == last_date:
                 totals[last_date] += dist_to_last
-
-            totals[last_date] += times.end_of(last_time, "day") - last_time
-            for days in range(1, (date - last_date).days()):
-                totals[last_date + datetime.timedelta(days)]
-            totals[date] += time - times.start_of(time, "day")
+            else:
+                speed = dist_to_last / (time - last_time).total_seconds()
+                totals[last_date] += (
+                    speed * (times.end_of(last_time, "day") - last_time).total_seconds()
+                )
+                for days in range(1, (date - last_date).days):
+                    day = last_date + datetime.timedelta(days)
+                    totals[day] = speed * datetime.timedelta(days=1)
+                totals[date] = (
+                    speed * (time - times.start_of(time, "day")).total_seconds()
+                )
+                last_date = date
 
             last_time = time
-            last_date = date
         return totals
 
     def graph(self, y_data, x_data="dist") -> tuple:
