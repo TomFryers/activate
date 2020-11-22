@@ -70,20 +70,15 @@ class MapWidget(Map):
 
     def show_heatmap(self, routes: list):
         """Display lists of points on the map as a heatmap."""
+        opacity = hex(min(round(1000 / (len(routes) ** 0.5)), 255))[2:]
         self.map.fitBounds(get_bounds(*routes))
         self.start_icon.removeFrom(self.map)
         self.finish_icon.removeFrom(self.map)
-        if self.mode != "heatmap":
-            self.clear_route_lines()
-        new_lines = []
-        for route in routes:
-            if self.route_lines:
-                new_lines.append(self.route_lines.pop())
-            else:
-                new_lines.append(self.add_route_line("#80209040"))
-            new_lines[-1].setLatLngs(route)
         self.clear_route_lines()
-        self.route_lines = new_lines
+        self.route_lines = []
+        for route in routes:
+            self.route_lines.append(self.add_route_line(f"#802090{opacity}"))
+            self.route_lines[-1].setLatLngs(route)
         self.mode = "heatmap"
 
     def add_route_line(self, colour="#802090"):
