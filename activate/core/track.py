@@ -463,23 +463,21 @@ class Track:
         for dist, time in zip(self["dist"], self["time"]):
             if dist is not None:
                 distance_values.append(dist)
-                time_values.append(time)
+                time_values.append(time.timestamp())
 
         bests = []
         for distance in table_distances:
             for last_point in range(len(distance_values)):
                 if distance_values[last_point] - distance_values[0] > distance:
                     break
-            best = (time_values[last_point] - self.start_time).total_seconds()
+            best = time_values[last_point] - self.start_time.timestamp()
             first_point = 0
             for last_point in range(last_point + 1, len(distance_values)):
                 while (
                     distance_values[last_point] - distance_values[first_point + 1]
                 ) >= distance:
                     first_point += 1
-                time_taken = (
-                    time_values[last_point] - time_values[first_point]
-                ).total_seconds()
+                time_taken = time_values[last_point] - time_values[first_point]
                 best = min(best, time_taken)
             bests.append(best)
 
