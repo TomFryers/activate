@@ -138,7 +138,11 @@ class ActivityList(list):
 
     def eddington(self, activities, unit):
         days = sum(
-            (Counter(a.load().track.distance_in_days) for a in activities), Counter()
+            (
+                Counter(self.get_activity(a.activity_id).track.distance_in_days)
+                for a in activities
+            ),
+            Counter(),
         )
         eddington = 0
         while True:
@@ -217,7 +221,9 @@ class ActivityList(list):
         records = {}
         activity_ids = {}
         for activity_ in self.filtered(activity_types, time_period, now, 0):
-            for record in activity_.load().track.get_curve(distances)[0]:
+            for record in self.get_activity(activity_.activity_id).track.get_curve(
+                distances
+            )[0]:
                 if record[0] not in records or records[record[0]][0] > record[1]:
                     records[record[0]] = record[1:] + (activity_.name,)
                     activity_ids[record[0]] = activity_.activity_id
@@ -230,12 +236,12 @@ class ActivityList(list):
         return (
             p
             for a in self.filtered(activity_types, time_period, now)
-            for p in a.load().photos
+            for p in self.get_activity(a.activity_id).photos
         )
 
     def get_all_routes(self, activity_types, time_period, now):
         return [
-            a.load().track.lat_lon_list
+            self.get_activity(a.activity_id).track.lat_lon_list
             for a in self.filtered(activity_types, time_period, now)
         ]
 
