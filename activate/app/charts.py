@@ -1,8 +1,8 @@
 """Custom QCharts."""
-import datetime
-import itertools
 import math
 from collections import namedtuple
+from datetime import datetime, timedelta
+from itertools import zip_longest
 
 import PyQt5
 from PyQt5 import QtChart, QtWidgets
@@ -20,19 +20,19 @@ def axis_number_format(axis):
         axis.setLabelFormat(f"%.{max(0, -math.floor(math.log10(interval)))}f")
 
 
-def date_axis_format(difference: datetime.timedelta) -> str:
+def date_axis_format(difference: timedelta) -> str:
     """Get the formatting for a date axis based on its range."""
-    if difference >= datetime.timedelta(days=365):
+    if difference >= timedelta(days=365):
         return "MMM yyyy"
-    if difference >= datetime.timedelta(days=100):
+    if difference >= timedelta(days=100):
         return "MMMM"
-    if difference >= datetime.timedelta(days=5):
+    if difference >= timedelta(days=5):
         return "dd MMMM"
-    if difference >= datetime.timedelta(days=3):
+    if difference >= timedelta(days=3):
         return "hh:00 d MMM"
-    if difference >= datetime.timedelta(days=1):
+    if difference >= timedelta(days=1):
         return "hh:mm d MMM"
-    if difference >= datetime.timedelta(hours=12):
+    if difference >= timedelta(hours=12):
         return "hh:mm"
     return "hh:mm:ss"
 
@@ -238,7 +238,7 @@ class LineChart(Chart):
         # Extract 'real' series from an area chart
         x_range = MinMax(*(d[0] for d in data))
         y_range = MinMax(*(d[1] for d in data))
-        for data_part, series in itertools.zip_longest(data, self.data_series):
+        for data_part, series in zip_longest(data, self.data_series):
             if data_part is None:
                 series.setVisible(False)
             else:
@@ -423,8 +423,8 @@ class TimePeriodLineChart(LineChart):
         if minimum is None:
             return
         if direction == Qt.Horizontal:
-            minimum = datetime.datetime.fromtimestamp(minimum)
-            maximum = datetime.datetime.fromtimestamp(maximum)
+            minimum = datetime.fromtimestamp(minimum)
+            maximum = datetime.fromtimestamp(maximum)
             # self.period_axis.setFormat(axis_format(maximum - minimum))
             self.period_axis.update_labels(minimum, maximum)
         super().update_axis(direction, ticks, minimum, maximum)

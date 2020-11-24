@@ -1,7 +1,7 @@
 """Contains classes and for handling units and some predefined units."""
-import datetime
 import math
 from dataclasses import dataclass
+from datetime import timedelta
 
 
 @dataclass
@@ -108,8 +108,8 @@ class PaceUnit(Unit):
         self.size = 1 / distance.size
         self.symbol = "∕ " + distance.symbol
 
-    def encode(self, value) -> datetime.timedelta:
-        return datetime.timedelta(seconds=super().encode(value))
+    def encode(self, value) -> timedelta:
+        return timedelta(seconds=super().encode(value))
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.distance!r})"

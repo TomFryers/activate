@@ -1,5 +1,5 @@
-import uuid
 import shutil
+from uuid import uuid4
 
 from activate.core import serialise
 from activate.core import track as track_
@@ -47,7 +47,7 @@ class Activity:
             distance = self.track.length
         self.distance = distance
         if activity_id is None:
-            self.activity_id = uuid.uuid4()
+            self.activity_id = uuid4()
         else:
             self.activity_id = activity_id
         self.description = description
@@ -73,9 +73,7 @@ class Activity:
                 average_speed_moving = None
             result["Average Speed"] = DimensionValue(average_speed, "speed")
             if average_speed_moving is not None:
-                result["Mov. Av. Speed"] = DimensionValue(
-                    average_speed_moving, "speed"
-                )
+                result["Mov. Av. Speed"] = DimensionValue(average_speed_moving, "speed")
             result["Pace"] = DimensionValue(1 / average_speed, "pace")
             if average_speed_moving is not None:
                 result["Pace (mov.)"] = DimensionValue(1 / average_speed_moving, "pace")

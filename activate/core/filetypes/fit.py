@@ -1,7 +1,7 @@
 """Load and parse FIT files."""
-import pathlib
+from pathlib import Path
 
-import fitparse
+from fitparse import FitFile
 
 from activate.core import files
 
@@ -31,7 +31,7 @@ LENGTH_SWIM_FIELDS = {
 
 def load_fit(filename):
     """Load and parse a FIT file."""
-    fit = list(fitparse.FitFile(filename).messages)
+    fit = list(FitFile(filename).messages)
     for message in fit:
         point = message.get_values()
         if point.items() & {"sub_sport": "lap_swimming", "event": "length"}.items():
@@ -56,4 +56,4 @@ def parse_fit(filename, fit, available_fields):
                     value = None
                 fields[field].append(value)
     fields = {field: fields[field] for field in fields if set(fields[field]) != {None}}
-    return (files.decode_name(pathlib.Path(filename).stem), sport, fields)
+    return (files.decode_name(Path(filename).stem), sport, fields)

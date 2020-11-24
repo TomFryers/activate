@@ -1,5 +1,5 @@
 import collections
-import datetime
+from datetime import timedelta
 
 from PyQt5 import QtWidgets
 
@@ -31,13 +31,13 @@ class DurationEdit(QtWidgets.QFormLayout):
         self.addRow("Seconds", self.seconds_widget)
 
     def value(self):
-        return datetime.timedelta(
+        return timedelta(
             hours=self.hours_widget.value(),
             minutes=self.minutes_widget.value(),
             seconds=self.seconds_widget.value(),
         )
 
-    def set_value(self, new: datetime.timedelta):
+    def set_value(self, new: timedelta):
         hours, minutes, seconds = times.hours_minutes_seconds(new)
         self.hours_widget.setValue(hours)
         self.minutes_widget.setValue(minutes)

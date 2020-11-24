@@ -3,9 +3,9 @@ Defines the activity list, which contains all of the user's real data.
 
 This is where computation of summary values should be done.
 """
-from collections import Counter
 import dataclasses
 import datetime
+from collections import Counter
 
 from activate.app import paths
 from activate.core import activity, serialise, times, units

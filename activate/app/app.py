@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import datetime
 import sys
 from collections import Counter
+from datetime import datetime
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
@@ -22,7 +22,7 @@ from activate.core import (
     units,
 )
 
-NOW = datetime.datetime.now()
+NOW = datetime.now()
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_main_window):

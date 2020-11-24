@@ -1,7 +1,8 @@
 """Functions for loading activities from files."""
 
-from activate.core import activity, files, filetypes, track
 from collections import defaultdict
+
+from activate.core import activity, files, filetypes, track
 
 ACTIVITY_TYPE_NAMES = defaultdict(
     lambda: "Other",

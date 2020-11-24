@@ -3,24 +3,24 @@ Functions for serialising and deserialising objects to JSON.
 
 The JSON can optionally be gzipped.
 """
-import datetime
 import gzip
 import json
 import uuid
+from datetime import datetime, timedelta
 
 
 def default(obj):
     """
     Turn datetimes and timedeltas into JSON.
 
-    >>> default(datetime.datetime(2000, 1, 2, 12, 30, 42))
+    >>> default(datetime(2000, 1, 2, 12, 30, 42))
     {'__DATETIME': '2000-01-02T12:30:42'}
-    >>> default(datetime.timedelta(minutes=1, seconds=40))
+    >>> default(timedelta(minutes=1, seconds=40))
     {'__TIMEDELTA': 100.0}
     """
-    if isinstance(obj, datetime.datetime):
+    if isinstance(obj, datetime):
         return {"__DATETIME": obj.isoformat()}
-    if isinstance(obj, datetime.timedelta):
+    if isinstance(obj, timedelta):
         return {"__TIMEDELTA": obj.total_seconds()}
     if isinstance(obj, uuid.UUID):
         return {"__ID": str(obj)}
@@ -32,9 +32,9 @@ def decode(obj):
     if len(obj) == 1:
         ((key, value),) = obj.items()
         if key == "__DATETIME":
-            return datetime.datetime.fromisoformat(value)
+            return datetime.fromisoformat(value)
         if key == "__TIMEDELTA":
-            return datetime.timedelta(seconds=value)
+            return timedelta(seconds=value)
         if key == "__ID":
             return uuid.UUID(value)
     return obj

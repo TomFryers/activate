@@ -1,5 +1,5 @@
-import datetime
 import math
+from datetime import timedelta
 
 from activate.core import times
 
@@ -73,7 +73,7 @@ def default_as_string(value) -> str:
         value = value[0]
     else:
         suffix = ""
-    if isinstance(value, datetime.timedelta):
+    if isinstance(value, timedelta):
         return times.to_string(value)
     if value >= 100:
         return as_int(value) + suffix

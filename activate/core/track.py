@@ -1,7 +1,7 @@
 """Contains the Track class and functions for handling tracks."""
-import datetime
 import math
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from functools import cached_property, lru_cache
 
 from activate.core import geometry, times
@@ -93,10 +93,10 @@ def distance(point1, point2):
 class ManualTrack:
     """A manual track with a few basic values."""
 
-    start_time: datetime.datetime
+    start_time: datetime
     length: float
     ascent: float
-    elapsed_time: datetime.timedelta
+    elapsed_time: timedelta
 
     has_altitude_data = False
     has_position_data = False
@@ -324,7 +324,7 @@ class Track:
 
     @cached_property
     def moving_time(self):
-        total_time = datetime.timedelta(0)
+        total_time = timedelta(0)
         last_distance = 0
         last_time = self.start_time
         for distance, time in zip(self["dist"][1:], self["time"][1:]):
@@ -367,8 +367,8 @@ class Track:
                     speed * (times.end_of(last_time, "day") - last_time).total_seconds()
                 )
                 for days in range(1, (date - last_date).days):
-                    day = last_date + datetime.timedelta(days)
-                    totals[day] = speed * datetime.timedelta(days=1)
+                    day = last_date + timedelta(days)
+                    totals[day] = speed * timedelta(days=1)
                 totals[date] = (
                     speed * (time - times.start_of(time, "day")).total_seconds()
                 )
@@ -487,7 +487,7 @@ class Track:
         bests_table = [
             (
                 DimensionValue(distance, "distance"),
-                DimensionValue(datetime.timedelta(seconds=time), "time"),
+                DimensionValue(timedelta(seconds=time), "time"),
                 DimensionValue(speed, "speed"),
             )
             for distance, time, speed in zip(table_distances, bests, speeds)
