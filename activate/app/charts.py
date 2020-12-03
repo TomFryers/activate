@@ -142,12 +142,12 @@ class Chart(QtChart.QChart):
 
     def set_axis_dimensions(self, x_axis_dimension, y_axis_dimension):
         if x_axis_dimension and self.x_axis_label:
-            self.axes(Qt.Horizontal)[0].setTitleText(
+            self.x_axis.setTitleText(
                 self.unit_system.format_name_unit(x_axis_dimension)
             )
 
         if y_axis_dimension and self.y_axis_label:
-            self.axes(Qt.Vertical)[0].setTitleText(
+            self.y_axis.setTitleText(
                 self.unit_system.format_name_unit(y_axis_dimension)
             )
 
@@ -179,6 +179,14 @@ class Chart(QtChart.QChart):
 
     def remove_legend(self):
         self.legend().hide()
+
+    @property
+    def x_axis(self):
+        return self.axes(Qt.Horizontal)[0]
+
+    @property
+    def y_axis(self):
+        return self.axes(Qt.Vertical)[0]
 
 
 class LineChart(Chart):
@@ -225,7 +233,15 @@ class LineChart(Chart):
             series.setVisible(False)
 
     def update(self, data):
-        """Change a line chart's data."""
+        """
+        Change a line chart's data.
+
+        Input format:
+        (((x_values_0, x_unit), (y_values_0, y_unit)),
+         ((x_values_1, x_unit), (y_values_1, y_unit)),
+         ...
+        )
+        """
         if not data:
             for series in self.data_series:
                 series.setVisible(False)
@@ -316,7 +332,7 @@ class Histogram(Chart):
         # Use QBarCategoryAxis instead of QCategoryAxis because the
         # latter allows putting values between categoreies instead of
         # centring them.
-        cat_axis = self.axes(Qt.Horizontal)[0]
+        cat_axis = self.x_axis
         self.removeAxis(cat_axis)
         cat_axis = QtChart.QCategoryAxis(self)
         cat_axis.setLabelsPosition(QtChart.QCategoryAxis.AxisLabelsPositionOnValue)
@@ -399,7 +415,7 @@ class TimePeriodLineChart(LineChart):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.removeAxis(self.axes(Qt.Horizontal)[0])
+        self.removeAxis(self.x_axis)
         self.period_axis = TimePeriodAxis()
         self.addAxis(self.period_axis, Qt.AlignBottom)
         for series in self.series():

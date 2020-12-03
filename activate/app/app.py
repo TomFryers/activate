@@ -9,7 +9,7 @@ from PyQt5.QtGui import QIcon
 
 import activate.app.dialogs.activity
 import activate.app.dialogs.settings
-from activate.app import activity_list, connect, maps, paths, settings
+from activate.app import activity_list, charts, connect, maps, paths, settings
 from activate.app.ui.main import Ui_main_window
 from activate.core import (
     activity,
@@ -62,6 +62,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.update_activity_types_list()
 
         self.records_table.gone_to.connect(self.show_activity)
+
+        self.eddington_chart = charts.LineChart(
+            self.eddington_chart_widget, self.unit_system, series_count=2
+        )
+        self.eddington_chart.y_axis.setTitleText("Count")
+        self.eddington_chart.add_legend(("Done", "Target"))
+        self.activity_list_table.set_units(self.unit_system)
 
         self.social_activities = []
 
@@ -301,6 +308,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             "Progression": self.update_progression,
             "Gallery": self.update_gallery,
             "Heatmap": self.update_heatmap,
+            "Eddington": self.update_eddington,
         }[tab]()
 
     def update_progression(self):
@@ -346,12 +354,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self.activities.total_climb(allowed_activities),
             "altitude",
         )
-        eddington = self.activities.eddington(
-            allowed_activities, self.unit_system.units["distance"].size
-        )
-        self.total_eddington_label.setText(
-            f"{eddington} {self.unit_system.units['distance'].symbol}"
-        )
 
     def update_records(self):
         good_distances = {}
@@ -382,6 +384,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.map_widget.show_heatmap(
             self.activities.get_all_routes(
                 self.get_allowed_for_summary(), self.summary_period, NOW
+            )
+        )
+
+    def update_eddington(self):
+        allowed_activities = list(
+            self.activities.filtered(
+                self.get_allowed_for_summary(), self.summary_period, NOW
+            )
+        )
+        unit = self.unit_system.units["distance"].size
+        eddington_data = self.activities.eddington(allowed_activities, unit)
+        eddington_number = 0
+        for eddington_number in range(1, len(eddington_data) + 1):
+            if eddington_data[eddington_number - 1] <= eddington_number * unit:
+                break
+        self.total_eddington_label.setText(
+            f"{eddington_number} {self.unit_system.units['distance'].symbol}"
+        )
+        y_indices = list(range(1, len(eddington_data) + 1))
+        x_indices = [x * unit for x in y_indices[: int(eddington_data[0] / unit) + 1]]
+        y_indices = (y_indices, None)
+        self.eddington_chart.update(
+            (
+                ((eddington_data, "distance"), y_indices),
+                ((x_indices, "distance"), y_indices),
             )
         )
 

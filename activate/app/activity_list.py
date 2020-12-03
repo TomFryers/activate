@@ -136,19 +136,18 @@ class ActivityList(list):
     def total_climb(self, activities):
         return sum(a.climb for a in activities if a.climb is not None)
 
-    def eddington(self, activities, unit):
-        days = sum(
-            (
-                Counter(self.get_activity(a.activity_id).track.distance_in_days)
-                for a in activities
-            ),
-            Counter(),
+    def eddington(self, activities, unit) -> list:
+        """Get a list of days sorted by distance done that day."""
+        return sorted(
+            sum(
+                (
+                    Counter(self.get_activity(a.activity_id).track.distance_in_days)
+                    for a in activities
+                ),
+                Counter(),
+            ).values(),
+            reverse=True,
         )
-        eddington = 0
-        while True:
-            if sum(1 for dist in days.values() if dist > eddington * unit) < eddington:
-                return eddington - 1
-            eddington += 1
 
     def get_progression_data(self, activity_types, time_period, now, key):
         """

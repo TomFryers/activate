@@ -197,34 +197,6 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="eddington_stats_label">
-              <property name="font">
-               <font>
-                <pointsize>20</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Eddington Number</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QLabel" name="total_eddington_label">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="records_tab">
@@ -262,6 +234,14 @@
                <bool>true</bool>
               </property>
               <widget class="Gallery" name="gallery">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>597</width>
+                 <height>553</height>
+                </rect>
+               </property>
                <layout class="QVBoxLayout" name="verticalLayout_3"/>
               </widget>
              </widget>
@@ -273,6 +253,48 @@
             <string>Heatmap</string>
            </attribute>
            <layout class="QVBoxLayout" name="heatmap_layout"/>
+          </widget>
+          <widget class="QWidget" name="eddington_tab">
+           <attribute name="title">
+            <string>Eddington</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="eddington_tab_layout">
+            <item>
+             <layout class="QFormLayout" name="eddington_number_form">
+              <item row="0" column="0">
+               <widget class="QLabel" name="eddington_stats_label">
+                <property name="font">
+                 <font>
+                  <pointsize>20</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Eddington Number</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="total_eddington_label">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QtCharts::QChartView" name="eddington_chart_widget"/>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>
@@ -498,6 +520,12 @@
   </action>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>QtCharts::QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">QtCharts/QChartView&gt;
+#include &lt;QtCharts/chartsnamespace.h</header>
+  </customwidget>
   <customwidget>
    <class>ActivityListTable</class>
    <extends>QTableWidget</extends>
