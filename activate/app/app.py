@@ -198,7 +198,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         elif files.has_extension(self.activity.original_name, ".fit"):
             file_type = "FIT file (*.fit)"
         elif files.has_extension(self.activity.original_name, ".tcx"):
-            file_type = "TCX file (*.TCX)"
+            file_type = "TCX file (*.tcx)"
         else:
             file_type = ""
         out_name = files.decode_name(self.activity.original_name)
