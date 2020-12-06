@@ -189,6 +189,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             import_progress_dialog.setValue(len(filenames))
         self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
+        self.main_tab_switch(self.main_tabs.currentIndex())
 
     def export_activity(self):
         """Export the original version of the activity."""
