@@ -1,16 +1,27 @@
 import hashlib
 import json
 from base64 import b64decode, b64encode
+from glob import glob
+from pathlib import Path
 
 from flask import Flask, abort, request
 
 from activate.core import activity, serialise
 
-USERS_FILE = "/var/lib/activate/users.json"
+DATA_DIR = Path("/var/lib/activate")
+
+USERS_FILE = DATA_DIR / "users.json"
+ACTIVITIES_DIR = DATA_DIR / "activities"
 
 app = Flask(__name__)
 
-activities = {}
+ACTIVITIES_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def load_activity(activity_id):
+    return activity.Activity(
+        **serialise.load(str(ACTIVITIES_DIR / f"{activity_id}.json.gz"))
+    )
 
 
 def get_users():
@@ -67,22 +78,24 @@ def upload():
     data = serialise.loads(request.form["activity"])
     data["username"] = request.authorization["username"]
     new_activity = activity.Activity(**data)
-    activities[new_activity.activity_id] = new_activity
+    new_activity.save(f"{ACTIVITIES_DIR}/")
     return "DONE"
 
 
 @app.route("/get_activities")
 @requires_auth
 def get_list():
-    return serialise.dump_bytes(list(activities.keys()))
+    return serialise.dump_bytes(
+        [Path(p).stem.replace(".json", "") for p in glob(f"{ACTIVITIES_DIR}/*")]
+    )
 
 
 @app.route("/get_activity/<string:activity_id>")
 @requires_auth
 def get_activity(activity_id):
     try:
-        activity_ = activities[activity_id]
-    except KeyError:
+        activity_ = load_activity(activity_id)
+    except FileNotFoundError:
         abort(404)
     return serialise.dump_bytes(activity_.save_data)
 
