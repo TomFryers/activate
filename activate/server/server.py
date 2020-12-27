@@ -77,7 +77,7 @@ def get_list():
     return serialise.dump_bytes(list(activities.keys()))
 
 
-@app.route("/get_activity/<int:activity_id>")
+@app.route("/get_activity/<string:activity_id>")
 @requires_auth
 def get_activity(activity_id):
     try:
