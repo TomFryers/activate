@@ -28,7 +28,7 @@ class UnloadedActivity:
     distance: float
     duration: float
     climb: float
-    activity_id: int
+    activity_id: str
     server: str = None
     username: str = None
 

@@ -82,6 +82,12 @@ def upload():
     return "DONE"
 
 
+@app.route("/delete_activity/<string:activity_id>")
+@requires_auth
+def delete_activity(activity_id):
+    (ACTIVITIES_DIR / f"{activity_id}.json.gz").unlink()
+
+
 @app.route("/get_activities")
 @requires_auth
 def get_list():

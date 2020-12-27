@@ -236,6 +236,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                     self.activity_list_table.removeRow(row)
                     break
             self.activities.remove(to_delete.activity_id)
+            for server in self.settings.servers:
+                try:
+                    server.get_data(
+                        f"delete_activity/{to_delete.activity_id}",
+                    )
+                except connect.requests.RequestException:
+                    continue
             return
 
         self.activity_list_table.setSortingEnabled(False)
@@ -257,6 +264,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_list_table.setSortingEnabled(True)
         if self.activity.sport != previous_sport:
             self.update_activity_types_list()
+
+        for server in self.settings.servers:
+            try:
+                server.post_data(
+                    "send_activity",
+                    {"activity": serialise.dump_bytes(self.activity.save_data)},
+                )
+            except connect.requests.RequestException:
+                continue
 
     def add_photos(self):
         """Open the Add Photos dialog."""
