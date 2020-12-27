@@ -140,10 +140,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activities.add_activity(new_activity)
         for server in self.settings.servers:
             try:
-                server.post_data(
-                    "send_activity",
-                    {"activity": serialise.dump_bytes(new_activity.save_data)},
-                )
+                server.upload_activity(new_activity)
             except connect.requests.RequestException:
                 continue
         self.activity_list_table.add_id_row(activity_id, activity_elements, position)
@@ -267,10 +264,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
         for server in self.settings.servers:
             try:
-                server.post_data(
-                    "send_activity",
-                    {"activity": serialise.dump_bytes(self.activity.save_data)},
-                )
+                server.upload_activity(self.activity)
             except connect.requests.RequestException:
                 continue
 
@@ -438,7 +432,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         Download all activities from each server.
 
         Gets the activity list from the server, and then downloads each
-        activity.
+        activity. Also uploads missing activities.
         """
         self.social_activities = activity_list.ActivityList([])
         for server in self.settings.servers:
@@ -446,13 +440,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 social_ids = serialise.load_bytes(server.get_data("get_activities"))
             except connect.requests.RequestException:
                 continue
+            own_ids = set(a.activity_id for a in self.activities)
             for social_id in social_ids:
                 data = serialise.load_bytes(
                     server.get_data(f"get_activity/{social_id}")
                 )
                 data["server"] = server.name
                 activity_ = activity.Activity(**data)
+                if activity_.username == server.username:
+                    if social_id not in own_ids:
+                        server.get_data(f"delete_activity/{social_id}")
+                        continue
+                    own_ids.remove(social_id)
                 self.social_activities.add_activity(activity_)
+            if not own_ids:
+                continue
+            sync_progress_dialog = QtWidgets.QProgressDialog(
+                f"Syncing activities with {server.name}",
+                "Cancel",
+                0,
+                len(own_ids),
+                self,
+            )
+            for completed, missing_id in enumerate(own_ids):
+                sync_progress_dialog.setValue(completed)
+                try:
+                    server.upload_activity(self.activities.get_activity(missing_id))
+                except connect.requests.RequestException:
+                    continue
+                if sync_progress_dialog.wasCanceled():
+                    break
+            else:
+                sync_progress_dialog.setValue(len(own_ids))
 
     def social_tab_update(self):
         self.get_social_activities()

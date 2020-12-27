@@ -1,5 +1,6 @@
 import hashlib
 import json
+import uuid
 from base64 import b64decode, b64encode
 from glob import glob
 from pathlib import Path
@@ -86,13 +87,17 @@ def upload():
 @requires_auth
 def delete_activity(activity_id):
     (ACTIVITIES_DIR / f"{activity_id}.json.gz").unlink()
+    return "DONE"
 
 
 @app.route("/get_activities")
 @requires_auth
 def get_list():
     return serialise.dump_bytes(
-        [Path(p).stem.replace(".json", "") for p in glob(f"{ACTIVITIES_DIR}/*")]
+        [
+            uuid.UUID(Path(p).stem.replace(".json", ""))
+            for p in glob(f"{ACTIVITIES_DIR}/*")
+        ]
     )
 
 

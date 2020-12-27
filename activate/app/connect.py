@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from activate.core import serialise
 import requests
 
 
@@ -23,6 +24,12 @@ class Server:
         r = requests.get(f"{self.address.rstrip('/')}/{page}", auth=self.auth)
         r.raise_for_status()
         return r.content
+
+    def upload_activity(self, activity):
+        self.post_data(
+            "send_activity",
+            {"activity": serialise.dump_bytes(activity.save_data)},
+        )
 
     @property
     def auth(self):

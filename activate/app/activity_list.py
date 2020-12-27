@@ -59,12 +59,13 @@ class ActivityList(list):
         self._activities = {}
         super().__init__(activities)
 
+    def by_id(self, activity_id):
+        return next(a for a in self if a.activity_id == activity_id)
+
     def get_activity(self, activity_id):
         """Get an activity from its activity_id."""
         if activity_id not in self._activities:
-            for unloaded_activity in self:
-                if unloaded_activity.activity_id == activity_id:
-                    self._activities[activity_id] = unloaded_activity.load()
+            self._activities[activity_id] = self.by_id(activity_id).load()
         return self._activities[activity_id]
 
     def save(self):
