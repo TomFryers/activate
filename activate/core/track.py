@@ -2,7 +2,7 @@
 import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from functools import cached_property, lru_cache
+from functools import lru_cache
 
 from activate.core import geometry, times
 from activate.core.units import DimensionValue
@@ -291,24 +291,29 @@ class Track:
         return max(self.without_nones(field))
 
     # Caching necessary to avoid fake elevation data
-    @cached_property
+    @property
+    @lru_cache
     def has_altitude_data(self):
         return "ele" in self.fields
 
-    @cached_property
+    @property
+    @lru_cache
     def has_position_data(self):
         return "lat" in self.fields and "lon" in self.fields
 
-    @cached_property
+    @property
+    @lru_cache
     def lat_lon_list(self):
         return [[x, y] for x, y in zip(self["lat"], self["lon"])]
 
-    @cached_property
+    @property
+    @lru_cache
     def ascent(self):
         if self.has_altitude_data:
             return sum(x for x in self["climb"] if x is not None)
 
-    @cached_property
+    @property
+    @lru_cache
     def descent(self):
         if self.has_altitude_data:
             return sum(x for x in self["desc"] if x is not None)
@@ -317,12 +322,14 @@ class Track:
     def start_time(self):
         return self["time"][0]
 
-    @cached_property
+    @property
+    @lru_cache
     def elapsed_time(self):
         end_time = self["time"][-1]
         return end_time - self.start_time
 
-    @cached_property
+    @property
+    @lru_cache
     def moving_time(self):
         total_time = timedelta(0)
         last_distance = 0
@@ -343,11 +350,13 @@ class Track:
 
         return total_time
 
-    @cached_property
+    @property
+    @lru_cache
     def average_speed_moving(self):
         return self.length / self.moving_time.total_seconds()
 
-    @cached_property
+    @property
+    @lru_cache
     def distance_in_days(self) -> dict:
         if self.start_time.date() == self["time"][-1].date():
             return {self.start_time.date(): self.length}
