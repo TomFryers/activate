@@ -7,6 +7,7 @@ import gzip
 import json
 import uuid
 from datetime import datetime, timedelta
+from pathlib import Path
 
 
 def default(obj):
@@ -24,6 +25,8 @@ def default(obj):
         return {"__TIMEDELTA": obj.total_seconds()}
     if isinstance(obj, uuid.UUID):
         return {"__ID": str(obj)}
+    if isinstance(obj, Path):
+        return {"__PATH": str(obj)}
     raise TypeError(f"Cannot serialise {obj.__class__.__qualname__}")
 
 
@@ -37,6 +40,8 @@ def decode(obj):
             return timedelta(seconds=value)
         if key == "__ID":
             return uuid.UUID(value)
+        if key == "__PATH":
+            return Path(value)
     return obj
 
 
@@ -77,9 +82,9 @@ def dump(obj, filename, *args, **kwargs):
         f.write(dump_bytes(obj, *args, **kwargs))
 
 
-def load(filename, gz="auto"):
+def load(filename: Path, gz="auto"):
     """Load a JSON file. Can retrieve datetimes and timedeltas."""
     if gz == "auto":
-        gz = filename.casefold().endswith("gz")
+        gz = filename.suffix.casefold() == ".gz"
     with open(filename, "rb") as f:
         return load_bytes(f.read(), gz=gz)

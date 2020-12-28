@@ -133,7 +133,7 @@ class PhotoList(QtWidgets.QWidget):
         self.filenames = filenames
         if not filenames:
             return
-        self.photos = [QtGui.QPixmap(f) for f in filenames]
+        self.photos = [QtGui.QPixmap(str(f)) for f in filenames]
         total_aspect = sum(i.width() / i.height() for i in self.photos)
         total_aspect = max(total_aspect, 2)
         width = self.width - self.space(len(self.photos))

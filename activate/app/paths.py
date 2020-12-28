@@ -1,29 +1,27 @@
 """Define some standard paths for storing data."""
-import pathlib
+from pathlib import Path
 
 from PyQt5.QtCore import QStandardPaths
 
 # Locations for user data
-DATA = f"{QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)}/activate/"
-ACTIVITIES = DATA + "activities/"
-TRACKS = DATA + "originals/"
-PHOTOS = DATA + "photos/"
-SAVE = DATA + "activity_list.json.gz"
+DATA = (
+    Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)) / "activate"
+)
+ACTIVITIES = DATA / "activities"
+TRACKS = DATA / "originals"
+PHOTOS = DATA / "photos"
+SAVE = DATA / "activity_list.json.gz"
 
 # Location for configuration files
 SETTINGS = (
-    QStandardPaths.writableLocation(QStandardPaths.ConfigLocation) + "/activate.json"
+    Path(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation))
+    / "activate.json"
 )
 
-HOME = QStandardPaths.writableLocation(QStandardPaths.HomeLocation) + "/"
-
-
-def ensure_exists(path):
-    """Create a directory if it doesn't already exist."""
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+HOME = Path(QStandardPaths.writableLocation(QStandardPaths.HomeLocation))
 
 
 def ensure_all_present():
     """Create all the required directories."""
     for path in (ACTIVITIES, TRACKS, PHOTOS):
-        ensure_exists(path)
+        path.mkdir(parents=True, exist_ok=True)

@@ -21,7 +21,7 @@ ACTIVITIES_DIR.mkdir(parents=True, exist_ok=True)
 
 def load_activity(activity_id):
     return activity.Activity(
-        **serialise.load(str(ACTIVITIES_DIR / f"{activity_id}.json.gz"))
+        **serialise.load(ACTIVITIES_DIR / f"{activity_id}.json.gz")
     )
 
 

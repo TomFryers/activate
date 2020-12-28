@@ -4,12 +4,12 @@ from glob import glob
 from pathlib import Path
 
 
-def has_extension(filename, extension) -> bool:
+def has_extension(filename: Path, extension: str) -> bool:
     """Determine if a file path has a given extension."""
-    return filename.casefold().endswith("." + extension)
+    return filename.suffix.casefold() == "." + extension
 
 
-def encode_name(filename, current_filenames, directory):
+def encode_name(filename: str, current_filenames, directory: Path):
     """
     Rename a file to avoid name collisions.
 
@@ -20,20 +20,20 @@ def encode_name(filename, current_filenames, directory):
     """
     # No-underscore, unique filename
     if filename[0] != "_":
-        full_name = f"{directory}{filename}"
+        full_name = directory / filename
         if full_name not in current_filenames:
             return full_name
 
     # Others
     i = 0
     while True:
-        full_name = f"{directory}_{i}_{filename}"
+        full_name = directory / f"_{i}_{filename}"
         i += 1
         if full_name not in current_filenames:
             return full_name
 
 
-def decode_name(filename):
+def decode_name(filename: str):
     """Get a file's original name from its encoded one."""
     if filename[0] != "_":
         return filename
@@ -41,13 +41,12 @@ def decode_name(filename):
     return filename
 
 
-def copy_to_location_renamed(filename, copy_to):
+def copy_to_location_renamed(filename: Path, copy_to: Path):
     """
     Copy a file to a location, renaming it if necessary.
 
     Returns the new filename.
     """
-    filename = Path(filename)
     filenames = glob(f"{copy_to}*")
     out_name = encode_name(filename.name, filenames, copy_to)
     shutil.copy2(filename, out_name)

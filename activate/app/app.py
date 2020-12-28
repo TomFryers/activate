@@ -2,6 +2,7 @@
 import sys
 from collections import Counter
 from datetime import datetime
+from pathlib import Path
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
@@ -168,7 +169,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         # [1] gives file type chosen ("Activity Files (...)",
         # "All Files" etc.)
         filenames = QtWidgets.QFileDialog.getOpenFileNames(
-            self, "Import an activity", paths.HOME, "Activity Files (*.gpx *.fit *.tcx)"
+            self,
+            "Import an activity",
+            str(paths.HOME),
+            "Activity Files (*.gpx *.fit *.tcx)",
         )[0]
         if not filenames:
             return
@@ -178,6 +182,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         )
         import_progress_dialog.setWindowModality(Qt.WindowModal)
         for completed, filename in enumerate(filenames):
+            filename = Path(filename)
             import_progress_dialog.setValue(completed)
             self.add_activity(load_activity.import_and_load(filename, paths.TRACKS))
             if import_progress_dialog.wasCanceled():
@@ -200,7 +205,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             file_type = ""
         out_name = files.decode_name(self.activity.original_name)
         filename = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Export Original Activity", f"{paths.HOME}/{out_name}", file_type
+            self, "Export Original Activity", str(paths.HOME / out_name), file_type
         )[0]
 
         if not filename:
@@ -273,7 +278,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         filenames = QtWidgets.QFileDialog.getOpenFileNames(
             self,
             "Add photos",
-            paths.HOME,
+            str(paths.HOME),
             "Image files (*.png *.jpg *.jpeg *.gif *.bmp *.ppm *.pgm *.xpm)",
         )[0]
         if not filenames:
@@ -281,7 +286,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
         for filename in filenames:
             self.activity.photos.append(
-                files.copy_to_location_renamed(filename, paths.PHOTOS)
+                files.copy_to_location_renamed(Path(filename), paths.PHOTOS)
             )
         self.activity.save(paths.ACTIVITIES)
         self.activity_view.force_update_page(0)

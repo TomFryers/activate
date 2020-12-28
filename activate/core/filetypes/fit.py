@@ -31,7 +31,7 @@ LENGTH_SWIM_FIELDS = {
 
 def load_fit(filename):
     """Load and parse a FIT file."""
-    fit = list(FitFile(filename).messages)
+    fit = list(FitFile(str(filename)).messages)
     for message in fit:
         point = message.get_values()
         if point.items() & {"sub_sport": "lap_swimming", "event": "length"}.items():

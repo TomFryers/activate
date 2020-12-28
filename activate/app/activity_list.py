@@ -35,7 +35,7 @@ class UnloadedActivity:
     def load(self) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""
         return activity.Activity(
-            **serialise.load(f"{paths.ACTIVITIES}/{self.activity_id}.json.gz")
+            **serialise.load(paths.ACTIVITIES / f"{self.activity_id}.json.gz")
         )
 
     @property
