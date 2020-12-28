@@ -276,7 +276,7 @@ class Track:
     def without_nones(self, field):
         return (v for v in self[field] if v is not None)
 
-    @lru_cache
+    @lru_cache(128)
     def average(self, field):
         """Get the mean value of a field, ignoring missing values."""
         if field == "speed":
@@ -285,35 +285,35 @@ class Track:
         valid = list(self.without_nones(field))
         return sum(valid) / len(valid)
 
-    @lru_cache
+    @lru_cache(128)
     def maximum(self, field):
         """Get the maximum value of a field, ignoring missing values."""
         return max(self.without_nones(field))
 
     # Caching necessary to avoid fake elevation data
     @property
-    @lru_cache
+    @lru_cache(128)
     def has_altitude_data(self):
         return "ele" in self.fields
 
     @property
-    @lru_cache
+    @lru_cache(128)
     def has_position_data(self):
         return "lat" in self.fields and "lon" in self.fields
 
     @property
-    @lru_cache
+    @lru_cache(128)
     def lat_lon_list(self):
         return [[x, y] for x, y in zip(self["lat"], self["lon"])]
 
     @property
-    @lru_cache
+    @lru_cache(128)
     def ascent(self):
         if self.has_altitude_data:
             return sum(x for x in self["climb"] if x is not None)
 
     @property
-    @lru_cache
+    @lru_cache(128)
     def descent(self):
         if self.has_altitude_data:
             return sum(x for x in self["desc"] if x is not None)
@@ -323,13 +323,13 @@ class Track:
         return self["time"][0]
 
     @property
-    @lru_cache
+    @lru_cache(128)
     def elapsed_time(self):
         end_time = self["time"][-1]
         return end_time - self.start_time
 
     @property
-    @lru_cache
+    @lru_cache(128)
     def moving_time(self):
         total_time = timedelta(0)
         last_distance = 0
@@ -351,12 +351,12 @@ class Track:
         return total_time
 
     @property
-    @lru_cache
+    @lru_cache(128)
     def average_speed_moving(self):
         return self.length / self.moving_time.total_seconds()
 
     @property
-    @lru_cache
+    @lru_cache(128)
     def distance_in_days(self) -> dict:
         if self.start_time.date() == self["time"][-1].date():
             return {self.start_time.date(): self.length}
