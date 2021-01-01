@@ -1,6 +1,7 @@
 """Display an individual activity's data."""
 import markdown
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSignal
 
 from activate.app import charts, photos
 from activate.app.ui.activity_view import Ui_activity_view
@@ -9,6 +10,8 @@ from activate.core import activity_types, times
 
 class ActivityView(QtWidgets.QWidget, Ui_activity_view):
     """The statistics, graphs and map showing an activity."""
+
+    closed = pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,7 +24,7 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.map_widget = map_widget
 
         self.photo_list = photos.PhotoList(self)
-        self.overview_tab_layout.addWidget(self.photo_list, 1, 1)
+        self.overview_tab_layout.addWidget(self.photo_list)
 
         for table in (
             self.split_table,
@@ -155,3 +158,7 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         Call this when the activity view becomes visible.
         """
         self.map_container.addWidget(self.map_widget)
+
+    def closeEvent(self, *args, **kwargs):
+        self.closed.emit()
+        super().closeEvent(*args, **kwargs)

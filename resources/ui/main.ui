@@ -238,8 +238,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>96</width>
-                 <height>26</height>
+                 <width>597</width>
+                 <height>553</height>
                 </rect>
                </property>
               </widget>
@@ -460,7 +460,7 @@
     </property>
     <addaction name="action_edit"/>
     <addaction name="action_add_photos"/>
-    <addaction name="actionAnalyse"/>
+    <addaction name="action_analyse"/>
    </widget>
    <addaction name="file_menu"/>
    <addaction name="activity_menu"/>
@@ -518,7 +518,7 @@
     <string>Servers</string>
    </property>
   </action>
-  <action name="actionAnalyse">
+  <action name="action_analyse">
    <property name="text">
     <string>Analyse</string>
    </property>
@@ -852,6 +852,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_analyse</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>analyse_activity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -872,5 +888,6 @@
   <slot>update_social_activity()</slot>
   <slot>filter_social_activities()</slot>
   <slot>change_progression_y(QString)</slot>
+  <slot>analyse_activity()</slot>
  </slots>
 </ui>

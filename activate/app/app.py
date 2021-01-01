@@ -3,13 +3,17 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
-
 import activate.app.dialogs.activity
 import activate.app.dialogs.settings
-from activate.app import activity_list, charts, connect, maps, paths, settings
+from activate.app import (
+    activity_list,
+    activity_view,
+    charts,
+    connect,
+    maps,
+    paths,
+    settings,
+)
 from activate.app.ui.main import Ui_main_window
 from activate.core import (
     activity,
@@ -21,6 +25,9 @@ from activate.core import (
     track,
     units,
 )
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 
 NOW = datetime.now()
 
@@ -75,6 +82,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.action_import.setIcon(QIcon.fromTheme("document-open"))
         self.action_add_manual.setIcon(QIcon.fromTheme("document-new"))
         self.action_edit.setIcon(QIcon.fromTheme("document-edit"))
+        self.action_analyse.setIcon(QIcon.fromTheme("view-statistics"))
         self.action_add_photos.setIcon(QIcon.fromTheme("insert-image"))
         self.action_units.setIcon(QIcon.fromTheme("measure"))
         self.action_servers.setIcon(QIcon.fromTheme("network-server"))
@@ -293,6 +301,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def show_activity(self, activity_id):
         self.main_tabs.setCurrentIndex(1)
         self.activity_list_table.select(activity_id)
+
+    def analyse_activity(self):
+        self.activity_view = activity_view.ActivityView()
+        self.activity_view.setup(self.unit_system, self.map_widget)
+        self.activity_view.show_activity(self.activity)
+        self.activity_view.closed.connect(self.activity_view_closed)
+        self.activity_view.create()
+        self.activity_view.show()
+
+    def activity_view_closed(self):
+        self.activity_summary.show_map()
 
     def main_tab_switch(self, tab):
         """

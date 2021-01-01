@@ -11,9 +11,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Analyse Activity</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QHBoxLayout" name="activity_view_layout">
    <item>
     <layout class="QGridLayout" name="map_container"/>
    </item>
@@ -28,85 +28,74 @@
       </attribute>
       <layout class="QHBoxLayout" name="overview_tab_layout">
        <item>
-        <layout class="QVBoxLayout" name="activity_text_area">
+        <layout class="QVBoxLayout" name="activity_text_area" stretch="0,0,0,0,1">
          <item>
-          <layout class="QHBoxLayout" name="activity_name_and_flags">
-           <item>
-            <widget class="QLabel" name="activity_name_label">
-             <property name="font">
-              <font>
-               <pointsize>20</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>[Activity Name]</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="flags_label">
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>[Flags]</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="indent">
-              <number>20</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QLabel" name="activity_name_label">
+           <property name="font">
+            <font>
+             <pointsize>20</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>[Activity Name]</string>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="date_activity_type_area">
-           <item>
-            <widget class="QLabel" name="date_time_label">
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>[Date]</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="activity_type_label">
-             <property name="maximumSize">
-              <size>
-               <width>120</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>[Type]</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QLabel" name="flags_label">
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>[Flags]</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="date_time_label">
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>[Date]</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="activity_type_label">
+           <property name="maximumSize">
+            <size>
+             <width>120</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>[Type]</string>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="description_label">
            <property name="text">
             <string>[Description]</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
