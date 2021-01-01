@@ -238,8 +238,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>597</width>
-                 <height>553</height>
+                 <width>96</width>
+                 <height>26</height>
                 </rect>
                </property>
               </widget>
@@ -357,7 +357,7 @@
          </layout>
         </item>
         <item>
-         <widget class="ActivityView" name="activity_view" native="true"/>
+         <widget class="ActivitySummary" name="activity_summary" native="true"/>
         </item>
        </layout>
       </widget>
@@ -414,7 +414,7 @@
          </layout>
         </item>
         <item>
-         <widget class="ActivityView" name="social_activity_view" native="true"/>
+         <widget class="ActivitySummary" name="social_activity_summary" native="true"/>
         </item>
        </layout>
       </widget>
@@ -460,6 +460,7 @@
     </property>
     <addaction name="action_edit"/>
     <addaction name="action_add_photos"/>
+    <addaction name="actionAnalyse"/>
    </widget>
    <addaction name="file_menu"/>
    <addaction name="activity_menu"/>
@@ -517,6 +518,11 @@
     <string>Servers</string>
    </property>
   </action>
+  <action name="actionAnalyse">
+   <property name="text">
+    <string>Analyse</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -536,9 +542,9 @@
    <header>activate/app/checklist.h</header>
   </customwidget>
   <customwidget>
-   <class>ActivityView</class>
+   <class>ActivitySummary</class>
    <extends>QWidget</extends>
-   <header>activate/app/activity_view.h</header>
+   <header>activate/app/activity_summary.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

@@ -44,8 +44,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         # fitBounds work properly.
         self.heatmap_layout.addWidget(self.map_widget)
 
-        self.activity_view.setup(self.unit_system, self.map_widget)
-        self.social_activity_view.setup(self.unit_system, self.map_widget)
+        self.activity_summary.setup(self.unit_system, self.map_widget)
+        self.social_activity_summary.setup(self.unit_system, self.map_widget)
         paths.ensure_all_present()
 
         self.records_table.set_units(self.unit_system)
@@ -151,7 +151,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity = self.activities.get_activity(
             self.activity_list_table.item(selected, 0).activity_id
         )
-        self.activity_view.show_activity(self.activity)
+        self.activity_summary.show_activity(self.activity)
         self.setUpdatesEnabled(True)
 
     def update_social_activity(self, selected):
@@ -160,7 +160,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.social_activity = self.social_activities.get_activity(
             self.social_activity_list.item(selected, 0).activity_id
         )
-        self.social_activity_view.show_activity(self.social_activity)
+        self.social_activity_summary.show_activity(self.social_activity)
         self.setUpdatesEnabled(True)
 
     def import_activities(self):
@@ -288,7 +288,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 files.copy_to_location_renamed(Path(filename), paths.PHOTOS)
             )
         self.activity.save(paths.ACTIVITIES)
-        self.activity_view.force_update_page(0)
+        self.activity_summary.update()
 
     def show_activity(self, activity_id):
         self.main_tabs.setCurrentIndex(1)
@@ -306,11 +306,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         if tab_name == "Summary":
             self.summary_tab_switch()
         elif tab_name == "Activities":
-            self.activity_view.show_map()
+            self.activity_summary.show_map()
             if not self.activity_list_table.selectedItems():
                 self.activity_list_table.selectRow(0)
         elif tab_name == "Social":
-            self.social_activity_view.show_map()
+            self.social_activity_summary.show_map()
             self.social_tab_update()
         else:
             raise ValueError("Invalid tab")
