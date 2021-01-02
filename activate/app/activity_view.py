@@ -165,9 +165,11 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         """
         self.map_container.addWidget(self.map_widget)
 
-    def show_marker(self, pos):
+    def show_marker(self, values):
         self.map_widget.remove_highlight()
-        distance = self.unit_system.decode(pos.x(), "distance")
+        distance = values.x()
+        self.charts.show_line(distance)
+        distance = self.unit_system.decode(distance, "distance")
         point = self.activity.track.lat_lng_from_distance(distance)
         self.map_widget.show_marker(point)
 

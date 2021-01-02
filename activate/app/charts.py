@@ -327,6 +327,18 @@ class LineChartSet:
         self[name].update(data)
         self.show(name)
 
+    def show_line(self, x_value):
+        for chart in self.charts:
+            chart_view = self.chart_views[chart]
+            chart = self.charts[chart]
+            x = chart.mapToPosition(QPointF(x_value, 0)).x()
+            try:
+                chart.line.setLine(x, 0, x, 999)
+            except AttributeError:
+                line = QtWidgets.QGraphicsLineItem(x, 0, x, 999)
+                chart_view.scene().addItem(line)
+                chart.line = line
+
     def __repr__(self):
         return f"<LineChartSet charts={self.charts!r}>"
 
