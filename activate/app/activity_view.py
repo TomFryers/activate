@@ -39,6 +39,8 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.charts.add("heartrate")
         self.charts.add("cadence")
         self.charts.add("power")
+        for chart in self.charts.charts.values():
+            chart.widget.mouse_moved.connect(self.mouse_moved)
 
         self.zones_chart = charts.Histogram([0], self.zones_graph, self.unit_system)
 
@@ -158,6 +160,13 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         Call this when the activity view becomes visible.
         """
         self.map_container.addWidget(self.map_widget)
+
+    def mouse_moved(self, pos):
+        tab = self.activity_tabs.tabText(self.activity_tabs.currentIndex())
+        if tab == "Data":
+            distance = self.unit_system.decode(pos.x(), "distance")
+            point = self.activity.track.lat_lng_from_distance(distance)
+            self.map_widget.show_marker(point)
 
     def closeEvent(self, *args, **kwargs):
         self.closed.emit()

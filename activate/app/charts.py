@@ -6,7 +6,7 @@ from itertools import zip_longest
 
 import PyQt5
 from PyQt5 import QtChart, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QPointF
 
 from activate.core import number_formats, times, units
 
@@ -99,6 +99,18 @@ def create_axis(log=False):
     return QtChart.QValueAxis()
 
 
+class ChartView(QtChart.QChartView):
+    mouse_moved = pyqtSignal(QPointF)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setMouseTracking(True)
+
+    def mouseMoveEvent(self, event):
+        self.mouse_moved.emit(self.chart().mapToValue(event.localPos()))
+        super().mouseMoveEvent(event)
+
+
 class Chart(QtChart.QChart):
     """A chart with sensible defaults and extra functionality."""
 
@@ -116,6 +128,7 @@ class Chart(QtChart.QChart):
         y_axis_label=True,
     ):
         """Create a new chart."""
+        self.widget = widget
         self.unit_system = unit_system
         self.horizontal_ticks = horizontal_ticks
         self.vertical_ticks = vertical_ticks
@@ -125,7 +138,7 @@ class Chart(QtChart.QChart):
         self.y_axis_label = y_axis_label
         super().__init__()
         self.setAnimationOptions(self.SeriesAnimations)
-        widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
+        self.widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
         self.legend().hide()
 
         x_axis = create_axis(horizontal_log)
@@ -136,7 +149,7 @@ class Chart(QtChart.QChart):
             self.addSeries(series)
             series.attachAxis(x_axis)
             series.attachAxis(y_axis)
-        widget.setChart(self)
+        self.widget.setChart(self)
         if title is not None:
             self.setTitle(title)
 
@@ -295,7 +308,7 @@ class LineChartSet:
         self.chart_views = {}
 
     def add(self, name, area=False):
-        self.chart_views[name] = QtChart.QChartView()
+        self.chart_views[name] = ChartView(self.container.parentWidget())
         self.charts[name] = LineChart(
             self.chart_views[name], self.unit_system, area=area
         )

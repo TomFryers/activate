@@ -386,6 +386,27 @@ class Track:
             last_time = time
         return totals
 
+    def lat_lng_from_distance(self, distance):
+        point0 = 0
+        for point1, dist1 in enumerate(self["dist"]):
+            if dist1 is None:
+                continue
+            if dist1 > distance:
+                break
+            point0 = point1
+        else:
+            return None
+
+        dist0 = self["dist"][point0]
+        lat0 = self["lat"][point0]
+        lon0 = self["lon"][point0]
+        if dist0 == dist1:
+            return (lat0, lon0)
+        lat1 = self["lat"][point1]
+        lon1 = self["lon"][point1]
+        ratio = (distance - dist0) / (dist1 - dist0)
+        return (lerp(lat0, lat1, ratio), lerp(lon0, lon1, ratio))
+
     def graph(self, y_data, x_data="dist") -> tuple:
         """Get x and y data as (data, dimension) tuples."""
         return (

@@ -13,6 +13,8 @@ def get_bounds(*routes):
 
 DEFAULT_POS = [53, -1]
 
+ACTIVATE_COLOUR = "#802090"
+
 
 def call_js_method(obj, method, *params) -> None:
     """Call obj.method(*params) equivalent in JavaScript."""
@@ -53,6 +55,7 @@ class MapWidget(Map):
         self.route_lines = []
         self.start_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#10b020"})
         self.finish_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#e00000"})
+        self.marker = CircleMarker(DEFAULT_POS, {"radius": 5, "color": ACTIVATE_COLOUR})
         self.mode = None
 
     def show_route(self, route: list):
@@ -77,11 +80,11 @@ class MapWidget(Map):
         self.clear_route_lines()
         self.route_lines = []
         for route in routes:
-            self.route_lines.append(self.add_route_line(f"#802090{opacity}"))
+            self.route_lines.append(self.add_route_line(f"{ACTIVATE_COLOUR}{opacity}"))
             self.route_lines[-1].setLatLngs(route)
         self.mode = "heatmap"
 
-    def add_route_line(self, colour="#802090"):
+    def add_route_line(self, colour=ACTIVATE_COLOUR):
         line = Polyline([], {"smoothFactor": 0, "color": colour})
         line.addTo(self.map)
         return line
@@ -89,3 +92,13 @@ class MapWidget(Map):
     def clear_route_lines(self):
         while self.route_lines:
             self.route_lines.pop().removeFrom(self.map)
+
+    def show_marker(self, position):
+        if position is None:
+            self.remove_marker()
+            return
+        self.marker.setLatLng(list(position))
+        self.marker.addTo(self.map)
+
+    def remove_marker(self):
+        self.marker.removeFrom(self.map)
