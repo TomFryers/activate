@@ -313,6 +313,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def activity_view_closed(self):
         self.activity_summary.show_map()
         self.map_widget.remove_marker()
+        self.map_widget.remove_highlight()
 
     def main_tab_switch(self, tab):
         """

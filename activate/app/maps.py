@@ -108,3 +108,6 @@ class MapWidget(Map):
         self.highlight_section.setLatLngs(part)
         self.highlight_section.addTo(self.map)
         call_js_method(self.highlight_section, "bringToFront")
+
+    def remove_highlight(self):
+        self.highlight_section.removeFrom(self.map)
