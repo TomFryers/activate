@@ -146,6 +146,7 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
     def show_activity(self, new_activity):
         """Display a new activity."""
         self.activity = new_activity
+        self.setWindowTitle(f"Analysing {self.activity.name}")
         if self.activity.track.manual:
             self.activity_tabs.setCurrentIndex(0)
         for page in range(1, 5):
