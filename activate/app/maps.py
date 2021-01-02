@@ -56,6 +56,7 @@ class MapWidget(Map):
         self.start_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#10b020"})
         self.finish_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#e00000"})
         self.marker = CircleMarker(DEFAULT_POS, {"radius": 5, "color": ACTIVATE_COLOUR})
+        self.highlight_section = self.add_route_line("#ffffff")
         self.mode = None
 
     def show_route(self, route: list):
@@ -102,3 +103,8 @@ class MapWidget(Map):
 
     def remove_marker(self):
         self.marker.removeFrom(self.map)
+
+    def show_highlight(self, part):
+        self.highlight_section.setLatLngs(part)
+        self.highlight_section.addTo(self.map)
+        call_js_method(self.highlight_section, "bringToFront")

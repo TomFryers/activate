@@ -32,6 +32,9 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
             self.curve_table,
         ):
             table.set_units(self.unit_system)
+
+        self.split_table.cellEntered.connect(self.show_split)
+        self.split_table.setMouseTracking(True)
         # Set up charts
         self.charts = charts.LineChartSet(self.unit_system, self.graphs_layout)
         self.charts.add("ele", area=True)
@@ -40,7 +43,7 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.charts.add("cadence")
         self.charts.add("power")
         for chart in self.charts.charts.values():
-            chart.widget.mouse_moved.connect(self.mouse_moved)
+            chart.widget.mouse_moved.connect(self.show_marker)
 
         self.zones_chart = charts.Histogram([0], self.zones_graph, self.unit_system)
 
@@ -161,12 +164,18 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         """
         self.map_container.addWidget(self.map_widget)
 
-    def mouse_moved(self, pos):
-        tab = self.activity_tabs.tabText(self.activity_tabs.currentIndex())
-        if tab == "Data":
-            distance = self.unit_system.decode(pos.x(), "distance")
-            point = self.activity.track.lat_lng_from_distance(distance)
-            self.map_widget.show_marker(point)
+    def show_marker(self, pos):
+        distance = self.unit_system.decode(pos.x(), "distance")
+        point = self.activity.track.lat_lng_from_distance(distance)
+        self.map_widget.show_marker(point)
+
+    def show_split(self, split, _):
+        self.map_widget.show_highlight(
+            self.activity.track.part_lat_lon_list(
+                self.unit_system.decode(split, "distance"),
+                self.unit_system.decode(split + 1, "distance"),
+            )
+        )
 
     def closeEvent(self, *args, **kwargs):
         self.closed.emit()

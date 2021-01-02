@@ -306,6 +306,16 @@ class Track:
     def lat_lon_list(self):
         return [[x, y] for x, y in zip(self["lat"], self["lon"])]
 
+    def part_lat_lon_list(self, min_dist, max_dist):
+        track = []
+        for dist, lat, lon in zip(self["dist"], self["lat"], self["lon"]):
+            if dist is None or dist < min_dist:
+                continue
+            if dist >= max_dist:
+                return track
+            track.append([lat, lon])
+        return track
+
     @property
     @lru_cache(128)
     def ascent(self):
