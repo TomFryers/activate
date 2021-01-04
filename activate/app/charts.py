@@ -193,6 +193,15 @@ class Chart(QtChart.QChart):
     def remove_legend(self):
         self.legend().hide()
 
+    def set_vertical_line(self, x):
+        x = self.mapToPosition(QPointF(x, 0)).x()
+        try:
+            self.line.setLine(x, 0, x, 999)
+        except AttributeError:
+            line = QtWidgets.QGraphicsLineItem(x, 0, x, 999)
+            self.widget.scene().addItem(line)
+            self.line = line
+
     @property
     def x_axis(self):
         return self.axes(Qt.Horizontal)[0]
@@ -329,15 +338,7 @@ class LineChartSet:
 
     def show_line(self, x_value):
         for chart in self.charts:
-            chart_view = self.chart_views[chart]
-            chart = self.charts[chart]
-            x = chart.mapToPosition(QPointF(x_value, 0)).x()
-            try:
-                chart.line.setLine(x, 0, x, 999)
-            except AttributeError:
-                line = QtWidgets.QGraphicsLineItem(x, 0, x, 999)
-                chart_view.scene().addItem(line)
-                chart.line = line
+            self.charts[chart].set_vertical_line(x_value)
 
     def __repr__(self):
         return f"<LineChartSet charts={self.charts!r}>"

@@ -35,6 +35,8 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
 
         self.split_table.cellEntered.connect(self.show_split)
         self.split_table.setMouseTracking(True)
+        self.curve_table.cellEntered.connect(self.show_fastest)
+        self.curve_table.setMouseTracking(True)
         # Set up charts
         self.charts = charts.LineChartSet(self.unit_system, self.graphs_layout)
         self.charts.add("ele", area=True)
@@ -114,15 +116,20 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.zones_chart.set_zones(zones)
         self.zones_chart.update(self.activity.track.get_zone_durations(zones))
 
-    def switch_to_curve(self):
-        good_distances = (
+    @property
+    def good_distances(self):
+        return (
             activity_types.SPECIAL_DISTANCES[self.activity.sport]
             if self.activity.sport in activity_types.SPECIAL_DISTANCES
             else activity_types.SPECIAL_DISTANCES[None]
         )
-        table, graph = self.activity.track.get_curve(good_distances)
+
+    def switch_to_curve(self):
+        table, graph, self.fastest_indices = self.activity.track.get_curve(
+            self.good_distances
+        )
         self.curve_chart.update([graph])
-        self.curve_table.update_data(list(good_distances.values()), table)
+        self.curve_table.update_data(list(self.good_distances.values()), table)
 
     def update_page(self, page):
         """Switch to a new activity tab page."""
@@ -180,6 +187,16 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
                 self.unit_system.decode(split, "distance"),
                 self.unit_system.decode(split + 1, "distance"),
             )
+        )
+
+    def show_fastest(self, row, _):
+        self.curve_chart.set_vertical_line(
+            self.unit_system.encode(list(self.good_distances)[row], "distance")
+        )
+        self.map_widget.remove_marker()
+        section = self.fastest_indices[row]
+        self.map_widget.show_highlight(
+            self.activity.track.lat_lon_list[section[0] : section[1]]
         )
 
     def closeEvent(self, *args, **kwargs):

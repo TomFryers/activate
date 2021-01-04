@@ -506,6 +506,7 @@ class Track:
                 time_values.append(time.timestamp())
 
         bests = []
+        point_indices = []
         for distance in table_distances:
             for last_point in range(len(distance_values)):
                 if distance_values[last_point] - distance_values[0] > distance:
@@ -518,8 +519,11 @@ class Track:
                 ) >= distance:
                     first_point += 1
                 time_taken = time_values[last_point] - time_values[first_point]
-                best = min(best, time_taken)
+                if time_taken < best:
+                    best = time_taken
+                    point = (first_point, last_point)
             bests.append(best)
+            point_indices.append(point)
 
         speeds = [distance / time for distance, time in zip(table_distances, bests)]
         bests_table = [
@@ -533,6 +537,7 @@ class Track:
         return (
             bests_table,
             ((table_distances, "distance"), (speeds, "speed")),
+            point_indices,
         )
 
     @property
