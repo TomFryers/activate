@@ -79,12 +79,13 @@ def upload():
 @app.route("/delete_activity/<string:activity_id>")
 @requires_auth
 def delete_activity(activity_id):
-    if activities.by_id(activity_id).username != request.authorization["username"]:
-        abort(403)
     try:
-        activities.remove(UUID(activity_id))
+        username = activities.by_id(activity_id).username
     except KeyError:
-        pass
+        return "DONE"
+    if username != request.authorization["username"]:
+        abort(403)
+    activities.remove(UUID(activity_id))
     return "DONE"
 
 
