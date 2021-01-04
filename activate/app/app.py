@@ -194,7 +194,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         if not filenames:
             return
         self.activity_list_table.setSortingEnabled(False)
-        for completed, filename in activate.app.dialogs.progress(
+        for filename in activate.app.dialogs.progress(
             self, filenames, "Importing Activities"
         ):
             filename = Path(filename)
