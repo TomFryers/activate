@@ -7,16 +7,22 @@ import dataclasses
 import datetime
 from collections import Counter
 
-from activate.app import paths
 from activate.core import activity, serialise, times, units
 
+LIST_FILENAME = "activity_list.json.gz"
+ACTIVITIES_DIR_NAME = "activities"
 
-def from_disk():
+
+def from_serial(serial, path):
+    return ActivityList((UnloadedActivity(**a) for a in serial), path)
+
+
+def from_disk(path):
     """Load an activity list from disk, if it exists."""
     try:
-        return ActivityList(UnloadedActivity(**a) for a in serialise.load(paths.SAVE))
+        return from_serial(serialise.load(path / LIST_FILENAME), path)
     except FileNotFoundError:
-        return ActivityList([])
+        return ActivityList([], path)
 
 
 @dataclasses.dataclass
@@ -32,11 +38,9 @@ class UnloadedActivity:
     server: str = None
     username: str = None
 
-    def load(self) -> activity.Activity:
+    def load(self, path) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""
-        return activity.Activity(
-            **serialise.load(paths.ACTIVITIES / f"{self.activity_id}.json.gz")
-        )
+        return activity.Activity(**serialise.load(path / f"{self.activity_id}.json.gz"))
 
     @property
     def list_row(self):
@@ -54,19 +58,34 @@ class UnloadedActivity:
 class ActivityList(list):
     """A list of activities, which may be loaded."""
 
-    def __init__(self, activities):
+    def __init__(self, activities, path=None):
         """Create a list of unloaded activities."""
         self._activities = {}
+        self.path = path
         super().__init__(activities)
 
     def by_id(self, activity_id):
-        return next(a for a in self if a.activity_id == activity_id)
+        try:
+            return next(a for a in self if a.activity_id == activity_id)
+        except StopIteration:
+            raise KeyError("No such activity_id")
+
+    def provide_full_activity(self, activity_id, activity_):
+        self._activities[activity_id] = activity_
 
     def get_activity(self, activity_id):
         """Get an activity from its activity_id."""
         if activity_id not in self._activities:
-            self._activities[activity_id] = self.by_id(activity_id).load()
+            if self.path is None:
+                raise ValueError("Cannot load activity")
+            self.provide_full_activity(
+                activity_id,
+                self.by_id(activity_id).load(self.path / ACTIVITIES_DIR_NAME),
+            )
         return self._activities[activity_id]
+
+    def serialised(self):
+        return [dataclasses.asdict(a) for a in self]
 
     def save(self):
         """
@@ -74,7 +93,7 @@ class ActivityList(list):
 
         This only stores the list data, not the actual activities.
         """
-        serialise.dump([dataclasses.asdict(a) for a in self], paths.SAVE, gz=True)
+        serialise.dump(self.serialised(), self.path / LIST_FILENAME, gz=True)
 
     def add_activity(self, new_activity):
         """
@@ -84,7 +103,7 @@ class ActivityList(list):
         """
         self._activities[new_activity.activity_id] = new_activity
         self.append(new_activity.unload(UnloadedActivity))
-        new_activity.save(paths.ACTIVITIES)
+        new_activity.save(self.path / ACTIVITIES_DIR_NAME)
 
     def update(self, activity_id):
         """Regenerate an unloaded activity from its loaded version."""

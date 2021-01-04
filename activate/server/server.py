@@ -1,28 +1,20 @@
 import hashlib
 import json
-import uuid
 from base64 import b64decode, b64encode
-from glob import glob
 from pathlib import Path
+from uuid import UUID
 
 from flask import Flask, abort, request
 
-from activate.core import activity, serialise
+from activate.core import activity, activity_list, serialise
 
 DATA_DIR = Path("/var/lib/activate")
 
 USERS_FILE = DATA_DIR / "users.json"
-ACTIVITIES_DIR = DATA_DIR / "activities"
 
 app = Flask(__name__)
 
-ACTIVITIES_DIR.mkdir(parents=True, exist_ok=True)
-
-
-def load_activity(activity_id):
-    return activity.Activity(
-        **serialise.load(ACTIVITIES_DIR / f"{activity_id}.json.gz")
-    )
+(DATA_DIR / activity_list.ACTIVITIES_DIR_NAME).mkdir(parents=True, exist_ok=True)
 
 
 def get_users():
@@ -79,36 +71,33 @@ def upload():
     data = serialise.loads(request.form["activity"])
     data["username"] = request.authorization["username"]
     new_activity = activity.Activity(**data)
-    new_activity.save(ACTIVITIES_DIR)
+    activities.add_activity(new_activity)
+    activities.save()
     return "DONE"
 
 
 @app.route("/delete_activity/<string:activity_id>")
 @requires_auth
 def delete_activity(activity_id):
-    (ACTIVITIES_DIR / f"{activity_id}.json.gz").unlink()
+    activities.remove(activity_id)
     return "DONE"
 
 
 @app.route("/get_activities")
 @requires_auth
 def get_list():
-    return serialise.dump_bytes(
-        [
-            uuid.UUID(Path(p).stem.replace(".json", ""))
-            for p in glob(f"{ACTIVITIES_DIR}/*")
-        ]
-    )
+    return serialise.dump_bytes(activities.serialised())
 
 
 @app.route("/get_activity/<string:activity_id>")
 @requires_auth
 def get_activity(activity_id):
     try:
-        activity_ = load_activity(activity_id)
-    except FileNotFoundError:
+        activity_ = activities.get_activity(UUID(activity_id))
+    except KeyError:
         abort(404)
     return serialise.dump_bytes(activity_.save_data)
 
 
 users = get_users()
+activities = activity_list.from_disk(DATA_DIR)

@@ -7,7 +7,6 @@ import activate.app.dialogs
 import activate.app.dialogs.activity
 import activate.app.dialogs.settings
 from activate.app import (
-    activity_list,
     activity_view,
     charts,
     connect,
@@ -18,6 +17,7 @@ from activate.app import (
 from activate.app.ui.main import Ui_main_window
 from activate.core import (
     activity,
+    activity_list,
     activity_types,
     files,
     load_activity,
@@ -76,8 +76,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.eddington_chart.y_axis.setTitleText("Count")
         self.eddington_chart.add_legend(("Done", "Target"))
         self.activity_list_table.set_units(self.unit_system)
-
-        self.social_activities = []
 
         self.action_import.setIcon(QIcon.fromTheme("document-open"))
         self.action_add_manual.setIcon(QIcon.fromTheme("document-new"))
@@ -165,9 +163,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def update_social_activity(self, selected):
         """Show a new activity on the right on the Social page."""
         self.setUpdatesEnabled(False)
-        self.social_activity = self.social_activities.get_activity(
-            self.social_activity_list.item(selected, 0).activity_id
-        )
+        activity_id = self.social_activity_list.item(selected, 0).activity_id
+        try:
+            self.social_activity = self.social_activities.get_activity(activity_id)
+        except ValueError:
+            server = next(
+                s
+                for s in self.settings.servers
+                if s.name == self.social_activities.by_id(activity_id).server
+            )
+            self.social_activity = activity.Activity(
+                **serialise.load_bytes(server.get_data(f"get_activity/{activity_id}"))
+            )
+            self.social_activities.provide_full_activity(
+                activity_id, self.social_activity
+            )
         self.social_activity_summary.show_activity(self.social_activity)
         self.setUpdatesEnabled(True)
 
@@ -452,25 +462,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         Gets the activity list from the server, and then downloads each
         activity. Also uploads missing activities.
         """
-        self.social_activities = activity_list.ActivityList([])
+        self.social_activities = activity_list.ActivityList([], None)
         for server in self.settings.servers:
             try:
-                social_ids = serialise.load_bytes(server.get_data("get_activities"))
-            except connect.requests.RequestException:
+                server_activities = activity_list.from_serial(
+                    serialise.load_bytes(server.get_data("get_activities")), None
+                )
+            except connect.requests.RequestException as e:
+                print(e)
                 continue
             own_ids = set(a.activity_id for a in self.activities)
-            for social_id in social_ids:
-                data = serialise.load_bytes(
-                    server.get_data(f"get_activity/{social_id}")
-                )
-                data["server"] = server.name
-                activity_ = activity.Activity(**data)
+            for activity_ in server_activities:
+                activity_.server = server.name
                 if activity_.username == server.username:
-                    if social_id not in own_ids:
-                        server.get_data(f"delete_activity/{social_id}")
+                    aid = activity_.activity_id
+                    if aid not in own_ids:
+                        server.get_data(f"delete_activity/{aid}")
                         continue
-                    own_ids.remove(social_id)
-                self.social_activities.add_activity(activity_)
+                    own_ids.remove(aid)
+                self.social_activities.append(activity_)
             if not own_ids:
                 continue
             progress = activate.app.dialogs.progress(
@@ -518,7 +528,7 @@ def main():
     """Run the app and display the main window."""
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QIcon("resources/icons/icon.png"))
-    main_window = MainWindow(activity_list.from_disk())
+    main_window = MainWindow(activity_list.from_disk(paths.DATA))
 
     main_window.showMaximized()
     sys.exit(app.exec_())

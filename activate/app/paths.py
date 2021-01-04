@@ -10,7 +10,6 @@ DATA = (
 ACTIVITIES = DATA / "activities"
 TRACKS = DATA / "originals"
 PHOTOS = DATA / "photos"
-SAVE = DATA / "activity_list.json.gz"
 
 # Location for configuration files
 SETTINGS = (
