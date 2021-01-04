@@ -74,6 +74,8 @@ class MapWidget(Map):
 
     def show_heatmap(self, routes: list):
         """Display lists of points on the map as a heatmap."""
+        if not routes:
+            return
         opacity = hex(min(round(1000 / (len(routes) ** 0.5)), 255))[2:]
         self.map.fitBounds(get_bounds(*routes))
         self.start_icon.removeFrom(self.map)

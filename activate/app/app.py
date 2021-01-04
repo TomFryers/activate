@@ -432,6 +432,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 self.get_allowed_for_summary(), self.summary_period, NOW
             )
         )
+        if not allowed_activities:
+            return
         unit = self.unit_system.units["distance"].size
         eddington_data = self.activities.eddington(allowed_activities, unit)
         eddington_number = 0
