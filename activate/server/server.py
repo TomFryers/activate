@@ -86,6 +86,7 @@ def delete_activity(activity_id):
     if username != request.authorization["username"]:
         abort(403)
     activities.remove(UUID(activity_id))
+    activities.save()
     return "DONE"
 
 
