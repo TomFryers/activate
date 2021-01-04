@@ -81,7 +81,10 @@ def upload():
 def delete_activity(activity_id):
     if activities.by_id(activity_id).username != request.authorization["username"]:
         abort(403)
-    activities.remove(UUID(activity_id))
+    try:
+        activities.remove(UUID(activity_id))
+    except KeyError:
+        pass
     return "DONE"
 
 
