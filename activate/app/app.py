@@ -308,7 +308,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_view.show_activity(self.activity)
         self.activity_view.closed.connect(self.activity_view_closed)
         self.activity_view.create()
-        self.activity_view.show()
+        self.activity_view.showMaximized()
 
     def activity_view_closed(self):
         self.activity_summary.show_map()
@@ -534,5 +534,5 @@ def main():
     app.setWindowIcon(QIcon("resources/icons/icon.png"))
     main_window = MainWindow(activity_list.from_disk())
 
-    main_window.show()
+    main_window.showMaximized()
     sys.exit(app.exec_())
