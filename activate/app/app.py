@@ -468,8 +468,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 server_activities = activity_list.from_serial(
                     serialise.load_bytes(server.get_data("get_activities")), None
                 )
-            except connect.requests.RequestException as e:
-                print(e)
+            except connect.requests.RequestException:
                 continue
             own_ids = set(a.activity_id for a in self.activities)
             for activity_ in server_activities:
