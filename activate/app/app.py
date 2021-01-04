@@ -163,7 +163,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def update_social_activity(self, selected):
         """Show a new activity on the right on the Social page."""
         self.setUpdatesEnabled(False)
-        activity_id = self.social_activity_list.item(selected, 0).activity_id
+        cell = self.social_activity_list.item(selected, 0)
+        if cell is None:
+            return
+        activity_id = cell.activity_id
         try:
             self.social_activity = self.social_activities.get_activity(activity_id)
         except ValueError:
