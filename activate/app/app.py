@@ -487,12 +487,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 len(own_ids),
                 self,
             )
+            sync_progress_dialog.setWindowModality(Qt.WindowModal)
             for completed, missing_id in enumerate(own_ids):
                 sync_progress_dialog.setValue(completed)
                 try:
                     server.upload_activity(self.activities.get_activity(missing_id))
                 except connect.requests.RequestException:
-                    continue
+                    sync_progress_dialog.setValue(len(own_ids))
+                    break
                 if sync_progress_dialog.wasCanceled():
                     break
             else:
