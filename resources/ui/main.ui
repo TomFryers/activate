@@ -2,9 +2,6 @@
 <ui version="4.0">
  <class>main_window</class>
  <widget class="QMainWindow" name="main_window">
-  <property name="windowTitle">
-   <string>Activate</string>
-  </property>
   <widget class="QWidget" name="main_widget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>

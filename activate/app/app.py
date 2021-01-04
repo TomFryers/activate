@@ -533,6 +533,7 @@ def main():
     """Run the app and display the main window."""
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QIcon("resources/icons/icon.png"))
+    app.setApplicationName("Activate")
     main_window = MainWindow(activity_list.from_disk(paths.DATA))
 
     main_window.showMaximized()
