@@ -79,7 +79,7 @@ def upload():
     data = serialise.loads(request.form["activity"])
     data["username"] = request.authorization["username"]
     new_activity = activity.Activity(**data)
-    new_activity.save(f"{ACTIVITIES_DIR}/")
+    new_activity.save(ACTIVITIES_DIR)
     return "DONE"
 
 
