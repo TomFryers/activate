@@ -1,6 +1,7 @@
 """Classes defining custom dialogs."""
 
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
 
 
 class FormDialog(QtWidgets.QDialog):
@@ -29,3 +30,14 @@ class FormDialog(QtWidgets.QDialog):
         elif result == 1:
             return self.form.values()
         return result
+
+
+def progress(parent, iterable, text, cancel_text="Cancel"):
+    dialog = QtWidgets.QProgressDialog(text, cancel_text, 0, len(iterable), parent)
+    dialog.setWindowModality(Qt.WindowModal)
+    for done, value in enumerate(iterable):
+        dialog.setValue(done)
+        if dialog.wasCanceled():
+            return
+        yield value
+    dialog.setValue(len(iterable))

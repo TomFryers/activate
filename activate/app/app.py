@@ -3,6 +3,7 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
+import activate.app.dialogs
 import activate.app.dialogs.activity
 import activate.app.dialogs.settings
 from activate.app import (
@@ -26,7 +27,6 @@ from activate.core import (
     units,
 )
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
 NOW = datetime.now()
@@ -184,18 +184,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         if not filenames:
             return
         self.activity_list_table.setSortingEnabled(False)
-        import_progress_dialog = QtWidgets.QProgressDialog(
-            "Importing Activities", "Cancel", 0, len(filenames), self
-        )
-        import_progress_dialog.setWindowModality(Qt.WindowModal)
-        for completed, filename in enumerate(filenames):
+        for completed, filename in activate.app.dialogs.progress(
+            self, filenames, "Importing Activities"
+        ):
             filename = Path(filename)
-            import_progress_dialog.setValue(completed)
             self.add_activity(load_activity.import_and_load(filename, paths.TRACKS))
-            if import_progress_dialog.wasCanceled():
-                break
-        else:
-            import_progress_dialog.setValue(len(filenames))
         self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
         self.main_tab_switch(self.main_tabs.currentIndex())
@@ -480,25 +473,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 self.social_activities.add_activity(activity_)
             if not own_ids:
                 continue
-            sync_progress_dialog = QtWidgets.QProgressDialog(
-                f"Syncing activities with {server.name}",
-                "Cancel",
-                0,
-                len(own_ids),
-                self,
+            progress = activate.app.dialogs.progress(
+                self, own_ids, f"Syncing activities with {server.name}"
             )
-            sync_progress_dialog.setWindowModality(Qt.WindowModal)
-            for completed, missing_id in enumerate(own_ids):
-                sync_progress_dialog.setValue(completed)
+            for missing_id in progress:
                 try:
                     server.upload_activity(self.activities.get_activity(missing_id))
                 except connect.requests.RequestException:
-                    sync_progress_dialog.setValue(len(own_ids))
+                    for _ in progress:
+                        pass
                     break
-                if sync_progress_dialog.wasCanceled():
-                    break
-            else:
-                sync_progress_dialog.setValue(len(own_ids))
 
     def social_tab_update(self):
         self.get_social_activities()
