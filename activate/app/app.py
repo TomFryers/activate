@@ -498,6 +498,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def social_tab_update(self):
         self.get_social_activities()
         self.social_tree.set_servers(self.settings.servers, self.social_activities)
+        self.social_activity_list.setRowCount(0)
         self.social_activity_list.setRowCount(len(self.social_activities))
         for row, activity_ in enumerate(self.social_activities):
             self.social_activity_list.set_id_row(
