@@ -47,7 +47,7 @@ def get_row(database, table: str, values: dict):
 def reset_activities():
     db = load_database()
 
-    with open(Path(__file__).parent / "resources/init.sql") as f:
+    with open(Path(__file__).parents[1] / "resources/init.sql") as f:
         db.executescript(f.read())
     db.commit()
 
