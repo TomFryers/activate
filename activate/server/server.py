@@ -40,6 +40,8 @@ def password_hash(password: str, salt):
 
 def verify_request():
     """Check username and password against the database."""
+    if request.authorization is None:
+        return False
     username = request.authorization["username"]
     if username not in users:
         return False
