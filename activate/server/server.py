@@ -1,12 +1,13 @@
 import hashlib
 import json
+import sqlite3
 from base64 import b64decode, b64encode
+from datetime import timedelta
 from pathlib import Path
 from uuid import UUID
 
-from flask import Flask, abort, request
-
-from activate.core import activity, activity_list, serialise
+from activate.core import activity, serialise
+from flask import Flask, abort, g, request
 
 DATA_DIR = Path("/var/lib/activate")
 
@@ -14,7 +15,65 @@ USERS_FILE = DATA_DIR / "users.json"
 
 app = Flask(__name__)
 
-(DATA_DIR / activity_list.ACTIVITIES_DIR_NAME).mkdir(parents=True, exist_ok=True)
+ACTIVITIES_DIR = DATA_DIR / "activities"
+ACTIVITIES_DIR.mkdir(parents=True, exist_ok=True)
+
+ACTIVITIES_DATABASE_PATH = DATA_DIR / "activities.sqlite"
+
+sqlite3.register_converter("DICT", eval)
+sqlite3.register_adapter(dict, repr)
+
+sqlite3.register_converter("TIMEDELTA", lambda d: timedelta(seconds=int(d)))
+sqlite3.register_adapter(timedelta, lambda d: d.total_seconds())
+
+sqlite3.register_converter("UUID", lambda u: UUID(u.decode("utf-8")))
+sqlite3.register_adapter(UUID, str)
+
+
+def add_row(database, table: str, values: dict):
+    database.execute(
+        f"INSERT INTO {table} ({', '.join(values)}) VALUES ({', '.join(':' + v for v in values)})",
+        values,
+    )
+
+
+def get_row(database, table: str, values: dict):
+    return database.execute(
+        f"SELECT * FROM {table} WHERE {' AND '.join(f'{v} = :{v}' for v in values)}",
+        values,
+    ).fetchone()
+
+
+def reset_activities():
+    db = load_database()
+
+    with open(Path(__file__) / "../resources/init.sql") as f:
+        db.executescript(f.read())
+    db.commit()
+
+
+def load_database():
+    db = sqlite3.connect(
+        ACTIVITIES_DATABASE_PATH,
+        detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES,
+    )
+    db.row_factory = sqlite3.Row
+    return db
+
+
+def get_activities():
+    if "db" not in g:
+        g.db = load_database()
+
+    return g.db
+
+
+@app.teardown_appcontext
+def close_activities(e=None):
+    db = g.pop("db", None)
+
+    if db is not None:
+        db.close()
 
 
 def get_users():
@@ -73,40 +132,61 @@ def upload():
     data = serialise.loads(request.form["activity"])
     data["username"] = request.authorization["username"]
     new_activity = activity.Activity(**data)
-    activities.add_activity(new_activity)
-    activities.save()
+    activities = get_activities()
+    add_row(
+        activities,
+        "activities",
+        {
+            "name": new_activity.name,
+            "sport": new_activity.sport,
+            "flags": new_activity.flags,
+            "start_time": new_activity.start_time,
+            "distance": new_activity.distance,
+            "duration": new_activity.track.elapsed_time,
+            "climb": new_activity.track.ascent,
+            "activity_id": new_activity.activity_id,
+            "username": new_activity.username,
+        },
+    )
+    new_activity.save(ACTIVITIES_DIR)
+    activities.commit()
     return "DONE"
 
 
 @app.route("/delete_activity/<string:activity_id>")
 @requires_auth
 def delete_activity(activity_id):
-    try:
-        username = activities.by_id(activity_id).username
-    except KeyError:
-        return "DONE"
-    if username != request.authorization["username"]:
+    activity_id = UUID(activity_id)
+    activities = get_activities()
+    row = get_row(activities, "activities", {"activity_id": activity_id})
+    if row["username"] != request.authorization["username"]:
         abort(403)
-    activities.remove(UUID(activity_id))
-    activities.save()
+    activities.execute("DELETE FROM activities WHERE activity_id = ?", activity_id)
+    activities.commit()
     return "DONE"
 
 
 @app.route("/get_activities")
 @requires_auth
 def get_list():
-    return serialise.dump_bytes(activities.serialised())
+    activities = get_activities()
+    activities = activities.execute("SELECT * FROM activities").fetchall()
+    return serialise.dump_bytes([{k: a[k] for k in a.keys()} for a in activities])
 
 
 @app.route("/get_activity/<string:activity_id>")
 @requires_auth
 def get_activity(activity_id):
+    activity_id = UUID(activity_id)
+    activities = get_activities()
     try:
-        activity_ = activities.get_activity(UUID(activity_id))
-    except KeyError:
+        get_row(activities, "activities", {"activity_id": activity_id})
+    except FileNotFoundError:
         abort(404)
-    return serialise.dump_bytes(activity_.save_data)
+    with open(ACTIVITIES_DIR / f"{activity_id}.json.gz", "rb") as f:
+        return f.read()
 
 
 users = get_users()
-activities = activity_list.from_disk(DATA_DIR)
+if not ACTIVITIES_DATABASE_PATH.exists():
+    reset_activities()

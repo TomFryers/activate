@@ -176,7 +176,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 if s.name == self.social_activities.by_id(activity_id).server
             )
             self.social_activity = activity.Activity(
-                **serialise.load_bytes(server.get_data(f"get_activity/{activity_id}"))
+                **serialise.load_bytes(
+                    server.get_data(f"get_activity/{activity_id}"), gz=True
+                )
             )
             self.social_activities.provide_full_activity(
                 activity_id, self.social_activity
