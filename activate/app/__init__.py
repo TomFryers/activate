@@ -509,6 +509,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self.social_activity_list.set_id_row(
                 activity_.activity_id, activity_.list_row, row
             )
+        self.social_activity_list.resizeColumnsToContents()
+        self.social_activity_list.default_sort()
 
     def filter_social_activities(self):
         self.social_activity_list.filter_by_server(
