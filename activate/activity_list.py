@@ -7,7 +7,7 @@ import dataclasses
 import datetime
 from collections import Counter
 
-from activate.core import activity, serialise, times, units
+from activate import activity, serialise, times, units
 
 LIST_FILENAME = "activity_list.json.gz"
 ACTIVITIES_DIR_NAME = "activities"

@@ -1,5 +1,5 @@
 """Define various activity type constants."""
-from activate.core import units
+from activate import units
 
 MARATHON = 42195
 # The distances shown in the Curve page

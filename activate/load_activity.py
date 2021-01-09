@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 
-from activate.core import activity, files, filetypes, track
+from activate import activity, files, filetypes, track
 
 ACTIVITY_TYPE_NAMES = defaultdict(
     lambda: "Other",

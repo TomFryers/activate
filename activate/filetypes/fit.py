@@ -3,7 +3,7 @@ from pathlib import Path
 
 from fitparse import FitFile
 
-from activate.core import files
+from activate import files
 
 CONVERSION_FACTOR = 180 / 2 ** 31
 UNIVERSAL_FIELDS = {

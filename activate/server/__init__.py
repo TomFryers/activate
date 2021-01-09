@@ -6,7 +6,7 @@ from datetime import timedelta
 from pathlib import Path
 from uuid import UUID
 
-from activate.core import activity, serialise
+from activate import activity, serialise
 from flask import Flask, abort, g, request
 
 DATA_DIR = Path("/var/lib/activate")

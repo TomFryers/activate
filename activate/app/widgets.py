@@ -4,7 +4,7 @@ from datetime import timedelta
 from PyQt5 import QtWidgets
 
 from activate.app import checklist
-from activate.core import activity_types, times, units
+from activate import activity_types, times, units
 
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
 TYPE_FLAGS = collections.defaultdict(tuple)

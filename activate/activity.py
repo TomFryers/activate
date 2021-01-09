@@ -1,9 +1,9 @@
 import shutil
 from uuid import uuid4
 
-from activate.core import serialise
-from activate.core import track as track_
-from activate.core.units import DimensionValue
+from activate import serialise
+from activate import track as track_
+from activate.units import DimensionValue
 
 
 def from_track(name, sport, track, filename):

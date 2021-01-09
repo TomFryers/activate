@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
 from activate.app import connect
-from activate.core import number_formats, times, units
+from activate import number_formats, times, units
 
 
 def aligned(horizontal="c", vertical="c"):

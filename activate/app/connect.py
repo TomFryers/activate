@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 import requests
-from activate.core import serialise
+from activate import serialise
 
 
 @dataclass

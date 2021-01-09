@@ -8,7 +8,7 @@ import PyQt5
 from PyQt5 import QtChart, QtWidgets
 from PyQt5.QtCore import Qt, pyqtSignal, QPointF
 
-from activate.core import number_formats, times, units
+from activate import number_formats, times, units
 
 
 def axis_number_format(axis):

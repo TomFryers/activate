@@ -2,7 +2,7 @@
 import dataclasses
 
 from activate.app import connect, paths
-from activate.core import serialise, units
+from activate import serialise, units
 
 DEFAULTS = {
     "unit_system": units.DEFAULT,

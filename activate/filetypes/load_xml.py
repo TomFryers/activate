@@ -1,7 +1,7 @@
 import pathlib
 import xml.etree.ElementTree
 
-from activate.core import files
+from activate import files
 
 
 def try_multi(point, locations):

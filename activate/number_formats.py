@@ -1,7 +1,7 @@
 import math
 from datetime import timedelta
 
-from activate.core import times
+from activate import times
 
 
 def as_int(value) -> str:

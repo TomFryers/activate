@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import lru_cache
 
-from activate.core import geometry, times
-from activate.core.units import DimensionValue
+from activate import geometry, times
+from activate.units import DimensionValue
 
 SPEED_RANGE = 1
 

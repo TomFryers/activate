@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSignal
 
 from activate.app import charts, photos
 from activate.app.ui.activity_view import Ui_activity_view
-from activate.core import activity_types, times
+from activate import activity_types, times
 
 
 class ActivityView(QtWidgets.QWidget, Ui_activity_view):

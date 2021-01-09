@@ -1,6 +1,6 @@
 """Load the fields from a GPX file on disk."""
-from activate.core import times
-from activate.core.filetypes import load_xml
+from activate import times
+from activate.filetypes import load_xml
 
 FIELDS = {
     "lat": lambda p: float(p.find("./Position/LatitudeDegrees").text),

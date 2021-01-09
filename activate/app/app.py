@@ -15,7 +15,7 @@ from activate.app import (
     settings,
 )
 from activate.app.ui.main import Ui_main_window
-from activate.core import (
+from activate import (
     activity,
     activity_list,
     activity_types,
