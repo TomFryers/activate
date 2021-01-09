@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
-from activate.app import app
+from activate import app
 
 app.main()
