@@ -6,7 +6,7 @@ from itertools import zip_longest
 
 import PyQt5
 from PyQt5 import QtChart, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSignal, QPointF
+from PyQt5.QtCore import QPointF, Qt, pyqtSignal
 
 from activate import number_formats, times, units
 

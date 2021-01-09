@@ -3,18 +3,12 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
+from PyQt5 import QtWidgets
+from PyQt5.QtGui import QIcon
+
 import activate.app.dialogs
 import activate.app.dialogs.activity
 import activate.app.dialogs.settings
-from activate.app import (
-    activity_view,
-    charts,
-    connect,
-    maps,
-    paths,
-    settings,
-)
-from activate.app.ui.main import Ui_main_window
 from activate import (
     activity,
     activity_list,
@@ -26,8 +20,8 @@ from activate import (
     track,
     units,
 )
-from PyQt5 import QtWidgets
-from PyQt5.QtGui import QIcon
+from activate.app import activity_view, charts, connect, maps, paths, settings
+from activate.app.ui.main import Ui_main_window
 
 NOW = datetime.now()
 

@@ -3,8 +3,8 @@ from datetime import timedelta
 
 from PyQt5 import QtWidgets
 
-from activate.app import checklist
 from activate import activity_types, times, units
+from activate.app import checklist
 
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
 TYPE_FLAGS = collections.defaultdict(tuple)

@@ -3,10 +3,10 @@ import datetime
 import PyQt5
 from PyQt5 import QtWidgets
 
+from activate import activity_types
 from activate.app import paths
 from activate.app.dialogs import FormDialog
 from activate.app.widgets import ActivityFlagEdit, DurationEdit, Form
-from activate import activity_types
 
 DELETE_ACTIVITY = 222  # 0xDE[lete]
 

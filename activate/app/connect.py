@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 import requests
+
 from activate import serialise
 
 

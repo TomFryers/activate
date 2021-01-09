@@ -3,9 +3,9 @@ import markdown
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
+from activate import activity_types, times
 from activate.app import charts, photos
 from activate.app.ui.activity_view import Ui_activity_view
-from activate import activity_types, times
 
 
 class ActivityView(QtWidgets.QWidget, Ui_activity_view):

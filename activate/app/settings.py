@@ -1,8 +1,8 @@
 """Contains a class holding current user settings."""
 import dataclasses
 
-from activate.app import connect, paths
 from activate import serialise, units
+from activate.app import connect, paths
 
 DEFAULTS = {
     "unit_system": units.DEFAULT,

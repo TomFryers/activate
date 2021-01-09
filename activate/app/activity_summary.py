@@ -2,9 +2,9 @@
 import markdown
 from PyQt5 import QtWidgets
 
+from activate import times
 from activate.app import photos
 from activate.app.ui.activity_summary import Ui_activity_summary
-from activate import times
 
 
 class ActivitySummary(QtWidgets.QWidget, Ui_activity_summary):
