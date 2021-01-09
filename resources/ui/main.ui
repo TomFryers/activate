@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>main_window</class>
  <widget class="QMainWindow" name="main_window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>770</width>
+    <height>507</height>
+   </rect>
+  </property>
   <widget class="QWidget" name="main_widget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
@@ -370,7 +378,7 @@
            <widget class="SocialActivityList" name="social_activity_list">
             <property name="minimumSize">
              <size>
-              <width>500</width>
+              <width>720</width>
               <height>0</height>
              </size>
             </property>
@@ -416,7 +424,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>652</width>
+     <width>770</width>
      <height>30</height>
     </rect>
    </property>
