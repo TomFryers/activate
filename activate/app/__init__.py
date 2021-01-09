@@ -162,11 +162,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
     def update_social_activity(self, selected):
         """Show a new activity on the right on the Social page."""
-        self.setUpdatesEnabled(False)
         cell = self.social_activity_list.item(selected, 0)
         if cell is None:
             return
         activity_id = cell.activity_id
+        self.setUpdatesEnabled(False)
         try:
             self.social_activity = self.social_activities.get_activity(activity_id)
         except ValueError:
@@ -505,10 +505,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.social_tree.set_servers(self.settings.servers, self.social_activities)
         self.social_activity_list.setRowCount(0)
         self.social_activity_list.setRowCount(len(self.social_activities))
+        self.social_activity_list.setSortingEnabled(False)
         for row, activity_ in enumerate(self.social_activities):
             self.social_activity_list.set_id_row(
                 activity_.activity_id, activity_.list_row, row
             )
+        self.filter_social_activities()
         self.social_activity_list.resizeColumnsToContents()
         self.social_activity_list.default_sort()
 

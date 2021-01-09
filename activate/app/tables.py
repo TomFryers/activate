@@ -243,6 +243,7 @@ class ActivityListTable(ValueColumnTable):
             self.setSortingEnabled(True)
 
     def default_sort(self):
+        self.setSortingEnabled(True)
         self.sortItems(self.headings.index("Start Time"), Qt.DescendingOrder)
 
     def mouseReleaseEvent(self, event):
