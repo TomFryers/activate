@@ -308,7 +308,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def analyse_activity(self):
         self.activity_view = activity_view.ActivityView()
         self.activity_view.setup(self.unit_system, self.map_widget)
-        self.activity_view.show_activity(self.activity)
+        self.activity_view.show_activity(
+            self.activity
+            if self.main_tabs.tabText(self.main_tabs.currentIndex()) == "Activities"
+            else self.social_activity
+        )
         self.activity_view.closed.connect(self.activity_view_closed)
         self.activity_view.create()
         self.activity_view.showMaximized()
@@ -325,8 +329,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         Triggers the opened tab to update.
         """
         tab_name = self.main_tabs.tabText(tab)
-        for action in (self.export_menu, self.activity_menu):
+        for action in (self.action_edit, self.action_add_photos, self.export_menu):
             action.setEnabled(tab_name == "Activities")
+        self.activity_menu.setEnabled(tab_name != "Summary")
         if tab_name == "Summary":
             self.summary_tab_switch()
         elif tab_name == "Activities":
