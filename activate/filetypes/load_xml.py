@@ -1,4 +1,5 @@
 import pathlib
+import gzip
 import xml.etree.ElementTree
 
 from activate import files
@@ -16,7 +17,9 @@ def try_multi(point, locations):
 
 def get_tree(filename):
     """Load the tree, getting rid of namespaces"""
-    tree = xml.etree.ElementTree.iterparse(open(filename, "r"))
+    tree = xml.etree.ElementTree.iterparse(
+        (gzip.open if filename.suffix == ".gz" else open)(filename)
+    )
     for _, element in tree:
         _, _, element.tag = element.tag.rpartition("}")
     return tree.root

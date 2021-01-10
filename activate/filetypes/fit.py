@@ -1,4 +1,5 @@
 """Load and parse FIT files."""
+import gzip
 from pathlib import Path
 
 from fitparse import FitFile
@@ -31,7 +32,12 @@ LENGTH_SWIM_FIELDS = {
 
 def load_fit(filename):
     """Load and parse a FIT file."""
-    fit = list(FitFile(str(filename)).messages)
+    if filename.suffix == ".gz":
+        with gzip.open(filename) as f:
+            fit = FitFile(f).messages
+    else:
+        fit = FitFile(str(filename)).messages
+    fit = list(fit)
     for message in fit:
         point = message.get_values()
         if point.items() & {"sub_sport": "lap_swimming", "event": "length"}.items():
