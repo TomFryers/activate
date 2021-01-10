@@ -21,8 +21,8 @@ ACTIVITIES_DIR.mkdir(parents=True, exist_ok=True)
 
 ACTIVITIES_DATABASE_PATH = DATA_DIR / "activities.sqlite"
 
-sqlite3.register_converter("DICT", eval)
-sqlite3.register_adapter(dict, repr)
+sqlite3.register_converter("DICT", serialise.loads)
+sqlite3.register_adapter(dict, serialise.dumps)
 
 sqlite3.register_converter("TIMEDELTA", lambda d: timedelta(seconds=int(d)))
 sqlite3.register_adapter(timedelta, lambda d: d.total_seconds())
