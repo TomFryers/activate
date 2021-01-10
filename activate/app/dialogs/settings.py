@@ -3,8 +3,23 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
-from activate.app import settings, widgets
+from activate.app import connect, settings, widgets
+from activate.app.dialogs import FormDialog
 from activate.app.ui.settings import Ui_settings
+from activate.app.widgets import Form
+
+
+class AddServerDialog(FormDialog):
+    def __init__(self, *args, **kwargs):
+        layout = {
+            "Address": QtWidgets.QLineEdit(),
+            "Name": QtWidgets.QLineEdit(),
+            "Username": QtWidgets.QLineEdit(),
+            "Password": QtWidgets.QLineEdit(),
+        }
+        layout["Password"].setEchoMode(layout["Password"].Password)
+        super().__init__(*args, form=Form(layout), **kwargs)
+        self.setWindowTitle("Add Server")
 
 
 class SettingsDialog(QtWidgets.QDialog, Ui_settings):
@@ -17,6 +32,15 @@ class SettingsDialog(QtWidgets.QDialog, Ui_settings):
         self.custom_units = widgets.CustomUnits(self)
         self.units_tab_layout.addLayout(self.custom_units)
         self.units_tab_layout.setAlignment(Qt.AlignTop)
+
+    def add_server(self):
+        result = AddServerDialog().exec({})
+        if not result:
+            return
+        self.server_table.add_row()
+        self.server_table.set_server(
+            self.server_table.rowCount() - 1, connect.Server(*result.values())
+        )
 
     def load_from_settings(self, current_settings: settings.Settings):
         """Load a Settings object to the UI widgets."""

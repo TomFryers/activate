@@ -160,16 +160,16 @@
   <connection>
    <sender>add_server_button</sender>
    <signal>clicked(bool)</signal>
-   <receiver>server_table</receiver>
-   <slot>add_row()</slot>
+   <receiver>settings</receiver>
+   <slot>add_server()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>213</x>
      <y>226</y>
     </hint>
     <hint type="destinationlabel">
-     <x>213</x>
-     <y>109</y>
+     <x>399</x>
+     <y>299</y>
     </hint>
    </hints>
   </connection>

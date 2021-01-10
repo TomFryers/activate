@@ -362,13 +362,14 @@ class ServersTable(Table):
         self.setColumnCount(len(self.headings))
         self.setHorizontalHeaderLabels(self.headings)
 
+    def set_server(self, row, server):
+        self.set_row(["" if x is None else x for x in dataclasses.astuple(server)], row)
+
     def set_servers(self, servers):
         self.setRowCount(len(servers))
         self.set_columns()
         for row, server in enumerate(servers):
-            self.set_row(
-                ("" if x is None else x for x in dataclasses.astuple(server)), row
-            )
+            self.set_server(row, server)
 
     def get_servers(self):
         return [connect.Server(*self.get_row_text(r)) for r in range(self.rowCount())]
