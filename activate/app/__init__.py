@@ -168,7 +168,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             server = next(
                 s
                 for s in self.settings.servers
-                if s.name in self.social_activities.by_id(activity_id).server.split("\n")
+                if s.name
+                in self.social_activities.by_id(activity_id).server.split("\n")
             )
             self.social_activity = activity.Activity(
                 **serialise.load_bytes(

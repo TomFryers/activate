@@ -27,7 +27,7 @@ class FormDialog(QtWidgets.QDialog):
         result = super().exec()
         if not result:
             return None
-        elif result == 1:
+        if result == 1:
             return self.form.values()
         return result
 

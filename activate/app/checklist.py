@@ -50,7 +50,7 @@ class CheckList(QtWidgets.QListWidget):
                 if real_row.text() == row:
                     return real_row
             raise ValueError(f"{row} is not a row.")
-        elif isinstance(row, int):
+        if isinstance(row, int):
             return self[row]
         return row
 

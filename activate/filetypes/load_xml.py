@@ -1,5 +1,5 @@
-import pathlib
 import gzip
+import pathlib
 import xml.etree.ElementTree
 
 from activate import files
