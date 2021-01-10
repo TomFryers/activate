@@ -46,6 +46,12 @@ def get_row(database, table: str, values: dict):
     ).fetchone()
 
 
+def delete_by_id(activities, activity_id):
+    activities.execute(
+        "DELETE FROM activities WHERE activity_id = ?", [str(activity_id)]
+    )
+
+
 def reset_activities():
     db = load_database()
     db.executescript(
@@ -135,6 +141,7 @@ def upload():
     data["username"] = request.authorization["username"]
     new_activity = activity.Activity(**data)
     activities = get_activities()
+    delete_by_id(activities, new_activity.activity_id)
     add_row(
         activities,
         "activities",
@@ -163,7 +170,7 @@ def delete_activity(activity_id):
     row = get_row(activities, "activities", {"activity_id": activity_id})
     if row["username"] != request.authorization["username"]:
         abort(403)
-    activities.execute("DELETE FROM activities WHERE activity_id = ?", activity_id)
+    delete_by_id(activities, activity_id)
     activities.commit()
     return "DONE"
 
