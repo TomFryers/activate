@@ -3,8 +3,9 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
+import pkg_resources
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 
 import activate.app.dialogs
 import activate.app.dialogs.activity
@@ -537,7 +538,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 def main():
     """Run the app and display the main window."""
     app = QtWidgets.QApplication(sys.argv)
-    app.setWindowIcon(QIcon("resources/icons/icon.png"))
+    icon = QPixmap()
+    icon.loadFromData(
+        pkg_resources.resource_string("activate.resources", "icons/icon.png")
+    )
+    app.setWindowIcon(QIcon(icon))
     app.setApplicationName("Activate")
     main_window = MainWindow(activity_list.from_disk(paths.DATA))
 

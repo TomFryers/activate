@@ -6,6 +6,7 @@ from datetime import timedelta
 from pathlib import Path
 from uuid import UUID
 
+import pkg_resources
 from flask import Flask, abort, g, request
 
 from activate import activity, serialise
@@ -47,9 +48,9 @@ def get_row(database, table: str, values: dict):
 
 def reset_activities():
     db = load_database()
-
-    with open(Path(__file__).resolve().parents[2] / "resources/init.sql") as f:
-        db.executescript(f.read())
+    db.executescript(
+        pkg_resources.resource_string("activate.resources", "init.sql").decode("utf-8")
+    )
     db.commit()
 
 

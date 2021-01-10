@@ -1,6 +1,6 @@
 # Activate
 
-![Icon](resources/icons/icon_cropped.png)
+![Icon](activate/resources/icons/icon_cropped.png)
 
 Activate is a free activity log and analysis tool.
 
@@ -18,7 +18,7 @@ The Python dependencies are:
 
 Run `make` to build the app.
 
-Run `./app` to launch Activate.
+Then, run `./app` to launch Activate, or `./setup.py install` to install it.
 
 ## Basic Usage
 

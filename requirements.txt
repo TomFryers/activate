@@ -6,3 +6,4 @@ Markdown=3.3.3
 fitparse==1.2.0
 requests==2.24.0
 flask==1.1.2
+setuptools==51.0.0
