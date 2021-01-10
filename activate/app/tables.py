@@ -265,8 +265,10 @@ class SocialActivityList(ActivityListTable):
 
     def filter_by_server(self, allowed):
         for row in range(len(self)):
+            servers = self.item(row, 0).text().split("\n")
+            usernames = self.item(row, 1).text().split("\n")
             self.setRowHidden(
-                row, (self.item(row, 0).text(), self.item(row, 1).text()) not in allowed
+                row, not any((s, u) in allowed for s, u in zip(servers, usernames))
             )
 
 

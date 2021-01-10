@@ -167,7 +167,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             server = next(
                 s
                 for s in self.settings.servers
-                if s.name == self.social_activities.by_id(activity_id).server
+                if s.name in self.social_activities.by_id(activity_id).server.split("\n")
             )
             self.social_activity = activity.Activity(
                 **serialise.load_bytes(
@@ -480,7 +480,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                         server.get_data(f"delete_activity/{aid}")
                         continue
                     own_ids.remove(aid)
-                self.social_activities.append(activity_)
+                try:
+                    previous = self.social_activities.by_id(activity_.activity_id)
+                    previous.server += f"\n{activity_.server}"
+                    previous.username += f"\n{activity_.username}"
+                except KeyError:
+                    self.social_activities.append(activity_)
             if not own_ids:
                 continue
             progress = activate.app.dialogs.progress(

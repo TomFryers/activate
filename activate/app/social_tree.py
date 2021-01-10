@@ -17,7 +17,10 @@ class SocialTree(QtWidgets.QTreeWidget):
         self.clear()
         structure = {s.name: set() for s in self.servers}
         for activity in activities:
-            structure[activity.server].add(activity.username)
+            for server, username in zip(
+                activity.server.split("\n"), activity.username.split("\n")
+            ):
+                structure[server].add(username)
 
         for server, users in structure.items():
             item = QtWidgets.QTreeWidgetItem()
