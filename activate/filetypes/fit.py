@@ -7,10 +7,7 @@ from fitparse import FitFile
 from activate import files
 
 CONVERSION_FACTOR = 180 / 2 ** 31
-UNIVERSAL_FIELDS = {
-    "time": lambda p: p["timestamp"],
-    "dist": lambda p: p["distance"],
-}
+UNIVERSAL_FIELDS = {"time": lambda p: p["timestamp"], "dist": lambda p: p["distance"]}
 NORMAL_FIELDS = {
     **UNIVERSAL_FIELDS,
     **{

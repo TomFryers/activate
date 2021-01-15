@@ -28,8 +28,7 @@ class Server:
 
     def upload_activity(self, activity):
         self.post_data(
-            "send_activity",
-            {"activity": serialise.dump_bytes(activity.save_data)},
+            "send_activity", {"activity": serialise.dump_bytes(activity.save_data)}
         )
 
     @property

@@ -251,9 +251,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self.activities.remove(to_delete.activity_id)
             for server in self.settings.servers:
                 try:
-                    server.get_data(
-                        f"delete_activity/{to_delete.activity_id}",
-                    )
+                    server.get_data(f"delete_activity/{to_delete.activity_id}")
                 except connect.requests.RequestException:
                     continue
             return

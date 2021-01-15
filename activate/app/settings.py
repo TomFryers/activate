@@ -4,11 +4,7 @@ import dataclasses
 from activate import serialise, units
 from activate.app import connect, paths
 
-DEFAULTS = {
-    "unit_system": units.DEFAULT,
-    "servers": [],
-    "custom_units": {},
-}
+DEFAULTS = {"unit_system": units.DEFAULT, "servers": [], "custom_units": {}}
 
 
 def load_settings():

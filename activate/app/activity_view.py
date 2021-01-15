@@ -26,11 +26,7 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.photo_list = photos.PhotoList(self)
         self.overview_tab_layout.addWidget(self.photo_list)
 
-        for table in (
-            self.split_table,
-            self.info_table,
-            self.curve_table,
-        ):
+        for table in (self.split_table, self.info_table, self.curve_table):
             table.set_units(self.unit_system)
 
         self.split_table.cellEntered.connect(self.show_split)

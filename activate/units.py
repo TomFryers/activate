@@ -202,13 +202,9 @@ IMPERIAL = {
     None: UNITLESS,
 }
 
-
 DEFAULT = "Metric"
 
-UNIT_SYSTEMS = {
-    "Metric": UnitConfig(METRIC),
-    "Imperial": UnitConfig(IMPERIAL),
-}
+UNIT_SYSTEMS = {"Metric": UnitConfig(METRIC), "Imperial": UnitConfig(IMPERIAL)}
 
 UNIT_NAMES = {
     u.name: u
