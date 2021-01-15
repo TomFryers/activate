@@ -513,6 +513,7 @@ class Track:
                     break
             best = time_values[last_point] - self.start_time.timestamp()
             first_point = 0
+            point = (first_point, last_point)
             for last_point in range(last_point + 1, len(distance_values)):
                 while (
                     distance_values[last_point] - distance_values[first_point + 1]
