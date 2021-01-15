@@ -2,9 +2,26 @@
 import math
 from dataclasses import dataclass
 from datetime import timedelta
+from functools import wraps
 
 
-@dataclass
+class DimensionError(Exception):
+    pass
+
+
+def compatible_dimensions(function):
+    @wraps(function)
+    def wrapper(var1, var2, **kwargs):
+        if var1.dimension != var2.dimension:
+            raise DimensionError(
+                f"incompatible dimensions: {var1.dimension} and {var2.dimension}"
+            )
+        return function(var1, var2, **kwargs)
+
+    return wrapper
+
+
+@dataclass(frozen=True)
 class DimensionValue:
     """A value with a dimension attached."""
 
@@ -17,26 +34,40 @@ class DimensionValue:
     def encode(self, unit_system):
         return unit_system.encode(self.value, self.dimension)
 
-    def __hash__(self):
-        return hash((self.value, self.dimension))
-
+    @compatible_dimensions
     def __lt__(self, other):
-        return self.dimension == other.dimension and self.value < other.value
+        return self.value < other.value
 
+    @compatible_dimensions
     def __gt__(self, other):
-        return self.dimension == other.dimension and self.value > other.value
+        return self.value > other.value
 
+    @compatible_dimensions
     def __eq__(self, other):
-        return self.dimension == other.dimension and self.value == other.value
+        return self.value == other.value
 
+    @compatible_dimensions
     def __ne__(self, other):
-        return self.dimension == other.dimension and self.value != other.value
+        return self.value != other.value
 
+    @compatible_dimensions
     def __le__(self, other):
-        return self.dimension == other.dimension and self.value <= other.value
+        return self.value <= other.value
 
+    @compatible_dimensions
     def __ge__(self, other):
-        return self.dimension == other.dimension and self.value >= other.value
+        return self.value >= other.value
+
+    @compatible_dimensions
+    def __add__(self, other):
+        return DimensionValue(self.value + other.value, self.dimension)
+
+    @compatible_dimensions
+    def __sub__(self, other):
+        return DimensionValue(self.value - other.value, self.dimension)
+
+    def __neg__(self):
+        return DimensionValue(-self.value, self.dimension)
 
 
 @dataclass
