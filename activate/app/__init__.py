@@ -190,7 +190,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self,
             "Import an activity",
             str(paths.HOME),
-            "Activity Files (*.gpx *.fit *.tcx)",
+            "Activity Files (*.gpx *.fit *.tcx *.gpx.gz *.fit.gz *.tcx.gz)",
         )[0]
         if not filenames:
             return
