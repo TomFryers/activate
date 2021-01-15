@@ -3,6 +3,7 @@ import json
 import sqlite3
 from base64 import b64decode, b64encode
 from datetime import timedelta
+from functools import wraps
 from pathlib import Path
 from uuid import UUID
 
@@ -120,12 +121,12 @@ def verify_request():
 
 
 def requires_auth(function):
+    @wraps(function)
     def new_function(*args, **kwargs):
         if not verify_request():
             abort(403)
         return function(*args, **kwargs)
 
-    new_function.__name__ = function.__name__
     return new_function
 
 
