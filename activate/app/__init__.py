@@ -366,9 +366,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def social_tab_update(self):
         self.get_social_activities()
         self.social_tree.set_servers(self.settings.servers, self.social_activities)
+        self.social_activity_list.setUpdatesEnabled(False)
+        self.social_activity_list.setSortingEnabled(False)
         self.social_activity_list.setRowCount(0)
         self.social_activity_list.setRowCount(len(self.social_activities))
-        self.social_activity_list.setSortingEnabled(False)
         for row, activity_ in enumerate(self.social_activities):
             self.social_activity_list.set_id_row(
                 activity_.activity_id, activity_.list_row, row
@@ -378,9 +379,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.social_activity_list.default_sort()
 
     def filter_social_activities(self):
+        self.social_activity_list.setUpdatesEnabled(False)
         self.social_activity_list.filter_by_server(
             self.social_tree.get_enabled_servers()
         )
+        self.social_activity_list.setUpdatesEnabled(True)
 
     @property
     def unit_system(self):
