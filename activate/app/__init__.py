@@ -326,7 +326,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         activity. Also uploads missing activities.
         """
         self.social_activities = activity_list.ActivityList([], None)
-        for server in self.settings.servers:
+        for server in activate.app.dialogs.progress(
+            self, self.settings.servers, f"Downloading activities"
+        ):
             try:
                 server_activities = activity_list.from_serial(
                     serialise.load_bytes(server.get_data("get_activities")), None
