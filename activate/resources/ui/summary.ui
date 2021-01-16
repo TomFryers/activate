@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>summary</class>
+ <widget class="QWidget" name="summary">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>632</width>
+    <height>254</height>
+   </rect>
+  </property>
+  <layout class="QHBoxLayout" name="summary_layout">
+   <item>
+    <layout class="QVBoxLayout" name="summary_options_layout">
+     <item>
+      <widget class="CheckList" name="activity_types_list">
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="summary_period_layout">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Period</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="summary_period_box">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>All Time</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Year</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Month</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Week</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="summary_tabs">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="totals_tab">
+      <attribute name="title">
+       <string>Totals</string>
+      </attribute>
+      <layout class="QFormLayout" name="totals_tab_layout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="distance_stat_label">
+         <property name="font">
+          <font>
+           <pointsize>20</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Distance</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="total_distance_label">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="time_stats_label">
+         <property name="font">
+          <font>
+           <pointsize>20</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Time</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="total_time_label">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="activities_stat_label">
+         <property name="font">
+          <font>
+           <pointsize>20</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Activities</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="total_activities_label">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="climb_stats_label">
+         <property name="font">
+          <font>
+           <pointsize>20</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Climb</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="total_climb_label">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="records_tab">
+      <attribute name="title">
+       <string>Records</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="RecordsTable" name="records_table">
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="progression_tab">
+      <attribute name="title">
+       <string>Progression</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="FullProgressionChart" name="progression_chart" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gallery_tab">
+      <attribute name="title">
+       <string>Gallery</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QScrollArea" name="gallery_scroll_area">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="Gallery" name="gallery">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>96</width>
+            <height>26</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="heatmap_tab">
+      <attribute name="title">
+       <string>Heatmap</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="heatmap_layout"/>
+     </widget>
+     <widget class="QWidget" name="eddington_tab">
+      <attribute name="title">
+       <string>Eddington</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="eddington_tab_layout">
+       <item>
+        <layout class="QFormLayout" name="eddington_number_form">
+         <item row="0" column="0">
+          <widget class="QLabel" name="eddington_stats_label">
+           <property name="font">
+            <font>
+             <pointsize>20</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Eddington Number</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="total_eddington_label">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QtCharts::QChartView" name="eddington_chart_widget"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtCharts::QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">QtCharts/QChartView&gt;
+#include &lt;QtCharts/chartsnamespace.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CheckList</class>
+   <extends>QListWidget</extends>
+   <header>activate/app/checklist.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RecordsTable</class>
+   <extends>QTableWidget</extends>
+   <header>activate/app/tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gallery</class>
+   <extends>QWidget</extends>
+   <header>activate/app/photos.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FullProgressionChart</class>
+   <extends>QWidget</extends>
+   <header>activate/app/charts.h</header>
+   <container>1</container>
+   <slots>
+    <signal>y_changed()</signal>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>progression_chart</sender>
+   <signal>y_changed()</signal>
+   <receiver>summary</receiver>
+   <slot>summary_tab_switch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>953</x>
+     <y>390</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>activity_types_list</sender>
+   <signal>itemChanged(QListWidgetItem*)</signal>
+   <receiver>summary</receiver>
+   <slot>summary_tab_switch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>745</x>
+     <y>376</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>activity_types_list</sender>
+   <signal>itemDoubleClicked(QListWidgetItem*)</signal>
+   <receiver>summary</receiver>
+   <slot>summary_tab_switch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>745</x>
+     <y>376</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>summary_tabs</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>summary</receiver>
+   <slot>summary_tab_switch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>summary_period_box</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>summary</receiver>
+   <slot>summary_period_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>handle_summary_check(QListWidgetItem*)</slot>
+  <slot>handle_summary_double_click(QListWidgetItem*)</slot>
+  <slot>summary_tab_switch()</slot>
+  <slot>summary_period_changed(QString)</slot>
+  <slot>change_progression_y(QString)</slot>
+ </slots>
+</ui>
