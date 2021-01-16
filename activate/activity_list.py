@@ -259,10 +259,12 @@ class ActivityList(list):
         )
 
     def get_all_routes(self, activity_types, time_period, now):
-        return [
-            self.get_activity(a.activity_id).track.lat_lon_list
-            for a in self.filtered(activity_types, time_period, now)
-        ]
+        result = []
+        for activity_ in self.filtered(activity_types, time_period, now):
+            track = self.get_activity(activity_.activity_id).track
+            if track.has_position_data:
+                result.append(track.lat_lon_list)
+        return result
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {super().__repr__()} _activities={self._activities!r}>"
