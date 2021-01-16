@@ -109,11 +109,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         activity_id = new_activity.activity_id
         activity_elements = new_activity.unload(activity_list.UnloadedActivity).list_row
         self.activities.add_activity(new_activity)
-        for server in self.settings.servers:
-            try:
-                server.upload_activity(new_activity)
-            except connect.requests.RequestException:
-                continue
         self.activity_list_table.add_id_row(activity_id, activity_elements, position)
 
     def update_activity(self, selected):
