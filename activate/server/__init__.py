@@ -26,7 +26,9 @@ ACTIVITIES_DATABASE_PATH = DATA_DIR / "activities.sqlite"
 sqlite3.register_converter("DICT", serialise.loads)
 sqlite3.register_adapter(dict, serialise.dumps)
 
-sqlite3.register_converter("TIMEDELTA", lambda d: timedelta(seconds=int(d)))
+sqlite3.register_converter(
+    "TIMEDELTA", lambda d: timedelta(seconds=float(d) if b"." in d else int(d))
+)
 sqlite3.register_adapter(timedelta, lambda d: d.total_seconds())
 
 sqlite3.register_converter("UUID", lambda u: UUID(u.decode("utf-8")))
