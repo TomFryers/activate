@@ -42,8 +42,10 @@ def load(filename) -> dict:
     Uses the appropriate track loader from the filetypes module.
     """
     filetype = (
-        filename.with_suffix("").suffix if filename.suffix == ".gz" else filename.suffix
-    )
+        filename.with_suffix("").suffix
+        if filename.suffix.casefold() == ".gz"
+        else filename.suffix
+    ).casefold()
     if filetype == ".gpx":
         data = filetypes.gpx.load_gpx(filename)
     elif filetype == ".fit":
