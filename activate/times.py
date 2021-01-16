@@ -66,9 +66,8 @@ def nice(time: datetime):
 
 def round_time(time: datetime) -> datetime:
     """Round a time to the nearest second."""
-    return time.replace(
-        microsecond=0, second=round(time.second + time.microsecond / 1000000)
-    )
+    new = time - timedelta(microseconds=time.microsecond)
+    return new + timedelta(seconds=1) if time.microsecond >= 500000 else new
 
 
 def to_number(value):
