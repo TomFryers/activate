@@ -44,7 +44,6 @@ def load(filename) -> dict:
     filetype = (
         filename.with_suffix("").suffix if filename.suffix == ".gz" else filename.suffix
     )
-    print(filetype)
     if filetype == ".gpx":
         data = filetypes.gpx.load_gpx(filename)
     elif filetype == ".fit":
