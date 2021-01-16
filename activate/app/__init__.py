@@ -413,4 +413,4 @@ def main():
     main_window = MainWindow(activity_list.from_disk(paths.DATA))
 
     main_window.showMaximized()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
