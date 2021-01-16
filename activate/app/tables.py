@@ -268,7 +268,7 @@ class SocialActivityList(ActivityListTable):
             servers = self.item(row, 0).text().split("\n")
             usernames = self.item(row, 1).text().split("\n")
             self.setRowHidden(
-                row, not any((s, u) in allowed for s, u in zip(servers, usernames))
+                row, not any(x in allowed for x in zip(servers, usernames))
             )
 
 
