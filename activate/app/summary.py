@@ -11,6 +11,8 @@ NOW = datetime.now()
 
 
 class Summary(QtWidgets.QWidget, Ui_summary):
+    """A widget summarising all of a person's activities."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)

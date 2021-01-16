@@ -9,7 +9,7 @@ def has_extension(filename: Path, extension: str) -> bool:
     return filename.suffix.casefold() == "." + extension
 
 
-def encode_name(filename: str, current_filenames, directory: Path):
+def encode_name(filename: str, current_filenames, directory: Path) -> Path:
     """
     Rename a file to avoid name collisions.
 
@@ -33,7 +33,7 @@ def encode_name(filename: str, current_filenames, directory: Path):
             return full_name
 
 
-def decode_name(filename: str):
+def decode_name(filename: str) -> str:
     """Get a file's original name from its encoded one."""
     if filename[0] != "_":
         return filename
@@ -41,7 +41,7 @@ def decode_name(filename: str):
     return filename
 
 
-def copy_to_location_renamed(filename: Path, copy_to: Path):
+def copy_to_location_renamed(filename: Path, copy_to: Path) -> str:
     """
     Copy a file to a location, renaming it if necessary.
 

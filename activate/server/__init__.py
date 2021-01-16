@@ -36,6 +36,7 @@ sqlite3.register_adapter(UUID, str)
 
 
 def add_row(database, table: str, values: dict):
+    """Add a row to an SQLite database."""
     database.execute(
         f"INSERT INTO {table} ({', '.join(values)}) VALUES ({', '.join(':' + v for v in values)})",
         values,
@@ -43,6 +44,7 @@ def add_row(database, table: str, values: dict):
 
 
 def get_row(database, table: str, values: dict):
+    """Find a row in an SQLite database."""
     return database.execute(
         f"SELECT * FROM {table} WHERE {' AND '.join(f'{v} = :{v}' for v in values)}",
         values,
@@ -50,12 +52,14 @@ def get_row(database, table: str, values: dict):
 
 
 def delete_by_id(activities, activity_id):
+    """Delete a row with a given activity_id."""
     activities.execute(
         "DELETE FROM activities WHERE activity_id = ?", [str(activity_id)]
     )
 
 
 def reset_activities():
+    """Generate a blank activities database."""
     db = load_database()
     db.executescript(
         pkg_resources.resource_string("activate.resources", "init.sql").decode("utf-8")

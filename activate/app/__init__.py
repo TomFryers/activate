@@ -276,6 +276,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_list_table.select(activity_id)
 
     def analyse_activity(self):
+        """Open a seperate window for activity analysis."""
         self.activity_view = activity_view.ActivityView()
         self.activity_view.setup(self.unit_system, self.map_widget)
         try:
