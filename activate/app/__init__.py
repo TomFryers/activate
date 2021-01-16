@@ -169,7 +169,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self, filenames, "Importing Activities"
         ):
             filename = Path(filename)
-            self.add_activity(load_activity.import_and_load(filename, paths.TRACKS))
+            try:
+                self.add_activity(load_activity.import_and_load(filename, paths.TRACKS))
+            except Exception as e:
+                alert_box = QtWidgets.QMessageBox()
+                alert_box.setText(f"Could not load {filename}:\n{e}")
+                alert_box.exec()
+
         self.activity_list_table.setCurrentCell(0, 0)
         self.activity_list_table.setSortingEnabled(True)
         self.main_tab_switch(self.main_tabs.currentIndex())
