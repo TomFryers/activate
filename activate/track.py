@@ -348,6 +348,8 @@ class Track:
             if distance is None:
                 continue
             time_difference = time - last_time
+            if not time_difference:
+                continue
             distance_difference = distance - last_distance
             if distance_difference < 1:
                 continue
