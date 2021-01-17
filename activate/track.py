@@ -133,9 +133,11 @@ class Track:
         if "time" in self.fields:
             infer_nones(self["time"])
 
-        if not self.has_altitude_data:
-            self["ele"] = [0 for _ in range(len(self))]
-        self["ele"] = infer_nones(self["ele"])
+        self["ele"] = (
+            infer_nones(self["ele"])
+            if self.has_altitude_data
+            else [0 for _ in range(len(self))]
+        )
 
     def __getitem__(self, field):
         try:

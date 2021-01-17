@@ -10,6 +10,11 @@ def from_track(name, sport, track, filename):
     return Activity(name, sport, track, filename)
 
 
+def none_default(value, default):
+    """Return default if value is None else value."""
+    return default if value is None else value
+
+
 class Activity:
     def __init__(
         self,
@@ -35,26 +40,12 @@ class Activity:
         self.original_name = original_name
         self.server = server
         self.username = username
-        if flags is None:
-            self.flags = {}
-        else:
-            self.flags = flags
-
-        if start_time is None:
-            start_time = self.track.start_time
-        self.start_time = start_time
-        if distance is None:
-            distance = self.track.length
-        self.distance = distance
-        if activity_id is None:
-            self.activity_id = uuid4()
-        else:
-            self.activity_id = activity_id
+        self.flags = none_default(flags, {})
+        self.start_time = none_default(start_time, self.track.start_time)
+        self.distance = none_default(distance, self.track.length)
+        self.activity_id = none_default(activity_id, uuid4())
         self.description = description
-        if photos is None:
-            self.photos = []
-        else:
-            self.photos = photos
+        self.photos = none_default(photos, [])
 
     @property
     def stats(self):

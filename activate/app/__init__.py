@@ -26,8 +26,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activities = activities
         super().__init__(*args, **kwargs)
         self.setupUi(self)
-        self.settings = settings.load_settings()
+        paths.ensure_all_present()
 
+        self.settings = settings.load_settings()
         self.main_tabs.setTabVisible(2, bool(self.settings.servers))
 
         # Create a global map widget to be used everywhere. This is
@@ -38,17 +39,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_summary.setup(self.unit_system, self.map_widget)
         self.social_activity_summary.setup(self.unit_system, self.map_widget)
         self.summary.setup(self.unit_system, self.map_widget, self.activities)
-
-        paths.ensure_all_present()
-
         self.activity_list_table.set_units(self.unit_system)
         self.social_activity_list.set_units(self.unit_system)
+        self.activity_list_table.set_units(self.unit_system)
 
         self.update_activity_list()
         self.activity_list_table.right_clicked.connect(self.activity_list_menu)
-
         self.summary.records_table.gone_to.connect(self.show_activity)
-        self.activity_list_table.set_units(self.unit_system)
 
         for widget, icon_name in (
             (self.action_import, "document-open"),

@@ -20,19 +20,17 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
     def setup(self, unit_system, map_widget):
         self.unit_system = unit_system
         self.updated = set()
-
         self.map_widget = map_widget
-
         self.photo_list = photos.PhotoList(self)
         self.overview_tab_layout.addWidget(self.photo_list)
 
         for table in (self.split_table, self.info_table, self.curve_table):
             table.set_units(self.unit_system)
-
         self.split_table.cellEntered.connect(self.show_split)
         self.split_table.setMouseTracking(True)
         self.curve_table.cellEntered.connect(self.show_fastest)
         self.curve_table.setMouseTracking(True)
+
         # Set up charts
         self.charts = charts.LineChartSet(self.unit_system, self.graphs_layout)
         self.charts.add("ele", area=True)
@@ -42,9 +40,7 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.charts.add("power")
         for chart in self.charts.charts.values():
             chart.widget.mouse_moved.connect(self.show_marker)
-
         self.zones_chart = charts.Histogram([0], self.zones_graph, self.unit_system)
-
         self.curve_chart = charts.LineChart(
             self.curve_graph,
             self.unit_system,

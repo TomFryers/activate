@@ -16,13 +16,10 @@ class ActivitySummary(QtWidgets.QWidget, Ui_activity_summary):
 
     def setup(self, unit_system, map_widget):
         self.unit_system = unit_system
-        self.updated = set()
-
         self.map_widget = map_widget
-
+        self.updated = set()
         self.photo_list = photos.PhotoList(self)
         self.activity_summary_layout.addWidget(self.photo_list, 1, 1)
-
         self.info_table.set_units(self.unit_system)
 
     def update(self):
