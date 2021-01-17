@@ -200,6 +200,8 @@ class Track:
         self.fields["climb"] = [None]
         self.fields["desc"] = [None]
         for height_change in self["height_change"][1:]:
+            # Not using max in order to have integers instead of floats,
+            # since max(0, 0.0) (0.0 is common in tracks) is 0.0.
             self.fields["climb"].append(0 if height_change <= 0 else height_change)
             self.fields["desc"].append(0 if height_change >= 0 else -height_change)
 
@@ -261,10 +263,9 @@ class Track:
         """Calculate the gradient at each point."""
         self.fields["gradient"] = [None]
         for dist, height_change in zip(self["dist_to_last"], self["height_change"])[1:]:
-            if dist is not None and dist > 0:
-                self.fields["gradient"].append(height_change / dist)
-            else:
-                self.fields["gradient"].append(None)
+            self.fields["gradient"].append(
+                None if dist in {None, 0} else height_change / dist
+            )
 
     def calculate_angle(self):
         """Calculate the angle of inclination at each point."""
@@ -322,13 +323,13 @@ class Track:
     @lru_cache(128)
     def ascent(self):
         if self.has_altitude_data:
-            return sum(x for x in self["climb"] if x is not None)
+            return sum(self.without_nones("climb"))
 
     @property
     @lru_cache(128)
     def descent(self):
         if self.has_altitude_data:
-            return sum(x for x in self["desc"] if x is not None)
+            return sum(self.without_nones("desc"))
 
     @property
     def start_time(self):
