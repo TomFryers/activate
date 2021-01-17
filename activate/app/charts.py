@@ -78,8 +78,8 @@ class MinMax:
 
     def __repr__(self):
         if self.minimum is None:
-            return f"{self.__class__.__name__}()"
-        return f"{self.__class__.__name__}(({self.minimum!r}, {self.maximum!r}))"
+            return f"{self.__class__.__qualname__}()"
+        return f"{self.__class__.__qualname__}(({self.minimum!r}, {self.maximum!r}))"
 
 
 def data_to_points(data):

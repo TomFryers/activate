@@ -19,7 +19,7 @@ class CheckList(QtWidgets.QListWidget):
             return [x for x in self][index]
         result = self.item(index)
         if result is None:
-            raise IndexError(f"{self.__class__.__name__} index out of range")
+            raise IndexError(f"{self.__class__.__qualname__} index out of range")
         return result
 
     @property

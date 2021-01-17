@@ -143,7 +143,7 @@ class PaceUnit(Unit):
         return timedelta(seconds=super().encode(value))
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.distance!r})"
+        return f"{self.__class__.__qualname__}({self.distance!r})"
 
 
 class DateUnit(Unit):

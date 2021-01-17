@@ -105,7 +105,7 @@ class ManualTrack:
     def average(self, field):
         if field == "speed":
             return self.length / self.elapsed_time.total_seconds()
-        raise AttributeError(f"{self.__class__.__name__} has no average {field}")
+        raise AttributeError(f"{self.__class__.__qualname__} has no average {field}")
 
     def __contains__(self, _):
         return False
