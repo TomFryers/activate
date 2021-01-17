@@ -240,7 +240,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.update_activity(row)
         self.activity_list_table.setSortingEnabled(True)
         if self.activity.sport != previous_sport:
-            self.update_activity_types_list()
+            self.summary.update_activity_types_list()
 
         for server in self.settings.servers:
             try:
