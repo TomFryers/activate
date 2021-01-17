@@ -1,5 +1,5 @@
 import gzip
-import pathlib
+from pathlib import Path
 from xml.etree import ElementTree
 
 from activate import files
@@ -27,7 +27,7 @@ def get_tree(filename):
 
 def default_name(filename):
     """Generate a default activity name from a file name."""
-    return files.decode_name(pathlib.Path(filename).stem)
+    return files.decode_name(Path(filename).stem)
 
 
 def load_fields(points, fields):
