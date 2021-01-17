@@ -50,15 +50,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.summary.records_table.gone_to.connect(self.show_activity)
         self.activity_list_table.set_units(self.unit_system)
 
-        self.action_import.setIcon(QIcon.fromTheme("document-open"))
-        self.action_add_manual.setIcon(QIcon.fromTheme("document-new"))
-        self.action_edit.setIcon(QIcon.fromTheme("document-edit"))
-        self.action_analyse.setIcon(QIcon.fromTheme("view-statistics"))
-        self.action_add_photos.setIcon(QIcon.fromTheme("insert-image"))
-        self.action_units.setIcon(QIcon.fromTheme("measure"))
-        self.action_servers.setIcon(QIcon.fromTheme("network-server"))
-        self.export_menu.setIcon(QIcon.fromTheme("document-send"))
-        self.action_quit.setIcon(QIcon.fromTheme("application-exit"))
+        for widget, icon_name in (
+            (self.action_import, "document-open"),
+            (self.action_add_manual, "document-new"),
+            (self.action_edit, "document-edit"),
+            (self.action_analyse, "view-statistics"),
+            (self.action_add_photos, "insert-image"),
+            (self.action_units, "measure"),
+            (self.action_servers, "network-server"),
+            (self.export_menu, "document-send"),
+            (self.action_quit, "application-exit"),
+        ):
+            widget.setIcon(QIcon.fromTheme(icon_name))
 
         self.main_tab_switch(0)
 
