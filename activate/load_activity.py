@@ -4,26 +4,31 @@ from collections import defaultdict
 
 from activate import activity, files, filetypes, track
 
-ACTIVITY_TYPE_NAMES = defaultdict(
-    lambda: "Other",
-    {
-        "running": "Run",
-        "cycling": "Ride",
-        "run": "Run",
-        "ride": "Ride",
-        "hiking": "Walk",
-        "alpine_skiing": "Ski",
-        "swimming": "Swim",
-        "rowing": "Row",
-        "9": "Run",
-        "1": "Ride",
-        "16": "Swim",
-    },
-)
+ACTIVITY_TYPE_NAMES = {
+    "running": "Run",
+    "cycling": "Ride",
+    "run": "Run",
+    "ride": "Ride",
+    "hiking": "Walk",
+    "walk": "Walk",
+    "walking": "Walk",
+    "alpine_skiing": "Ski",
+    "ski": "Ski",
+    "swimming": "Swim",
+    "swim": "Swim",
+    "rowing": "Row",
+    "row": "Row",
+    "9": "Run",
+    "1": "Ride",
+    "16": "Swim",
+}
 
 
 def convert_activity_type(activity_type: str, name) -> str:
     """Get the correct activity type from a raw one or by inference."""
+    activity_type = activity_type.casefold()
+    if activity_type in ACTIVITY_TYPE_NAMES:
+        return ACTIVITY_TYPE_NAMES[activity_type]
     if activity_type in {"unknown", "generic"}:
         # Infer activity type from name
         for activity_type_name in ACTIVITY_TYPE_NAMES:
@@ -31,8 +36,7 @@ def convert_activity_type(activity_type: str, name) -> str:
                 continue
             if activity_type_name in name.casefold():
                 return ACTIVITY_TYPE_NAMES[activity_type_name]
-        return ""
-    return ACTIVITY_TYPE_NAMES[activity_type.casefold()]
+    return "Other"
 
 
 def load(filename) -> dict:
