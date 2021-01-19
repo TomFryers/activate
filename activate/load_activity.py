@@ -5,21 +5,23 @@ from collections import defaultdict
 from activate import activity, files, filetypes, track
 
 ACTIVITY_TYPE_NAMES = {
-    "running": "Run",
-    "cycling": "Ride",
     "run": "Run",
+    "running": "Run",
     "ride": "Ride",
-    "hiking": "Walk",
+    "cycling": "Ride",
+    "biking": "Ride",
     "walk": "Walk",
     "walking": "Walk",
-    "alpine_skiing": "Ski",
+    "hiking": "Walk",
     "ski": "Ski",
-    "swimming": "Swim",
+    "alpine_skiing": "Ski",
     "swim": "Swim",
-    "rowing": "Row",
+    "swimming": "Swim",
     "row": "Row",
-    "9": "Run",
+    "rowing": "Row",
     "1": "Ride",
+    "9": "Run",
+    "10": "Walk",
     "16": "Swim",
 }
 
