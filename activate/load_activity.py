@@ -1,6 +1,5 @@
 """Functions for loading activities from files."""
-
-from collections import defaultdict
+from pathlib import Path
 
 from activate import activity, files, filetypes, track
 
@@ -41,7 +40,12 @@ def convert_activity_type(activity_type: str, name) -> str:
     return "Other"
 
 
-def load(filename) -> dict:
+def default_name(filename: Path):
+    """Generate a default activity name from a file name."""
+    return files.decode_name(filename.stem.split(".")[0])
+
+
+def load(filename: Path) -> dict:
     """
     Get {"name": name, "sport": sport, "track": Track} by loading a file.
 
@@ -62,7 +66,7 @@ def load(filename) -> dict:
         raise ValueError("Invalid filetype")
 
     return {
-        "name": data[0],
+        "name": data[0] if data[0] is not None else default_name(filename),
         "sport": convert_activity_type(data[1], data[0]),
         "track": track.Track(data[2]),
     }

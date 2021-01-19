@@ -28,7 +28,7 @@ def load_gpx(filename) -> tuple:
     try:
         name = tree.find("./trk/name").text
     except AttributeError:
-        name = load_xml.default_name(filename)
+        name = None
 
     # Find the sport
     try:

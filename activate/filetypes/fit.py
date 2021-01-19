@@ -59,4 +59,4 @@ def parse_fit(filename, fit, available_fields):
                     value = None
                 fields[field].append(value)
     fields = {field: fields[field] for field in fields if set(fields[field]) != {None}}
-    return (files.decode_name(Path(filename).stem), sport, fields)
+    return (None, sport, fields)

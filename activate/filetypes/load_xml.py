@@ -1,8 +1,5 @@
 import gzip
-from pathlib import Path
 from xml.etree import ElementTree
-
-from activate import files
 
 
 def try_multi(point, locations):
@@ -23,11 +20,6 @@ def get_tree(filename):
     for element in tree.iter():
         _, _, element.tag = element.tag.rpartition("}")
     return tree.getroot()
-
-
-def default_name(filename):
-    """Generate a default activity name from a file name."""
-    return files.decode_name(Path(filename).stem)
 
 
 def load_fields(points, fields):

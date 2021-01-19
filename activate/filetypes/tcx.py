@@ -18,15 +18,12 @@ FIELDS = {
 def load_tcx(filename):
     """Extract the fields from a TCX file."""
     tree = load_xml.get_tree(filename)
-    # Find the activity name
-    name = load_xml.default_name(filename)
-
     # Find the sport
     try:
         sport = tree.find("./Activities/Activity").get("Sport")
-        print(f"{sport=} {name=}")
+        print(f"{sport=} {filename=}")
     except AttributeError:
         sport = "unknown"
 
     points = tree.findall("./Activities/Activity/Lap/Track/Trackpoint")
-    return (name, sport, load_xml.load_fields(points, FIELDS))
+    return (None, sport, load_xml.load_fields(points, FIELDS))
