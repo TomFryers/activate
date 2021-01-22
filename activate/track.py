@@ -89,6 +89,10 @@ def distance(point1, point2):
     return math.sqrt(sum((c1 - c2) ** 2 for c1, c2 in zip(point1, point2)))
 
 
+def enumerate_from(list_, point):
+    return enumerate(list_[point:], point)
+
+
 @dataclass
 class ManualTrack:
     """A manual track with a few basic values."""
@@ -503,27 +507,31 @@ class Track:
     def get_curve(self, table_distances):
         """Get the curve and curve table for an activity."""
         table_distances = [x for x in table_distances if x <= self.length]
-        distance_values = []
-        time_values = []
-        for dist, time in zip(self["dist"], self["time"]):
-            if dist is not None:
-                distance_values.append(dist)
-                time_values.append(time.timestamp())
+        time_values = [t.timestamp() for t in self["time"]]
 
         bests = []
         point_indices = []
         for distance in table_distances:
-            for last_point in range(len(distance_values)):
-                if distance_values[last_point] - distance_values[0] > distance:
+            for last_point, last_dist in enumerate(self["dist"]):
+                if last_dist is not None and last_dist > distance:
                     break
             best = time_values[last_point] - self.start_time.timestamp()
             first_point = 0
             point = (first_point, last_point)
-            for last_point in range(last_point + 1, len(distance_values)):
-                while (
-                    distance_values[last_point] - distance_values[first_point + 1]
-                ) >= distance:
-                    first_point += 1
+            for last_point, last_dist in enumerate_from(self["dist"], last_point + 1):
+                if last_dist is None:
+                    continue
+                last_good_first_point = first_point
+                for first_point, first_dist in enumerate_from(
+                    self["dist"], first_point
+                ):
+                    if first_dist is None:
+                        continue
+                    if last_dist - first_dist >= distance:
+                        last_good_first_point = first_point
+                    else:
+                        break
+                first_point = last_good_first_point
                 time_taken = time_values[last_point] - time_values[first_point]
                 if time_taken < best:
                     best = time_taken
