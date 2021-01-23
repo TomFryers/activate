@@ -236,10 +236,12 @@ class ActivityList(list):
 
         return (periods[::-1], result[::-1])
 
-    def get_records(self, activity_types, time_period, now, distances):
+    def get_records(
+        self, activity_types, time_period, now, distances, progress=lambda x: x
+    ):
         records = {}
         activity_ids = {}
-        for activity_ in self.filtered(activity_types, time_period, now, 0):
+        for activity_ in progress(self.filtered(activity_types, time_period, now, 0)):
             for record in self.get_activity(activity_.activity_id).track.get_curve(
                 distances
             )[0]:
@@ -258,9 +260,9 @@ class ActivityList(list):
             for p in self.get_activity(a.activity_id).photos
         )
 
-    def get_all_routes(self, activity_types, time_period, now):
+    def get_all_routes(self, activity_types, time_period, now, progress=lambda x: x):
         result = []
-        for activity_ in self.filtered(activity_types, time_period, now):
+        for activity_ in progress(self.filtered(activity_types, time_period, now)):
             track = self.get_activity(activity_.activity_id).track
             if track.has_position_data:
                 result.append(track.lat_lon_list)

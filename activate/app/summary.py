@@ -5,6 +5,7 @@ from PyQt5 import QtWidgets
 
 from activate import activity_types, number_formats
 from activate.app import charts
+from activate.app.dialogs import progress
 from activate.app.ui.summary import Ui_summary
 
 NOW = datetime.now()
@@ -108,7 +109,11 @@ class Summary(QtWidgets.QWidget, Ui_summary):
             )
         good_distances = {k: good_distances[k] for k in sorted(good_distances)}
         records, activity_ids = self.activities.get_records(
-            self.get_allowed_for_summary(), self.summary_period, NOW, good_distances
+            self.get_allowed_for_summary(),
+            self.summary_period,
+            NOW,
+            good_distances,
+            lambda x: progress(self, list(x), "Loading"),
         )
 
         self.records_table.update_data(
@@ -126,7 +131,10 @@ class Summary(QtWidgets.QWidget, Ui_summary):
         self.heatmap_layout.addWidget(self.map_widget)
         self.map_widget.show_heatmap(
             self.activities.get_all_routes(
-                self.get_allowed_for_summary(), self.summary_period, NOW
+                self.get_allowed_for_summary(),
+                self.summary_period,
+                NOW,
+                lambda x: progress(self, list(x), "Loading"),
             )
         )
 
