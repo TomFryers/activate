@@ -539,7 +539,10 @@ class Track:
             bests.append(best)
             point_indices.append(point)
 
-        speeds = [distance / time for distance, time in zip(table_distances, bests)]
+        speeds = [
+            distance / time if time else 0
+            for distance, time in zip(table_distances, bests)
+        ]
         bests_table = [
             (
                 DimensionValue(distance, "distance"),
