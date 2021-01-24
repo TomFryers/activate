@@ -3,4 +3,4 @@ activate/app/ui/*.py
 !activate/app/ui/__init__.py
 build/
 dist/
-Activate.egg-info
+*.egg-info
