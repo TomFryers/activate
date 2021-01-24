@@ -18,7 +18,11 @@ setuptools.setup(
     package_data={"activate.resources": ["/".join("*" * i) for i in range(9)]},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
-        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+        (
+            "License"
+            " :: OSI Approved"
+            " :: GNU Affero General Public License v3 or later (AGPLv3+)"
+        ),
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",

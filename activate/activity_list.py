@@ -269,4 +269,8 @@ class ActivityList(list):
         return result
 
     def __repr__(self):
-        return f"<{self.__class__.__qualname__} {super().__repr__()} _activities={self._activities!r}>"
+        return (
+            f"<{self.__class__.__qualname__}"
+            f" {super().__repr__()}"
+            f" _activities={self._activities!r}>"
+        )
