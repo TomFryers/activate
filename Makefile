@@ -6,7 +6,7 @@ PYFILES = $(patsubst activate/resources/ui/%.ui, activate/app/ui/%.py, $(UIFILES
 all: build
 
 build: ui
-	python3 setup.py build
+	python3 setup.py sdist bdist_wheel
 
 install:
 	pip install .

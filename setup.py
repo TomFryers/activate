@@ -5,7 +5,8 @@ with open("README.md") as f:
     long_description = f.read()
 
 setuptools.setup(
-    name="Activate",
+    name="Activate-App",
+    version="0.0.1",
     author="Tom Fryers",
     description="Activate is a free activity log and analysis tool.",
     long_description=long_description,
