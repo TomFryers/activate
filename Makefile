@@ -1,7 +1,7 @@
 UIFILES := $(wildcard activate/resources/ui/*.ui)
 PYFILES = $(patsubst activate/resources/ui/%.ui, activate/app/ui/%.py, $(UIFILES))
 
-.PHONY: all build install ui
+.PHONY: all build install clean ui
 
 all: build
 
@@ -10,6 +10,10 @@ build: ui
 
 install:
 	pip install .
+
+clean:
+	python3 setup.py clean
+	rm -r dist/ *.egg-info
 
 ui: $(PYFILES)
 
