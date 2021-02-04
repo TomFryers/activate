@@ -341,13 +341,13 @@ class Track:
 
     @property
     @lru_cache(128)
-    def elapsed_time(self):
+    def elapsed_time(self) -> timedelta:
         end_time = self["time"][-1]
         return end_time - self.start_time
 
     @property
     @lru_cache(128)
-    def moving_time(self):
+    def moving_time(self) -> timedelta:
         total_time = timedelta(0)
         last_distance = 0
         last_time = self.start_time

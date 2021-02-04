@@ -4,9 +4,9 @@ from collections import namedtuple
 from datetime import datetime, timedelta
 from itertools import zip_longest
 
-import PyQt5
 from PyQt5 import QtChart, QtWidgets
 from PyQt5.QtCore import QPointF, Qt, pyqtSignal
+from PyQt5.QtGui import QPainter
 
 from activate import number_formats, times, units
 
@@ -84,7 +84,7 @@ class MinMax:
 
 def data_to_points(data):
     """Convert a [series1, series2] of data to a list of QPointF."""
-    return [PyQt5.QtCore.QPointF(*p) for p in zip(*data)]
+    return [QPointF(*p) for p in zip(*data)]
 
 
 series_gc_prevent = []
@@ -138,7 +138,7 @@ class Chart(QtChart.QChart):
         self.y_axis_label = y_axis_label
         super().__init__()
         self.setAnimationOptions(self.SeriesAnimations)
-        self.widget.setRenderHint(PyQt5.QtGui.QPainter.Antialiasing, True)
+        self.widget.setRenderHint(QPainter.Antialiasing, True)
         self.legend().hide()
 
         x_axis = create_axis(horizontal_log)

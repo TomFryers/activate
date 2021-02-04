@@ -1,6 +1,5 @@
 import pyqtlet
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPalette
 from pyqtlet import L
 
 

@@ -1,8 +1,9 @@
 import gzip
+from typing import Optional
 from xml.etree import ElementTree
 
 
-def try_multi(point, locations):
+def try_multi(point, locations) -> Optional[str]:
     """Try to search for a value in several positions."""
     for location in locations:
         try:
