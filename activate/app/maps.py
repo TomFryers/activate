@@ -1,5 +1,6 @@
 import pyqtlet
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPalette
 from pyqtlet import L
 
 
@@ -56,7 +57,7 @@ class MapWidget(Map):
         self.start_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#10b020"})
         self.finish_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#e00000"})
         self.marker = CircleMarker(DEFAULT_POS, {"radius": 5, "color": ACTIVATE_COLOUR})
-        self.highlight_section = self.add_route_line("#ffffff")
+        self.highlight_section = self.add_route_line(self.highlight_colour)
         self.mode = None
 
     def show_route(self, route: list):
@@ -76,14 +77,14 @@ class MapWidget(Map):
         """Display lists of points on the map as a heatmap."""
         if not routes:
             return
-        opacity = hex(min(round(1000 / (len(routes) ** 0.5)), 255))[2:]
+        colour = ACTIVATE_COLOUR + hex(min(round(1000 / (len(routes) ** 0.5)), 255))[2:]
         self.map.fitBounds(get_bounds(*routes))
         self.start_icon.removeFrom(self.map)
         self.finish_icon.removeFrom(self.map)
         self.clear_route_lines()
         self.route_lines = []
         for route in routes:
-            self.route_lines.append(self.add_route_line(f"{ACTIVATE_COLOUR}{opacity}"))
+            self.route_lines.append(self.add_route_line(colour))
             self.route_lines[-1].setLatLngs(route)
         self.mode = "heatmap"
 
@@ -113,3 +114,7 @@ class MapWidget(Map):
 
     def remove_highlight(self):
         self.highlight_section.removeFrom(self.map)
+
+    @property
+    def highlight_colour(self):
+        return self.palette().color(self.palette().Highlight).name()
