@@ -6,6 +6,7 @@ This is where computation of summary values should be done.
 import dataclasses
 import datetime
 from collections import Counter
+from typing import Optional
 
 from activate import activity, serialise, times, units
 
@@ -35,8 +36,8 @@ class UnloadedActivity:
     duration: float
     climb: float
     activity_id: str
-    server: str = None
-    username: str = None
+    server: Optional[str] = None
+    username: Optional[str] = None
 
     def load(self, path) -> activity.Activity:
         """Get the corresponding loaded Activity from disk."""

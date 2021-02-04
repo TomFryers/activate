@@ -3,6 +3,7 @@ import math
 from dataclasses import dataclass
 from datetime import timedelta
 from functools import wraps
+from typing import Union
 
 
 class DimensionError(Exception):
@@ -25,7 +26,7 @@ def compatible_dimensions(function):
 class DimensionValue:
     """A value with a dimension attached."""
 
-    value: float
+    value: Union[float, timedelta]
     dimension: str
 
     def format(self, unit_system):

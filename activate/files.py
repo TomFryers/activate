@@ -41,7 +41,7 @@ def decode_name(filename: str) -> str:
     return filename
 
 
-def copy_to_location_renamed(filename: Path, copy_to: Path) -> str:
+def copy_to_location_renamed(filename: Path, copy_to: Path) -> Path:
     """
     Copy a file to a location, renaming it if necessary.
 
