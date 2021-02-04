@@ -355,9 +355,6 @@ class ServersTable(Table):
         self.action_delete.setIcon(QIcon.fromTheme("edit-delete"))
         self.menu.addAction(self.action_delete)
 
-    def show(self):
-        super().show()
-
     def set_columns(self):
         self.setColumnCount(len(self.headings))
         self.setHorizontalHeaderLabels(self.headings)

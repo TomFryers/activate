@@ -111,7 +111,7 @@ class ManualTrack:
             return self.length / self.elapsed_time.total_seconds()
         raise AttributeError(f"{self.__class__.__qualname__} has no average {field}")
 
-    def __contains__(self, _):
+    def __contains__(*_):
         return False
 
 
