@@ -266,7 +266,7 @@ class Track:
     def calculate_gradient(self):
         """Calculate the gradient at each point."""
         self.fields["gradient"] = [None]
-        for dist, height_change in zip(self["dist_to_last"], self["height_change"])[1:]:
+        for dist, height_change in list(zip(self["dist_to_last"], self["height_change"]))[1:]:
             self.fields["gradient"].append(
                 None if dist in {None, 0} else height_change / dist
             )
