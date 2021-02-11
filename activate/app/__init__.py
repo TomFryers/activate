@@ -323,7 +323,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         """
         self.social_activities = activity_list.ActivityList([], None)
         for server in activate.app.dialogs.progress(
-            self, self.settings.servers, f"Downloading activities"
+            self, self.settings.servers, "Downloading activities"
         ):
             try:
                 server_activities = activity_list.from_serial(
