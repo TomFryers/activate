@@ -31,6 +31,11 @@ the activities you wish to import, and wait for the import to finish. If
 you switch to the 'Activities' tab, you can see individual activities.
 Go to Activity/Analyse to see more detail.
 
+To connect to an Activate server, go to Settings/Servers, press 'Add
+Server' and enter the server details. You will need a username and
+password given to you by the server admin. You can then access the
+'Social' tab to see the activities of members of that server.
+
 ---
 
 Activate, a free activity log and analysis tool.
