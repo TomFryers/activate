@@ -1,6 +1,6 @@
-PyQt5==5.15.1
-PyQtChart==5.15.1
-PyQtWebEngine==5.15.1
+PyQt5==5.15.2
+PyQtChart==5.15.2
+PyQtWebEngine==5.15.2
 pyqtlet==0.3.3
 Markdown==3.3.3
 fitparse==1.2.0
