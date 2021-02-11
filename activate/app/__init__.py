@@ -1,4 +1,5 @@
 import sys
+from PyQt5.QtCore import Qt
 from pathlib import Path
 
 import pkg_resources
@@ -19,6 +20,8 @@ from activate import (
 )
 from activate.app import activity_view, connect, maps, paths, settings
 from activate.app.ui.main import Ui_main_window
+
+SYNC_PROGRESS_STEPS = 1000
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
@@ -322,9 +325,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         activity. Also uploads missing activities.
         """
         self.social_activities = activity_list.ActivityList([], None)
-        for server in activate.app.dialogs.progress(
-            self, self.settings.servers, "Downloading activities"
-        ):
+        dialog = QtWidgets.QProgressDialog(
+            "Syncing",
+            "Cancel",
+            0,
+            len(self.settings.servers) * SYNC_PROGRESS_STEPS,
+            self,
+        )
+        dialog.setWindowModality(Qt.WindowModal)
+        for i, server in enumerate(self.settings.servers):
+            dialog.setLabelText(f"Getting activity list from {server.name}")
             try:
                 server_activities = activity_list.from_serial(
                     serialise.load_bytes(server.get_data("get_activities")), None
@@ -332,7 +342,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             except connect.requests.RequestException:
                 continue
             own_ids = set(a.activity_id for a in self.activities)
-            for activity_ in server_activities:
+            dialog.setLabelText(f"Syncing activities with {server.name}")
+            for j, activity_ in enumerate(server_activities):
+                dialog.setValue(
+                    round(SYNC_PROGRESS_STEPS * (i + j / len(server_activities) / 2))
+                )
                 activity_.server = server.name
                 if activity_.username == server.username:
                     aid = activity_.activity_id
@@ -348,16 +362,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                     self.social_activities.append(activity_)
             if not own_ids:
                 continue
-            progress = activate.app.dialogs.progress(
-                self, own_ids, f"Syncing activities with {server.name}"
-            )
-            for missing_id in progress:
+            dialog.setLabelText(f"Uploading activities to {server.name}")
+            for j, missing_id in enumerate(own_ids):
+                dialog.setValue(
+                    round(SYNC_PROGRESS_STEPS * (i + (1 + j / len(own_ids)) / 2))
+                )
                 try:
                     server.upload_activity(self.activities.get_activity(missing_id))
                 except connect.requests.RequestException:
-                    for _ in progress:
-                        pass
                     break
+        dialog.setValue(SYNC_PROGRESS_STEPS * len(self.settings.servers))
 
     def social_tab_update(self):
         self.get_social_activities()
