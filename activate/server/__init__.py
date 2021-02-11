@@ -145,7 +145,7 @@ def index():
     return "This is an Activate server."
 
 
-@app.route("/send_activity", methods=["POST"])
+@app.route("/api/send_activity", methods=["POST"])
 @requires_auth
 def upload():
     data = serialise.loads(request.form["activity"])
@@ -173,7 +173,7 @@ def upload():
     return "DONE"
 
 
-@app.route("/delete_activity/<string:activity_id>")
+@app.route("/api/delete_activity/<string:activity_id>")
 @requires_auth
 def delete_activity(activity_id):
     activity_id = UUID(activity_id)
@@ -186,7 +186,7 @@ def delete_activity(activity_id):
     return "DONE"
 
 
-@app.route("/get_activities")
+@app.route("/api/get_activities")
 @requires_auth
 def get_list():
     activities = get_activities()
@@ -194,7 +194,7 @@ def get_list():
     return serialise.dump_bytes([{k: a[k] for k in a.keys()} for a in activities])
 
 
-@app.route("/get_activity/<string:activity_id>")
+@app.route("/api/get_activity/<string:activity_id>")
 @requires_auth
 def get_activity(activity_id):
     activity_id = UUID(activity_id)

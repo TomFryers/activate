@@ -14,15 +14,13 @@ class Server:
 
     def post_data(self, page, data) -> bytes:
         """Send a POST request to address/page with data."""
-        r = requests.post(
-            f"{self.address.rstrip('/')}/{page}", data=data, auth=self.auth
-        )
+        r = requests.post(self.api_address(page), data=data, auth=self.auth)
         r.raise_for_status()
         return r.content
 
     def get_data(self, page) -> bytes:
         """Send a GET request to address/page."""
-        r = requests.get(f"{self.address.rstrip('/')}/{page}", auth=self.auth)
+        r = requests.get(self.api_address(page), auth=self.auth)
         r.raise_for_status()
         return r.content
 
@@ -30,6 +28,9 @@ class Server:
         self.post_data(
             "send_activity", {"activity": serialise.dump_bytes(activity.save_data)}
         )
+
+    def api_address(self, page):
+        return f"{self.address.rstrip('/')}/api/{page}"
 
     @property
     def auth(self):
