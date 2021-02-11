@@ -6,7 +6,7 @@ with open("README.md") as f:
 
 setuptools.setup(
     name="Activate-App",
-    version="0.0.1",
+    version="0.0.2",
     author="Tom Fryers",
     description="Activate is a free activity log and analysis tool.",
     long_description=long_description,
@@ -17,7 +17,7 @@ setuptools.setup(
     include_package_data=True,
     package_data={"activate.resources": ["/".join("*" * i) for i in range(9)]},
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 3 - Alpha",
         (
             "License"
             " :: OSI Approved"
