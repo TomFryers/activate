@@ -187,6 +187,8 @@ class ActivityList(list):
             )
             for a in valid_sorted:
                 value = key(a)
+                if value is None:
+                    continue
                 if total is None:
                     total = value - value
                 data[0].append(a.start_time)
@@ -217,6 +219,8 @@ class ActivityList(list):
                 continue
             for a in valid_sorted:
                 value = key(a)
+                if value is None:
+                    continue
                 if total is None:
                     total = value - value
                 data[0].append(start + times.since_start(a.start_time, time_period))
