@@ -27,7 +27,7 @@ class Summary(QtWidgets.QWidget, Ui_summary):
         # fitBounds work properly.
         self.heatmap_layout.addWidget(self.map_widget)
         self.records_table.set_units(self.unit_system)
-        self.summary_period = "All Time"
+        self.summary_period = "Year"
         self.progression_chart.set_units(self.unit_system)
         self.update_activity_types_list()
         self.eddington_chart = charts.LineChart(
