@@ -85,8 +85,11 @@ def get_nearby_indices(length, position, number=1) -> range:
     return range(max(position - number, 0), min(position + number + 1, length))
 
 
-def distance(point1, point2):
-    return math.sqrt(sum((c1 - c2) ** 2 for c1, c2 in zip(point1, point2)))
+try:
+    import dist
+except ImportError:
+    def dist(point1, point2):
+        return math.sqrt(sum((c1 - c2) ** 2 for c1, c2 in zip(point1, point2)))
 
 
 def enumerate_from(list_, point):
@@ -197,7 +200,7 @@ class Track:
                 for point in zip(self["lat"], self["lon"], self["ele"])
             ]
             self.fields["dist_to_last"] += [
-                distance(xyz[point], xyz[point - 1]) for point in range(1, len(self))
+                dist(xyz[point], xyz[point - 1]) for point in range(1, len(self))
             ]
 
     def calculate_climb_desc(self):
