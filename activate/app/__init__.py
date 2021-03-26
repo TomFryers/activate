@@ -290,6 +290,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_view.create()
         self.activity_view.showMaximized()
 
+    def match_activity(self):
+        self.activity_list_table.setUpdatesEnabled(False)
+        if self.action_match.text() == "Clear Match":
+            self.action_match.setText("Find Matching")
+            self.activity_list_table.filter({a.activity_id for a in self.activities})
+        else:
+            self.activity_list_table.filter(
+                self.activities.get_matching(
+                    self.activity,
+                    progress=lambda x: activate.app.dialogs.progress(
+                        self, x, "Finding matching activities"
+                    ),
+                )
+            )
+            self.action_match.setText("Clear Match")
+        self.activity_list_table.setUpdatesEnabled(True)
+
     def activity_view_closed(self):
         self.activity_summary.show_map()
         self.map_widget.remove_marker()

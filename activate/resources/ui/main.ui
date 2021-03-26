@@ -189,6 +189,7 @@
     <addaction name="action_edit"/>
     <addaction name="action_add_photos"/>
     <addaction name="action_analyse"/>
+    <addaction name="action_match"/>
    </widget>
    <addaction name="file_menu"/>
    <addaction name="activity_menu"/>
@@ -249,6 +250,11 @@
   <action name="action_analyse">
    <property name="text">
     <string>Analyse</string>
+   </property>
+  </action>
+  <action name="action_match">
+   <property name="text">
+    <string>Find Matching</string>
    </property>
   </action>
  </widget>
@@ -491,6 +497,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_match</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>match_activity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>384</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -507,5 +529,6 @@
   <slot>update_social_activity()</slot>
   <slot>filter_social_activities()</slot>
   <slot>analyse_activity()</slot>
+  <slot>match_activity()</slot>
  </slots>
 </ui>

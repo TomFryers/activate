@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import lru_cache
 
+from dtw import dtw
+
 from activate import geometry, times
 from activate.units import DimensionValue
 
@@ -88,6 +90,7 @@ def get_nearby_indices(length, position, number=1) -> range:
 try:
     import dist
 except ImportError:
+
     def dist(point1, point2):
         return math.sqrt(sum((c1 - c2) ** 2 for c1, c2 in zip(point1, point2)))
 
@@ -185,6 +188,14 @@ class Track:
             return self.has_altitude_data
         return field in self.fields
 
+    @property
+    @lru_cache(128)
+    def xyz(self):
+        return [
+            geometry.to_cartesian(*point)
+            for point in zip(self["lat"], self["lon"], self["ele"])
+        ]
+
     def calculate_dist_to_last(self):
         """Calculate distances between adjacent points"""
         self.fields["dist_to_last"] = [None]
@@ -195,12 +206,9 @@ class Track:
                     None if None in relevant else relevant[1] - relevant[0]
                 )
         else:
-            xyz = [
-                geometry.to_cartesian(*point)
-                for point in zip(self["lat"], self["lon"], self["ele"])
-            ]
             self.fields["dist_to_last"] += [
-                dist(xyz[point], xyz[point - 1]) for point in range(1, len(self))
+                dist(self.xyz[point], self.xyz[point - 1])
+                for point in range(1, len(self))
             ]
 
     def calculate_climb_desc(self):
@@ -561,6 +569,9 @@ class Track:
             ((table_distances, "distance"), (speeds, "speed")),
             point_indices,
         )
+
+    def match(self, other):
+        return dtw(self.xyz, other.xyz, distance_only=True).normalizedDistance < 40
 
     @property
     def save_data(self):

@@ -14,6 +14,7 @@ The Python dependencies are:
 - `fitparse`
 - `requests`
 - `setuptools`
+- `dtw`
 
 `Flask` is also required to host an Activate server.
 

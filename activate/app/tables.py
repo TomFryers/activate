@@ -258,6 +258,10 @@ class ActivityListTable(ValueColumnTable):
                 self.selectRow(row)
                 return
 
+    def filter(self, ids):
+        for row in range(len(self)):
+            self.setRowHidden(row, self.item(row, 0).activity_id not in ids)
+
 
 class SocialActivityList(ActivityListTable):
     headings = ["Server", "User", "Name", "Type", "Start Time", "Distance"]

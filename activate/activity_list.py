@@ -272,6 +272,25 @@ class ActivityList(list):
                 result.append(track.lat_lon_list)
         return result
 
+    def get_matching(self, activity_, progress=lambda x: x):
+        matching = {activity_.activity_id}
+        if not activity_.track.has_position_data:
+            return matching
+        for other_activity in progress(self):
+            if other_activity.activity_id == activity_.activity_id or not (
+                other_activity.sport == activity_.sport
+                and other_activity.distance / 1.2
+                < activity_.distance
+                < other_activity.distance * 1.2
+            ):
+                continue
+            if activity_.track.match(
+                self.get_activity(other_activity.activity_id).track
+            ):
+                matching.add(other_activity.activity_id)
+
+        return matching
+
     def __repr__(self):
         return (
             f"<{self.__class__.__qualname__}"
