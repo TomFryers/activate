@@ -333,9 +333,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self,
         )
         dialog.setWindowModality(Qt.WindowModal)
+        dialog.forceShow()
         for i, server in enumerate(self.settings.servers):
-            dialog.setValue(SYNC_PROGRESS_STEPS * i)
             dialog.setLabelText(f"Getting activity list from {server.name}")
+            dialog.setValue(SYNC_PROGRESS_STEPS * i)
             try:
                 server_activities = activity_list.from_serial(
                     serialise.loads(server.get_data("get_activities")), None
