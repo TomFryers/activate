@@ -140,7 +140,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 in self.social_activities.by_id(activity_id).server.split("\n")
             )
             self.social_activity = activity.Activity(
-                **serialise.load_bytes(
+                **serialise.loads(
                     server.get_data(f"get_activity/{activity_id}"), gz=True
                 )
             )
@@ -338,7 +338,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             dialog.setLabelText(f"Getting activity list from {server.name}")
             try:
                 server_activities = activity_list.from_serial(
-                    serialise.load_bytes(server.get_data("get_activities")), None
+                    serialise.loads(server.get_data("get_activities")), None
                 )
             except connect.requests.RequestException:
                 continue

@@ -30,19 +30,23 @@ def default(obj):
     raise TypeError(f"Cannot serialise {obj.__class__.__qualname__}")
 
 
+DECODE_KEYS = {
+    "__DATETIME": datetime.fromisoformat,
+    "__TIMEDELTA": lambda v: timedelta(seconds=v),
+    "__ID": uuid.UUID,
+    "__PATH": Path,
+}
+
+
 def decode(obj):
     """Undo encoding done by default."""
-    if len(obj) == 1:
-        ((key, value),) = obj.items()
-        if key == "__DATETIME":
-            return datetime.fromisoformat(value)
-        if key == "__TIMEDELTA":
-            return timedelta(seconds=value)
-        if key == "__ID":
-            return uuid.UUID(value)
-        if key == "__PATH":
-            return Path(value)
-    return obj
+    if len(obj) != 1:
+        return obj
+    key, value = obj.popitem()
+    try:
+        return DECODE_KEYS[key](value)
+    except KeyError:
+        return {key: value}
 
 
 def dumps(obj, readable=False):
@@ -61,15 +65,10 @@ def dump_bytes(obj, gz=False, readable=False):
     return gzip.compress(data) if gz else data
 
 
-def loads(data):
-    """Load an object from a string."""
-    return json.loads(data, object_hook=decode)
-
-
-def load_bytes(data, gz=False):
-    """Load an object from data."""
+def loads(data, gz=False):
+    """Load an object from a string or bytes."""
     data = gzip.decompress(data) if gz else data
-    return loads(data.decode("utf-8"))
+    return json.loads(data, object_hook=decode)
 
 
 def dump(obj, filename, *args, **kwargs):
@@ -86,5 +85,5 @@ def load(filename: Path, gz="auto"):
     """Load a JSON file. Can retrieve datetimes and timedeltas."""
     if gz == "auto":
         gz = filename.suffix.casefold() == ".gz"
-    with open(filename, "rb") as f:
-        return load_bytes(f.read(), gz=gz)
+    with (gzip.open if gz else open)(filename, "rt") as f:
+        return json.load(f, object_hook=decode)
