@@ -232,10 +232,9 @@ class ActivityList(list):
                 data[1].append(total)
             if back != 0:
                 data[0].append(times.end_of(times.EPOCH, time_period))
-                data[1].append(total)
             else:
                 data[0].append(times.EPOCH + times.since_start(now, time_period))
-                data[1].append(total)
+            data[1].append(total)
             result.append(data)
             periods.append(times.back_name(now, time_period, back))
 
