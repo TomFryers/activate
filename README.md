@@ -4,23 +4,10 @@
 
 Activate is a free activity log and analysis tool.
 
-The Python dependencies are:
+The recommended way to install Activate is through PyPI. Just run
+`pip install activate-app[app]`.
 
-- `PyQt5`
-- `PyQtChart`
-- `PyQtWebEngine`
-- `pyqtlet`
-- `Markdown`
-- `fitparse`
-- `requests`
-- `dtw`
-
-`Flask` is also required to host an Activate server.
-
-Run `make` to build the app.
-
-Then, run `./app` to launch Activate, or `python setup.py install` to
-install it.
+To install an Activate server, use `pip install activate-app[server]`.
 
 ## Basic Usage
 
@@ -35,6 +22,13 @@ To connect to an Activate server, go to Settings/Servers, press 'Add
 Server' and enter the server details. You will need a username and
 password given to you by the server admin. You can then access the
 'Social' tab to see the activities of members of that server.
+
+## Development Information
+
+Run `make` to build the app.
+
+Then, run `./app` to launch Activate, or `./server` to launch a test
+server.
 
 ---
 
