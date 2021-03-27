@@ -13,7 +13,6 @@ The Python dependencies are:
 - `Markdown`
 - `fitparse`
 - `requests`
-- `setuptools`
 - `dtw`
 
 `Flask` is also required to host an Activate server.

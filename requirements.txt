@@ -6,5 +6,4 @@ Markdown
 fitparse
 requests
 flask
-setuptools
 dtw
