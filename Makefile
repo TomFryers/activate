@@ -9,7 +9,7 @@ build: ui
 	python3 setup.py sdist bdist_wheel
 
 install:
-	pip install .
+	python3 -m pip install .
 
 clean:
 	python3 setup.py clean
