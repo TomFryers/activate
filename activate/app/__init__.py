@@ -13,6 +13,7 @@ from activate import (
     activity,
     activity_list,
     files,
+    filetypes,
     load_activity,
     serialise,
     track,
@@ -196,6 +197,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         if not filename:
             return
         self.activity.export_original(filename)
+
+    def export_as_route(self):
+        out_name = f"{self.activity.name}.gpx"
+        filename = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Export as Route", str(paths.HOME / out_name), "GPX file (*.gpx)"
+        )[0]
+        if not filename:
+            return
+        with open(filename, "w") as f:
+            f.write(filetypes.gpx.to_route(self.activity))
 
     def edit_activity_data(self):
         """

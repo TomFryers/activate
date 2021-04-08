@@ -39,3 +39,18 @@ def load_gpx(filename) -> tuple:
 
     points = tree.findall("./trk/trkseg/trkpt")
     return (name, sport, load_xml.load_fields(points, FIELDS))
+
+
+def to_route(activity):
+    name, track = activity.name, activity.track
+    gpx = [
+        '<?xml version="1.0" encoding="UTF-8"?><gpx version="1.0">'
+        f"<name>{name}</name><trk><trkseg>"
+    ]
+    for p in range(len(track)):
+        gpx.append(
+            f'<trkpt lat="{track["lat"][p]}" lon="{track["lon"][p]}">'
+            f'<ele>{track["ele"][p]}</ele></trkpt>"'
+        )
+    gpx.append("</trkseg></trk></gpx>")
+    return "".join(gpx)

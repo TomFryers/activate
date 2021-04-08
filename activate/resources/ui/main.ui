@@ -168,6 +168,7 @@
       <string>Export</string>
      </property>
      <addaction name="export_original"/>
+     <addaction name="action_as_route"/>
     </widget>
     <addaction name="action_import"/>
     <addaction name="action_add_manual"/>
@@ -255,6 +256,11 @@
   <action name="action_match">
    <property name="text">
     <string>Find Matching</string>
+   </property>
+  </action>
+  <action name="action_as_route">
+   <property name="text">
+    <string>As Route</string>
    </property>
   </action>
  </widget>
@@ -513,6 +519,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_as_route</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>export_as_route()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>384</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -530,5 +552,6 @@
   <slot>filter_social_activities()</slot>
   <slot>analyse_activity()</slot>
   <slot>match_activity()</slot>
+  <slot>export_as_route()</slot>
  </slots>
 </ui>
