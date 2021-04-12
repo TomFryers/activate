@@ -27,7 +27,7 @@ class ManualActivityDialog(FormDialog):
         layout["Type"].addItems(activity_types.TYPES)
         layout["Distance"].setRange(0, 100000)
         layout["Ascent"].setRange(0, 100000)
-        super().__init__(*args, form=Form(layout), **kwargs)
+        super().__init__(Form(layout), *args, **kwargs)
         self.setWindowTitle("Manual Activity")
 
     def accept(self):
@@ -45,7 +45,7 @@ class EditActivityDialog(FormDialog):
         }
         layout["Type"].currentTextChanged.connect(layout["Flags"].change_options)
         layout["Type"].addItems(activity_types.TYPES)
-        super().__init__(*args, form=Form(layout), **kwargs)
+        super().__init__(Form(layout), *args, **kwargs)
         self.setWindowTitle("Edit Activity")
         self.add_delete_button()
 
@@ -83,7 +83,7 @@ class EditActivityDialog(FormDialog):
                 "Description": self.activity.description,
             }
         )
-        if result and result != DELETE_ACTIVITY:
+        if isinstance(result, dict):
             self.apply_to_activity(result)
         return result
 
@@ -117,6 +117,6 @@ class EditManualActivityDialog(EditActivityDialog, ManualActivityDialog):
                 "Description": self.activity.description,
             },
         )
-        if result and result != DELETE_ACTIVITY:
+        if isinstance(result, dict):
             self.apply_to_activity(result)
         return result

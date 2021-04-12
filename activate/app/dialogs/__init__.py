@@ -25,9 +25,7 @@ class FormDialog(QtWidgets.QDialog):
     def exec(self, initial_values: dict):
         self.form.set_values(initial_values)
         result = super().exec()
-        if not result:
-            return None
-        if result == 1:
+        if result == self.Accepted:
             return self.form.values()
         return result
 

@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import overload
+
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
@@ -14,9 +18,17 @@ class CheckList(QtWidgets.QListWidget):
         self.itemChanged.connect(self.item_changed)
         self.itemDoubleClicked.connect(self.item_double_clicked)
 
+    @overload
+    def __getitem__(self, index: int) -> QtWidgets.QListWidgetItem:
+        ...
+
+    @overload
+    def __getitem__(self, index: slice) -> list[QtWidgets.QListWidgetItem]:
+        ...
+
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return [x for x in self][index]
+            return [self.item(i) for i in range(len(self))[index]]
         result = self.item(index)
         if result is None:
             raise IndexError(f"{self.__class__.__qualname__} index out of range")

@@ -79,7 +79,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def add_manual_activity(self):
         manual_window = activate.app.dialogs.activity.ManualActivityDialog()
         data = manual_window.exec({})
-        if data:
+        if isinstance(data, dict):
             self.add_activity(
                 activity.Activity(
                     data["Name"],

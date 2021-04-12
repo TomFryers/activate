@@ -18,7 +18,7 @@ class AddServerDialog(FormDialog):
             "Password": QtWidgets.QLineEdit(),
         }
         layout["Password"].setEchoMode(layout["Password"].Password)
-        super().__init__(*args, form=Form(layout), **kwargs)
+        super().__init__(Form(layout), *args, **kwargs)
         self.setWindowTitle("Add Server")
 
 
