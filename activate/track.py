@@ -88,7 +88,7 @@ def get_nearby_indices(length, position, number=1) -> range:
 
 
 try:
-    import dist
+    from math import dist
 except ImportError:
 
     def dist(point1, point2):
