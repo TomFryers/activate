@@ -31,7 +31,10 @@ class Summary(QtWidgets.QWidget, Ui_summary):
         self.progression_chart.set_units(self.unit_system)
         self.update_activity_types_list()
         self.eddington_chart = charts.LineChart(
-            self.eddington_chart_widget, self.unit_system, series_count=2
+            self.eddington_chart_widget,
+            self.unit_system,
+            series_count=2,
+            vertical_log=True,
         )
         self.eddington_chart.y_axis.setTitleText("Count")
         self.eddington_chart.add_legend(("Done", "Target"))
