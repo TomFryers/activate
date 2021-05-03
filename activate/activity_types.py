@@ -119,11 +119,11 @@ SPECIAL_DISTANCES = {
 
 # The boundaries of the zones
 ZONES = {
-    "Run": list(range(20)) + [float("inf")],
-    "Ride": list(range(0, 60, 2)) + [float("inf")],
-    "Swim": [x / 2 for x in range(12)] + [float("inf")],
-    "Walk": [x / 2 for x in range(20)] + [float("inf")],
-    None: list(range(20)) + [float("inf")],
+    "Run": list(range(21)) + [float("inf")],
+    "Ride": list(range(0, 62, 2)) + [float("inf")],
+    "Swim": [x / 2 for x in range(13)] + [float("inf")],
+    "Walk": [x / 2 for x in range(21)] + [float("inf")],
+    None: list(range(21)) + [float("inf")],
 }
 
 TYPES = ("Run", "Ride", "Swim", "Walk", "Ski", "Row", "Other")
