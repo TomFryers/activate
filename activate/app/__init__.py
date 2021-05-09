@@ -19,7 +19,7 @@ from activate import (
     track,
     units,
 )
-from activate.app import activity_view, connect, maps, paths, settings
+from activate.app import activity_view, connect, maps, paths, settings, widgets
 from activate.app.ui.main import Ui_main_window
 
 SYNC_PROGRESS_STEPS = 1000
@@ -313,15 +313,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self.action_match.setText("Find Matching")
             self.activity_list_table.filter({a.activity_id for a in self.activities})
         else:
-            self.activity_list_table.filter(
-                self.activities.get_matching(
-                    self.activity,
-                    progress=lambda x: activate.app.dialogs.progress(
-                        self, x, "Finding matching activities"
-                    ),
+            spinbox = QtWidgets.QSpinBox()
+            spinbox.setMinimum(1)
+            spinbox.setMaximum(500)
+            spinbox.setSuffix(" m")
+            tolerance = activate.app.dialogs.FormDialog(
+                widgets.Form({"Tolerance": spinbox})
+            ).exec({"Tolerance": 40})
+            if tolerance:
+                tolerance = tolerance["Tolerance"]
+                self.activity_list_table.filter(
+                    self.activities.get_matching(
+                        self.activity,
+                        tolerance=tolerance,
+                        progress=lambda x: activate.app.dialogs.progress(
+                            self, x, "Finding matching activities"
+                        ),
+                    )
                 )
-            )
-            self.action_match.setText("Clear Match")
+                self.action_match.setText("Clear Match")
         self.activity_list_table.setUpdatesEnabled(True)
 
     def activity_view_closed(self):

@@ -570,8 +570,8 @@ class Track:
             point_indices,
         )
 
-    def match(self, other):
-        return dtw(self.xyz, other.xyz, distance_only=True).normalizedDistance < 40
+    def match(self, other, tolerance=40):
+        return dtw(self.xyz, other.xyz, distance_only=True).normalizedDistance < tolerance
 
     @property
     def save_data(self):

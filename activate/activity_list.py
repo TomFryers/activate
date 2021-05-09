@@ -272,7 +272,7 @@ class ActivityList(list):
                 result.append(track.lat_lon_list)
         return result
 
-    def get_matching(self, activity_, progress=lambda x: x):
+    def get_matching(self, activity_, tolerance, progress=lambda x: x):
         matching = {activity_.activity_id}
         if not activity_.track.has_position_data:
             return matching
@@ -285,7 +285,7 @@ class ActivityList(list):
             ):
                 continue
             if activity_.track.match(
-                self.get_activity(other_activity.activity_id).track
+                self.get_activity(other_activity.activity_id).track, tolerance
             ):
                 matching.add(other_activity.activity_id)
 
