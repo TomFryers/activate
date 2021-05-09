@@ -38,7 +38,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         # Create a global map widget to be used everywhere. This is
         # necessary because pyqtlet doesn't support multiple L.map
         # instances.
-        self.map_widget = maps.MapWidget(self)
+        self.map_widget = maps.MapWidget(self, self.settings.tiles)
 
         self.activity_summary.setup(self.unit_system, self.map_widget)
         self.social_activity_summary.setup(self.unit_system, self.map_widget)
@@ -57,6 +57,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             (self.action_edit, "document-edit"),
             (self.action_analyse, "view-statistics"),
             (self.action_add_photos, "insert-image"),
+            (self.action_general, "settings-configure"),
             (self.action_units, "measure"),
             (self.action_servers, "network-server"),
             (self.export_menu, "document-send"),
@@ -66,13 +67,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
         self.main_tab_switch(0)
 
-    def edit_unit_settings(self):
+    def edit_settings(self, tab):
         settings_window = activate.app.dialogs.settings.SettingsDialog()
-        self.settings = settings_window.exec(self.settings, "Units")
+        self.settings = settings_window.exec(self.settings, tab)
+
+    def edit_general_settings(self):
+        self.edit_settings("General")
+
+    def edit_unit_settings(self):
+        self.edit_settings("Units")
 
     def edit_server_settings(self):
-        settings_window = activate.app.dialogs.settings.SettingsDialog()
-        self.settings = settings_window.exec(self.settings, "Servers")
+        self.edit_settings("Servers")
 
         self.main_tabs.setTabVisible(2, bool(self.settings.servers))
 

@@ -32,17 +32,20 @@ class CircleMarker(L.circleMarker):
 
 
 class Map(pyqtlet.MapWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, tiles):
         super().__init__()
         size_policy = self.sizePolicy()
         size_policy.setRetainSizeWhenHidden(True)
         self.setSizePolicy(size_policy)
         self.setContextMenuPolicy(Qt.NoContextMenu)
         self.map = L.map(self)
-        L.tileLayer(
-            "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
-            {"attribution": "&copy; OpenStreetMap contributors"},
-        ).addTo(self.map)
+        if tiles is None:
+            L.tileLayer(
+                "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+                {"attribution": "&copy; OpenStreetMap contributors"},
+            ).addTo(self.map)
+        else:
+            L.tileLayer(tiles, {"attribution": ""}).addTo(self.map)
 
         self.map.runJavaScript(f"{self.map.jsName}.attributionControl.setPrefix('');")
 
@@ -50,8 +53,8 @@ class Map(pyqtlet.MapWidget):
 class MapWidget(Map):
     """A map for displaying a route or heatmap"""
 
-    def __init__(self, parent):
-        super().__init__(parent)
+    def __init__(self, parent, tiles):
+        super().__init__(parent, tiles)
         self.route_lines = []
         self.start_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#10b020"})
         self.finish_icon = CircleMarker(DEFAULT_POS, {"radius": 8, "color": "#e00000"})

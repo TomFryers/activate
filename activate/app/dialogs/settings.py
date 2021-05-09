@@ -26,8 +26,9 @@ class SettingsDialog(QtWidgets.QDialog, Ui_settings):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
-        self.settings_tabs.setTabIcon(0, QIcon.fromTheme("measure"))
-        self.settings_tabs.setTabIcon(1, QIcon.fromTheme("network-server"))
+        self.settings_tabs.setTabIcon(0, QIcon.fromTheme("settings-configure"))
+        self.settings_tabs.setTabIcon(1, QIcon.fromTheme("measure"))
+        self.settings_tabs.setTabIcon(2, QIcon.fromTheme("network-server"))
         self.add_server_button.setIcon(PyQt5.QtGui.QIcon.fromTheme("list-add"))
         self.custom_units = widgets.CustomUnits(self)
         self.units_tab_layout.addLayout(self.custom_units)
@@ -44,20 +45,27 @@ class SettingsDialog(QtWidgets.QDialog, Ui_settings):
 
     def load_from_settings(self, current_settings: settings.Settings):
         """Load a Settings object to the UI widgets."""
+        self.map_tiles_edit.setText(
+            current_settings.tiles if current_settings.tiles is not None else ""
+        )
         self.unit_system.setCurrentText(current_settings.unit_system)
         self.server_table.set_servers(current_settings.servers)
         self.custom_units.set_units(current_settings.custom_units)
 
     def get_settings(self) -> settings.Settings:
         """Get a Settings object from the UI widgets."""
+        tiles = self.map_tiles_edit.toPlainText()
+        if not tiles:
+            tiles = None
         return settings.Settings(
+            tiles=tiles,
             unit_system=self.unit_system.currentText(),
             servers=self.server_table.get_servers(),
             custom_units=self.custom_units.units_dict(),
         )
 
     def exec(self, current_settings, page):
-        self.settings_tabs.setCurrentIndex(("Units", "Servers").index(page))
+        self.settings_tabs.setCurrentIndex(("General", "Units", "Servers").index(page))
         self.load_from_settings(current_settings)
         result = super().exec()
         if not result:

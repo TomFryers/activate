@@ -180,6 +180,7 @@
     <property name="title">
      <string>Settings</string>
     </property>
+    <addaction name="action_general"/>
     <addaction name="action_units"/>
     <addaction name="action_servers"/>
    </widget>
@@ -261,6 +262,11 @@
   <action name="action_as_route">
    <property name="text">
     <string>As Route</string>
+   </property>
+  </action>
+  <action name="action_general">
+   <property name="text">
+    <string>General</string>
    </property>
   </action>
  </widget>
@@ -535,6 +541,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_general</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>edit_general_settings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>384</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -553,5 +575,6 @@
   <slot>analyse_activity()</slot>
   <slot>match_activity()</slot>
   <slot>export_as_route()</slot>
+  <slot>edit_general_settings()</slot>
  </slots>
 </ui>

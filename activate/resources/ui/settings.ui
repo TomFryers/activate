@@ -22,6 +22,33 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
+     <widget class="QWidget" name="general_tab">
+      <attribute name="title">
+       <string>General</string>
+      </attribute>
+      <layout class="QFormLayout" name="general_tab_layout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="map_tiles_label">
+         <property name="text">
+          <string>Custom Map Tiles</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QTextEdit" name="map_tiles_edit">
+         <property name="inputMethodHints">
+          <set>Qt::ImhNone</set>
+         </property>
+         <property name="acceptRichText">
+          <bool>false</bool>
+         </property>
+         <property name="placeholderText">
+          <string>http://{s}.tile.osm.org/{z}/{x}/{y}.png</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="units_tab">
       <attribute name="title">
        <string>Units</string>

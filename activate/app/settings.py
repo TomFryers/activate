@@ -1,10 +1,16 @@
 """Contains a class holding current user settings."""
 import dataclasses
+from typing import Optional
 
 from activate import serialise, units
 from activate.app import connect, paths
 
-DEFAULTS = {"unit_system": units.DEFAULT, "servers": [], "custom_units": {}}
+DEFAULTS = {
+    "tiles": None,
+    "unit_system": units.DEFAULT,
+    "servers": [],
+    "custom_units": {},
+}
 
 
 def load_settings():
@@ -23,6 +29,7 @@ def load_settings():
 class Settings:
     """A settings configuration"""
 
+    tiles: Optional[str]
     unit_system: str
     custom_units: dict
     servers: list
