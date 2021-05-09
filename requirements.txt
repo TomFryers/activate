@@ -6,4 +6,4 @@ Markdown
 fitparse
 requests
 flask
-dtw
+dtw-python
