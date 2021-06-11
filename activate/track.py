@@ -571,7 +571,9 @@ class Track:
         )
 
     def match(self, other, tolerance=40):
-        return dtw(self.xyz, other.xyz, distance_only=True).normalizedDistance < tolerance
+        return (
+            dtw(self.xyz, other.xyz, distance_only=True).normalizedDistance < tolerance
+        )
 
     @property
     def save_data(self):

@@ -38,11 +38,8 @@ sqlite3.register_adapter(UUID, str)
 def add_row(database, table: str, values: dict):
     """Add a row to an SQLite database."""
     database.execute(
-        (
-            f"INSERT INTO {table}"
-            f" ({', '.join(values)})"
-            f" VALUES ({', '.join(f':{v}' for v in values)})"
-        ),
+        f"INSERT INTO {table} ({', '.join(values)})"
+        f" VALUES ({', '.join(f':{v}' for v in values)})",
         values,
     )
 
