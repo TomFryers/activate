@@ -14,7 +14,7 @@ def try_multi(point, locations) -> Optional[str]:
 
 
 def get_tree(filename):
-    """Load the tree, getting rid of namespaces"""
+    """Load the tree, getting rid of namespaces."""
     with (gzip.open if filename.suffix == ".gz" else open)(filename) as f:
         text = f.read().lstrip()
     tree = ElementTree.ElementTree(ElementTree.fromstring(text))

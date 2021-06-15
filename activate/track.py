@@ -197,7 +197,7 @@ class Track:
         ]
 
     def calculate_dist_to_last(self):
-        """Calculate distances between adjacent points"""
+        """Calculate distances between adjacent points."""
         self.fields["dist_to_last"] = [None]
         if "dist" in self.fields:
             for point in range(1, len(self)):
@@ -221,7 +221,7 @@ class Track:
             self.fields["desc"].append(0 if height_change >= 0 else -height_change)
 
     def calculate_dist(self):
-        """Calculate cumulative distances"""
+        """Calculate cumulative distances."""
         total_dist = 0
         new_dist = [0]
         for dist in self["dist_to_last"][1:]:
@@ -230,7 +230,7 @@ class Track:
         self.fields["dist"] = new_dist
 
     def calculate_speed(self):
-        """Calculate speeds at each point"""
+        """Calculate speeds at each point."""
         speeds = []
         for point_index in range(len(self)):
             relevant_points = get_nearby_indices(

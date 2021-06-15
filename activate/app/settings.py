@@ -26,7 +26,7 @@ def load_settings():
 
 @dataclasses.dataclass
 class Settings:
-    """A settings configuration"""
+    """A settings configuration."""
 
     tiles: Optional[str]
     unit_system: str

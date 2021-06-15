@@ -51,7 +51,7 @@ class Map(pyqtlet.MapWidget):
 
 
 class MapWidget(Map):
-    """A map for displaying a route or heatmap"""
+    """A map for displaying a route or heatmap."""
 
     def __init__(self, parent, tiles):
         super().__init__(parent, tiles)
