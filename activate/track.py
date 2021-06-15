@@ -117,7 +117,7 @@ class ManualTrack:
             return self.length / self.elapsed_time.total_seconds()
         raise AttributeError(f"{self.__class__.__qualname__} has no average {field}")
 
-    def __contains__(*_):
+    def __contains__(self, _):
         return False
 
 
@@ -525,9 +525,9 @@ class Track:
         bests = []
         point_indices = []
         for distance in table_distances:
-            for last_point, last_dist in enumerate(self["dist"]):
-                if last_dist is not None and last_dist > distance:
-                    break
+            last_point = next(
+                i for i, d in enumerate(self["dist"]) if d is not None and d > distance
+            )
             best = time_values[last_point] - self.start_time.timestamp()
             first_point = 0
             point = (first_point, last_point)

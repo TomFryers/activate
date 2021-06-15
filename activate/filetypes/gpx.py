@@ -21,7 +21,7 @@ FIELDS = {
 }
 
 
-def load_gpx(filename) -> tuple:
+def load(filename) -> tuple:
     """Extract the fields from a GPX file."""
     tree = load_xml.get_tree(filename)
     # Find the activity name

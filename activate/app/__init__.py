@@ -1,9 +1,9 @@
 import sys
-from PyQt5.QtCore import Qt
 from pathlib import Path
 
 import pkg_resources
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
 
 import activate.app.dialogs
@@ -387,7 +387,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                 )
             except connect.requests.RequestException:
                 continue
-            own_ids = set(a.activity_id for a in self.activities)
+            own_ids = {a.activity_id for a in self.activities}
             dialog.setValue(round(SYNC_PROGRESS_STEPS * (i + 1 / 3)))
             dialog.setLabelText(f"Syncing activities with {server.name}")
             for j, activity_ in enumerate(server_activities):

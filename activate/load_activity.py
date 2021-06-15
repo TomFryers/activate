@@ -56,15 +56,9 @@ def load(filename: Path) -> dict:
         if filename.suffix.casefold() == ".gz"
         else filename.suffix
     ).casefold()
-    if filetype == ".gpx":
-        data = filetypes.gpx.load_gpx(filename)
-    elif filetype == ".fit":
-        data = filetypes.fit.load_fit(filename)
-    elif filetype == ".tcx":
-        data = filetypes.tcx.load_tcx(filename)
-    else:
-        raise ValueError("Invalid filetype")
-
+    data = {".gpx": filetypes.gpx, ".fit": filetypes.fit, ".tcx": filetypes.tcx}[
+        filetype
+    ].load(filename)
     return {
         "name": data[0] if data[0] is not None else default_name(filename),
         "sport": convert_activity_type(data[1], data[0]),

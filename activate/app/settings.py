@@ -1,5 +1,6 @@
 """Contains a class holding current user settings."""
 import dataclasses
+from contextlib import suppress
 from typing import Optional
 
 from activate import serialise, units
@@ -16,10 +17,8 @@ DEFAULTS = {
 def load_settings():
     """Load settings from a configuration file."""
     settings_data = DEFAULTS.copy()
-    try:
+    with suppress(FileNotFoundError):
         settings_data.update(serialise.load(paths.SETTINGS))
-    except FileNotFoundError:
-        pass
 
     settings_data["servers"] = [connect.Server(**s) for s in settings_data["servers"]]
     return Settings(**settings_data)

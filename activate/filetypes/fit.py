@@ -24,7 +24,7 @@ LENGTH_SWIM_FIELDS = {
 }
 
 
-def load_fit(filename):
+def load(filename):
     """Load and parse a FIT file."""
     if filename.suffix == ".gz":
         with gzip.open(filename) as f:

@@ -84,7 +84,7 @@ class CheckList(QtWidgets.QListWidget):
             for item_ in self[1:]:
                 item_.setCheckState(item.checkState())
         else:
-            states = set(i.checkState() for i in self[1:])
+            states = {i.checkState() for i in self[1:]}
             self.set_all_state(
                 next(iter(states)) if len(states) == 1 else PartiallyChecked
             )

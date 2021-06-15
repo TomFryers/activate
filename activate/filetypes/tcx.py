@@ -15,7 +15,7 @@ FIELDS = {
 }
 
 
-def load_tcx(filename):
+def load(filename):
     """Extract the fields from a TCX file."""
     tree = load_xml.get_tree(filename)
     # Find the sport
