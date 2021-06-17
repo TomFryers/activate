@@ -575,6 +575,15 @@ class Track:
             dtw(self.xyz, other.xyz, distance_only=True).normalizedDistance < tolerance
         )
 
+    def max_point(self, stat):
+        point = None
+        maximum = float("-inf")
+        for index, value in enumerate(self[stat]):
+            if value is not None and value > maximum:
+                maximum = value
+                point = index
+        return point
+
     @property
     def save_data(self):
         return {

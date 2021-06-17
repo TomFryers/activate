@@ -26,10 +26,10 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
 
         for table in (self.split_table, self.info_table, self.curve_table):
             table.set_units(self.unit_system)
+            table.setMouseTracking(True)
+        self.info_table.cellEntered.connect(self.show_stat_point)
         self.split_table.cellEntered.connect(self.show_split)
-        self.split_table.setMouseTracking(True)
         self.curve_table.cellEntered.connect(self.show_fastest)
-        self.curve_table.setMouseTracking(True)
 
         # Set up charts
         self.charts = charts.LineChartSet(self.unit_system, self.graphs_layout)
@@ -190,6 +190,17 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.map_widget.show_highlight(
             self.activity.track.lat_lon_list[section[0] : section[1]]
         )
+
+    def show_stat_point(self, stat, _):
+        stat = self.info_table.get_row_text(stat)[0]
+        self.map_widget.remove_highlight()
+        try:
+            stat = {"Max. Speed": "speed", "Highest Point": "ele"}[stat]
+        except KeyError:
+            self.map_widget.remove_marker()
+            return
+        point = self.activity.track.max_point(stat)
+        self.map_widget.show_marker(self.activity.track.lat_lon_list[point])
 
     def closeEvent(self, *args, **kwargs):
         self.closed.emit()
