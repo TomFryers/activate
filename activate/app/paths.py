@@ -5,7 +5,7 @@ from PyQt5.QtCore import QStandardPaths
 
 # Locations for user data
 DATA = (
-    Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)) / "activate"
+    Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)) / "Activate"
 )
 ACTIVITIES = DATA / "activities"
 TRACKS = DATA / "originals"
