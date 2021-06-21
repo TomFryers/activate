@@ -81,14 +81,14 @@ def back_name(base, period: str, number=0):
     """Get the name of a year, month or week number back."""
     if period == "year":
         return str(base.year - number)
-    elif period == "month":
+    if period == "month":
         return MONTHS[(base.month - number - 1) % 12]
-    elif period == "week":
+    if period == "week":
         date = base.date() - number * ONE_WEEK - timedelta(days=base.weekday())
         return f"w/c {date:%d %b}"
-    elif period == "day":
+    if period == "day":
         return str((base - ONE_DAY * number).day)
-    elif period == "weekday":
+    if period == "weekday":
         return f"{base - ONE_DAY * number:%A}"
     raise ValueError('period must be "year", "month" or "week"')
 
@@ -142,8 +142,7 @@ def end_of(base, period: str) -> datetime:
     if period == "month":
         if base.month == 12:
             return start_of(base.replace(year=base.year + 1, month=1), period)
-        else:
-            return start_of(base.replace(month=base.month + 1), period)
+        return start_of(base.replace(month=base.month + 1), period)
 
     if period == "week":
         return start_of(base + ONE_WEEK, period)

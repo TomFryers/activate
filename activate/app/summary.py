@@ -150,7 +150,7 @@ class Summary(QtWidgets.QWidget, Ui_summary):
         if not allowed_activities:
             return
         unit = self.unit_system.units["distance"].size
-        eddington_data = self.activities.eddington(allowed_activities, unit)
+        eddington_data = self.activities.eddington(allowed_activities)
         eddington_number = 0
         for eddington_number in range(1, len(eddington_data) + 1):
             if eddington_data[eddington_number - 1] <= eddington_number * unit:

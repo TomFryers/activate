@@ -461,15 +461,15 @@ class Track:
         lasttime = None
         lastalt = None
         total_climb = 0
-        for time, dist, alt, climb in zip(
+        for time, distance, alt, climb in zip(
             self["time"], self["dist"], self["ele"], self["climb"]
         ):
             if lasttime is None:
                 lasttime = time
                 lastalt = alt
-            if dist is None:
+            if distance is None:
                 continue
-            if dist // splitlength > len(splits):
+            if distance // splitlength > len(splits):
                 speed = splitlength / (time - lasttime).total_seconds()
                 splits.append(
                     [

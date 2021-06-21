@@ -295,14 +295,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_view = activity_view.ActivityView()
         self.activity_view.setup(self.unit_system, self.map_widget)
         try:
-            activity = (
+            activity_ = (
                 self.activity
                 if self.main_tabs.tabText(self.main_tabs.currentIndex()) == "Activities"
                 else self.social_activity
             )
         except AttributeError:
             return
-        self.activity_view.show_activity(activity)
+        self.activity_view.show_activity(activity_)
         self.activity_view.closed.connect(self.activity_view_closed)
         self.activity_view.create()
         self.activity_view.showMaximized()

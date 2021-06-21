@@ -3,7 +3,8 @@ from datetime import timedelta
 
 from PyQt5 import QtWidgets
 
-from activate import activity_types, times, units
+from activate import activity_types, times
+from activate import units as units_
 from activate.app import checklist
 
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
@@ -119,8 +120,8 @@ class CustomUnits(QtWidgets.QFormLayout):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.combo_boxes = {}
-        self.labels = list(units.ALL.keys())
-        for unit, options in units.ALL.items():
+        self.labels = list(units_.ALL.keys())
+        for unit, options in units_.ALL.items():
             if len(options) <= 1:
                 continue
             combo_box = QtWidgets.QComboBox()

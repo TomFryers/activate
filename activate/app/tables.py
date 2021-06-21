@@ -113,10 +113,10 @@ class Table(QtWidgets.QTableWidget):
     def set_row(self, values, position, formats=None, alignments=None):
         alignments = iterablise(alignments)
         formats = iterablise(formats)
-        for column, (value, format, align) in enumerate(
+        for column, (value, format_, align) in enumerate(
             zip(values, formats, alignments)
         ):
-            self.set_item(position, column, value, format, align)
+            self.set_item(position, column, value, format_, align)
 
     def get_row_text(self, index) -> list:
         result = []

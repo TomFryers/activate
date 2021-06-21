@@ -68,8 +68,8 @@ class ActivityList(list):
     def by_id(self, activity_id):
         try:
             return next(a for a in self if a.activity_id == activity_id)
-        except StopIteration:
-            raise KeyError("No such activity_id")
+        except StopIteration as e:
+            raise KeyError("No such activity_id") from e
 
     def provide_full_activity(self, activity_id, activity_):
         self._activities[activity_id] = activity_
@@ -157,7 +157,7 @@ class ActivityList(list):
     def total_climb(self, activities):
         return sum(a.climb for a in activities if a.climb is not None)
 
-    def eddington(self, activities, unit) -> list:
+    def eddington(self, activities) -> list:
         """Get a list of days sorted by distance done that day."""
         return sorted(
             sum(

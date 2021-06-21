@@ -24,28 +24,28 @@ def maybe_as_int(value) -> str:
 def info_format(entry: str):
     """Format an value for the info box."""
     if entry in {"Average Speed", "Mov. Av. Speed", "Distance"}:
-        return lambda value: f"{value:.2f}"
+        return "{:.2f}".format
     if entry in {"Max. Speed", "Average Power", "Average HR", "Avg. Cadence"}:
-        return lambda value: f"{value:.1f}"
+        return "{:.1f}".format
     if entry in {"Ascent", "Descent", "Highest Point", "Max. Power"}:
-        return lambda value: as_int(value)
+        return as_int
     if entry in {"Elapsed Time", "Moving Time", "Pace", "Pace (mov.)"}:
-        return lambda value: times.to_string(value)
+        return times.to_string
     if entry is None:
-        return lambda value: value
+        return lambda x: x
     raise ValueError(f"Unknown entry: {entry}")
 
 
 def split_format(entry: str):
     """Format a value for the splits table."""
     if entry == "Number":
-        return lambda value: as_int(value)
+        return as_int
     if entry in {"Time", "Split"}:
-        return lambda value: times.to_string(value)
+        return times.to_string
     if entry in {"Net Climb", "Ascent"}:
-        return lambda value: as_int(value)
+        return as_int
     if entry == "Speed":
-        return lambda value: f"{value:.2f}"
+        return "{:.2f}".format
     raise ValueError(f"Unknown entry: {entry}")
 
 
@@ -54,7 +54,7 @@ def list_format(entry: str):
     if entry in {"Name", "Type", "Server", "User"}:
         return None
     if entry == "Distance":
-        return lambda value: f"{value:.2f}"
+        return "{:.2f}".format
     if entry == "Start Time":
         return lambda value: str(times.round_time(value))
     raise ValueError(f"Unknown entry: {entry}")

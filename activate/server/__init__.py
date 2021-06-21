@@ -100,7 +100,7 @@ def get_users():
         return {}
 
 
-def save_users(users):
+def save_users():
     with open(USERS_FILE, "w") as f:
         json.dump(f, users)
 
