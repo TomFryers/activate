@@ -118,10 +118,19 @@ class Summary(QtWidgets.QWidget, Ui_summary):
             good_distances,
             lambda x: progress(self, list(x), "Loading"),
         )
-
-        self.records_table.update_data(
-            list(good_distances.values()), records, activity_ids
-        )
+        try:
+            first_non_one_second = max(
+                next(
+                    i for i, r in enumerate(records) if r[1].value.total_seconds() > 1
+                ),
+                1,
+            )
+        except StopIteration:
+            first_non_one_second = 0
+        records = records[first_non_one_second - 1 :]
+        activity_ids = list(activity_ids)[first_non_one_second - 1 :]
+        good_distances = list(good_distances.values())[first_non_one_second - 1 :]
+        self.records_table.update_data(good_distances, records, activity_ids)
 
     def update_gallery(self):
         self.gallery.replace_photos(
