@@ -35,7 +35,7 @@ def convert_activity_type(activity_type: str, name) -> str:
         for activity_type_name in ACTIVITY_TYPE_NAMES:
             if activity_type_name.isnumeric():
                 continue
-            if activity_type_name in name.casefold():
+            if name is not None and activity_type_name in name.casefold():
                 return ACTIVITY_TYPE_NAMES[activity_type_name]
     return "Other"
 

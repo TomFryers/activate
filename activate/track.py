@@ -41,7 +41,7 @@ def lerp(value1, value2, ratio):
     lerp(x, y, 0.5) = (x + y) / 2
     lerp(x, y, 1) = y
     """
-    return value1 * (1 - ratio) + value2 * ratio
+    return value1 + ratio * (value2 - value1)
 
 
 def infer_nones(data):
