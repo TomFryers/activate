@@ -33,6 +33,7 @@ class FormDialog(QtWidgets.QDialog):
 def progress(parent, iterable, text, cancel_text="Cancel"):
     dialog = QtWidgets.QProgressDialog(text, cancel_text, 0, len(iterable), parent)
     dialog.setWindowModality(Qt.WindowModal)
+    dialog.setMinimumDuration(2)
     for done, value in enumerate(iterable):
         dialog.setValue(done)
         if dialog.wasCanceled():

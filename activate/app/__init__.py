@@ -377,6 +377,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self,
         )
         dialog.setWindowModality(Qt.WindowModal)
+        dialog.setMinimumDuration(2)
         dialog.forceShow()
         for i, server in enumerate(self.settings.servers):
             dialog.setLabelText(f"Getting activity list from {server.name}")
