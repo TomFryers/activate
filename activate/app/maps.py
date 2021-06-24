@@ -16,19 +16,27 @@ DEFAULT_POS = [53, -1]
 ACTIVATE_COLOUR = "#802090"
 
 
-def call_js_method(obj, method, *params) -> None:
-    """Call obj.method(*params) equivalent in JavaScript."""
-    obj.runJavaScript(f"{obj.jsName}.{method}({','.join(str(x) for x in params)});")
+class Js:
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __getattr__(self, name):
+        def method(*params):
+            self.obj.runJavaScript(
+                f"{self.obj.jsName}.{name}({','.join(str(x) for x in params)});"
+            )
+
+        return method
 
 
 class Polyline(L.polyline):
     def setLatLngs(self, coordinates):
-        call_js_method(self, "setLatLngs", coordinates)
+        Js(self).setLatLngs(coordinates)
 
 
 class CircleMarker(L.circleMarker):
     def setLatLng(self, coordinates):
-        call_js_method(self, "setLatLng", coordinates)
+        Js(self).setLatLng(coordinates)
 
 
 class Map(pyqtlet.MapWidget):
@@ -50,12 +58,7 @@ class Map(pyqtlet.MapWidget):
         self.map.runJavaScript(f"{self.map.jsName}.attributionControl.setPrefix('');")
 
     def fit_bounds(self, bounds):
-        call_js_method(
-            self.map,
-            "fitBounds",
-            bounds,
-            '{"animate": true, "zoomAnimationThreshold": 9}',
-        )
+        Js(self.map).fitBounds(bounds, '{"animate": true, "zoomAnimationThreshold": 9}')
 
 
 class MapWidget(Map):
@@ -120,7 +123,7 @@ class MapWidget(Map):
     def show_highlight(self, part):
         self.highlight_section.setLatLngs(part)
         self.highlight_section.addTo(self.map)
-        call_js_method(self.highlight_section, "bringToFront")
+        Js(self.highlight_section).bringToFront
 
     def remove_highlight(self):
         self.highlight_section.removeFrom(self.map)
