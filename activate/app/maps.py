@@ -56,9 +56,14 @@ class Map(pyqtlet.MapWidget):
             L.tileLayer(tiles, {"attribution": ""}).addTo(self.map)
 
         self.map.runJavaScript(f"{self.map.jsName}.attributionControl.setPrefix('');")
+        self.moved = False
 
     def fit_bounds(self, bounds):
-        Js(self.map).fitBounds(bounds, '{"animate": true, "zoomAnimationThreshold": 9}')
+        if self.moved:
+            Js(self.map).flyToBounds(bounds)
+        else:
+            Js(self.map).fitBounds(bounds)
+            self.moved = True
 
 
 class MapWidget(Map):
