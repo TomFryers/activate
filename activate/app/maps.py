@@ -49,6 +49,14 @@ class Map(pyqtlet.MapWidget):
 
         self.map.runJavaScript(f"{self.map.jsName}.attributionControl.setPrefix('');")
 
+    def fit_bounds(self, bounds):
+        call_js_method(
+            self.map,
+            "fitBounds",
+            bounds,
+            '{"animate": true, "zoomAnimationThreshold": 9}',
+        )
+
 
 class MapWidget(Map):
     """A map for displaying a route or heatmap."""
@@ -64,7 +72,7 @@ class MapWidget(Map):
 
     def show_route(self, route: list):
         """Display a list of points on the map."""
-        self.map.fitBounds(get_bounds(route))
+        self.fit_bounds(get_bounds(route))
         if self.mode != "route":
             self.clear_route_lines()
             self.route_lines = [self.add_route_line()]
@@ -80,7 +88,7 @@ class MapWidget(Map):
         if not routes:
             return
         colour = ACTIVATE_COLOUR + hex(min(round(1000 / (len(routes) ** 0.5)), 255))[2:]
-        self.map.fitBounds(get_bounds(*routes))
+        self.fit_bounds(get_bounds(*routes))
         self.start_icon.removeFrom(self.map)
         self.finish_icon.removeFrom(self.map)
         self.clear_route_lines()
