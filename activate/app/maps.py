@@ -16,14 +16,30 @@ DEFAULT_POS = [53, -1]
 ACTIVATE_COLOUR = "#802090"
 
 
+def js_string(obj):
+    if obj is None:
+        return "null"
+    if isinstance(obj, bool):
+        return "true" if obj else "false"
+    if isinstance(obj, (list, tuple, set)):
+        return f"[{','.join(js_string(i) for i in obj)}]"
+    if isinstance(obj, dict):
+        return (
+            "{"
+            f"{','.join(f'{js_string(k)}:{js_string(v)}' for k, v in obj.items())}"
+            "}"
+        )
+    return repr(obj)
+
+
 class Js:
     def __init__(self, obj):
         self.obj = obj
 
     def __getattr__(self, name):
-        def method(*params):
+        def method(*args):
             self.obj.runJavaScript(
-                f"{self.obj.jsName}.{name}({','.join(str(x) for x in params)});"
+                f"{self.obj.jsName}.{name}({','.join(js_string(x) for x in args)});"
             )
 
         return method

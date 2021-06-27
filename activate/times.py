@@ -153,8 +153,8 @@ def end_of(base, period: str) -> datetime:
 
 
 def hours_minutes_seconds(time: timedelta) -> tuple:
-    time = time.total_seconds()
-    return (time // 3600, *divmod(time % 3600, 60))
+    hours, seconds = divmod(time.total_seconds(), 3600)
+    return (hours, *divmod(seconds, 60))
 
 
 def get_periods(minimum, maximum, period: str) -> list:
