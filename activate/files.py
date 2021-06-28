@@ -1,6 +1,5 @@
 """Functions for manipulating files."""
 import shutil
-from glob import glob
 from pathlib import Path
 
 
@@ -9,7 +8,7 @@ def has_extension(filename: Path, extension: str) -> bool:
     return filename.suffix.casefold() == "." + extension
 
 
-def encode_name(filename: str, current_filenames, directory: Path) -> Path:
+def encode_name(filename: str, directory: Path) -> Path:
     """
     Rename a file to avoid name collisions.
 
@@ -18,6 +17,7 @@ def encode_name(filename: str, current_filenames, directory: Path) -> Path:
     If the name already starts with an underscore, the bare name cannot
     be used, _foo_bar.gpx becomes _0__foo_bar.gpx, _1__foo_bar.gpx etc.
     """
+    current_filenames = set(directory.glob("*"))
     # No-underscore, unique filename
     if filename[0] != "_":
         full_name = directory / filename
@@ -47,7 +47,6 @@ def copy_to_location_renamed(filename: Path, copy_to: Path) -> Path:
 
     Returns the new filename.
     """
-    filenames = glob(f"{copy_to}*")
-    out_name = encode_name(filename.name, filenames, copy_to)
+    out_name = encode_name(filename.name, copy_to)
     shutil.copy2(filename, out_name)
     return out_name
