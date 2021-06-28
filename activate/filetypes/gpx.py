@@ -33,7 +33,6 @@ def load(filename) -> tuple:
     # Find the sport
     try:
         sport = tree.find("./trk/type").text
-        print(f"{sport=} {name=}")
     except AttributeError:
         sport = "unknown"
 

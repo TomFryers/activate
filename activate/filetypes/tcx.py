@@ -21,7 +21,6 @@ def load(filename):
     # Find the sport
     try:
         sport = tree.find("./Activities/Activity").get("Sport")
-        print(f"{sport=} {filename=}")
     except AttributeError:
         sport = "unknown"
 
