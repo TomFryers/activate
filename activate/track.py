@@ -190,6 +190,13 @@ class Track:
 
     @property
     @lru_cache(128)
+    def temporal_resolution(self):
+        return min(
+            self["time"][i] - self["time"][i - 1] for i in range(1, len(self))
+        ).total_seconds()
+
+    @property
+    @lru_cache(128)
     def xyz(self):
         return [
             geometry.to_cartesian(*point)
@@ -519,7 +526,7 @@ class Track:
 
     def get_curve(self, table_distances):
         """Get the curve and curve table for an activity."""
-        table_distances = [x for x in table_distances if x <= self.length]
+        table_distances = [x for x in table_distances if x <= self.length][::-1]
         time_values = [t.timestamp() for t in self["time"]]
 
         bests = []
@@ -551,6 +558,15 @@ class Track:
                     point = (first_point, last_point)
             bests.append(best)
             point_indices.append(point)
+            if best == self.temporal_resolution:
+                break
+        while len(point_indices) < len(table_distances):
+            point_indices.append(point_indices[-1])
+            bests.append(bests[-1])
+
+        point_indices = point_indices[::-1]
+        bests = bests[::-1]
+        table_distances = table_distances[::-1]
 
         speeds = [
             distance / time if time else 0
