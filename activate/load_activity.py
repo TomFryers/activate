@@ -19,9 +19,11 @@ ACTIVITY_TYPE_NAMES = {
     "row": "Row",
     "rowing": "Row",
     "1": "Ride",
+    "2": "Ski",
     "9": "Run",
     "10": "Walk",
     "16": "Swim",
+    "23": "Row",
 }
 
 
