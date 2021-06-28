@@ -472,6 +472,7 @@ def main():
     )
     app.setWindowIcon(QIcon(icon))
     app.setApplicationName("Activate")
+    app.setAttribute(Qt.AA_DisableWindowContextHelpButton)
     main_window = MainWindow(activity_list.from_disk(paths.DATA))
 
     main_window.showMaximized()
