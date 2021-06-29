@@ -129,6 +129,23 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="sync_tab">
+      <attribute name="title">
+       <string>Sync</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="cookie_label">
+         <property name="text">
+          <string>Cookie</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="cookie_edit"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>

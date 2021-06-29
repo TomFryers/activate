@@ -11,6 +11,7 @@ DEFAULTS = {
     "unit_system": units.DEFAULT,
     "servers": [],
     "custom_units": {},
+    "cookie": None,
 }
 
 
@@ -32,6 +33,7 @@ class Settings:
     unit_system: str
     custom_units: dict
     servers: list
+    cookie: Optional[str]
 
     def save(self):
         """Save settings to a configuration file."""

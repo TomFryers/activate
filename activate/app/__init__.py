@@ -1,4 +1,5 @@
 import sys
+import time
 from pathlib import Path
 
 import pkg_resources
@@ -19,10 +20,12 @@ from activate import (
     track,
     units,
 )
-from activate.app import activity_view, connect, maps, paths, settings, widgets
+from activate.app import activity_view, connect, maps, paths, settings, sync, widgets
 from activate.app.ui.main import Ui_main_window
 
 SYNC_PROGRESS_STEPS = 1000
+SYNC_WAIT_DIVISIONS = 100
+SYNC_DELAY = 2
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
@@ -60,6 +63,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             (self.action_general, "settings-configure"),
             (self.action_units, "measure"),
             (self.action_servers, "network-server"),
+            (self.action_sync, "folder-sync"),
+            (self.action_sync_settings, "folder-sync"),
             (self.export_menu, "document-send"),
             (self.action_quit, "application-exit"),
         ):
@@ -81,6 +86,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.edit_settings("Servers")
 
         self.main_tabs.setTabVisible(2, bool(self.settings.servers))
+
+    def edit_sync_settings(self):
+        self.edit_settings("Sync")
 
     def add_manual_activity(self):
         manual_window = activate.app.dialogs.activity.ManualActivityDialog()
@@ -120,6 +128,49 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         activity_elements = new_activity.unload(activity_list.UnloadedActivity).list_row
         self.activities.add_activity(new_activity)
         self.activity_list_table.add_id_row(activity_id, activity_elements, position)
+
+    def sync(self):
+        """Sync with another service."""
+        dialog = QtWidgets.QProgressDialog("Syncing", "Cancel", 0, 0, self)
+        dialog.setWindowModality(Qt.WindowModal)
+        dialog.setMinimumDuration(0)
+        dialog.forceShow()
+        sync.sync_state.ensure_loaded()
+        new_activities = sync.sync_state.sync(
+            {"Strava": self.settings.cookie}, self.activities
+        )
+        new_activity_count = next(new_activities)
+        if new_activity_count == 0:
+            dialog.reset()
+            return
+        dialog.setMaximum(new_activity_count * SYNC_WAIT_DIVISIONS)
+        for progress in range(1, SYNC_WAIT_DIVISIONS):
+            dialog.setValue(progress)
+            time.sleep(SYNC_DELAY / SYNC_WAIT_DIVISIONS)
+            if dialog.wasCanceled():
+                dialog.reset()
+                return
+        done = False
+        self.activity_list_table.setSortingEnabled(False)
+        for index, new_activity in enumerate(new_activities):
+            dialog.setLabelText(f"Syncing {new_activity.name}")
+            progress += 1
+            dialog.setValue(progress)
+            self.add_activity(new_activity)
+            if index < new_activity_count - 1:
+                for i in range(SYNC_WAIT_DIVISIONS - 1):
+                    progress += 1
+                    dialog.setValue(progress)
+                    time.sleep(SYNC_DELAY / SYNC_WAIT_DIVISIONS)
+                    if dialog.wasCanceled():
+                        done = True
+            if done:
+                break
+        sync.sync_state.write()
+
+        self.activity_list_table.setCurrentCell(0, 0)
+        self.activity_list_table.setSortingEnabled(True)
+        self.main_tab_switch(self.main_tabs.currentIndex())
 
     def update_activity(self, selected):
         """Show a new activity on the right on the Activities page."""

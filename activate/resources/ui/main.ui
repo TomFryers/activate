@@ -172,6 +172,7 @@
     </widget>
     <addaction name="action_import"/>
     <addaction name="action_add_manual"/>
+    <addaction name="action_sync"/>
     <addaction name="export_menu"/>
     <addaction name="separator"/>
     <addaction name="action_quit"/>
@@ -183,6 +184,7 @@
     <addaction name="action_general"/>
     <addaction name="action_units"/>
     <addaction name="action_servers"/>
+    <addaction name="action_sync_settings"/>
    </widget>
    <widget class="QMenu" name="activity_menu">
     <property name="title">
@@ -267,6 +269,16 @@
   <action name="action_general">
    <property name="text">
     <string>General</string>
+   </property>
+  </action>
+  <action name="action_sync_settings">
+   <property name="text">
+    <string>Sync</string>
+   </property>
+  </action>
+  <action name="action_sync">
+   <property name="text">
+    <string>Sync</string>
    </property>
   </action>
  </widget>
@@ -557,6 +569,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_sync_settings</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>edit_sync_settings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>384</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>action_sync</sender>
+   <signal>triggered()</signal>
+   <receiver>main_window</receiver>
+   <slot>sync()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>384</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>import_activities()</slot>
@@ -576,5 +620,7 @@
   <slot>match_activity()</slot>
   <slot>export_as_route()</slot>
   <slot>edit_general_settings()</slot>
+  <slot>edit_sync_settings()</slot>
+  <slot>sync()</slot>
  </slots>
 </ui>

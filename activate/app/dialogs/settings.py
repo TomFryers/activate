@@ -29,6 +29,7 @@ class SettingsDialog(QtWidgets.QDialog, Ui_settings):
         self.settings_tabs.setTabIcon(0, QIcon.fromTheme("settings-configure"))
         self.settings_tabs.setTabIcon(1, QIcon.fromTheme("measure"))
         self.settings_tabs.setTabIcon(2, QIcon.fromTheme("network-server"))
+        self.settings_tabs.setTabIcon(3, QIcon.fromTheme("folder-sync"))
         self.add_server_button.setIcon(PyQt5.QtGui.QIcon.fromTheme("list-add"))
         self.custom_units = widgets.CustomUnits(self)
         self.units_tab_layout.addLayout(self.custom_units)
@@ -48,6 +49,9 @@ class SettingsDialog(QtWidgets.QDialog, Ui_settings):
         self.map_tiles_edit.setText(
             current_settings.tiles if current_settings.tiles is not None else ""
         )
+        self.cookie_edit.setText(
+            current_settings.cookie if current_settings.cookie is not None else ""
+        )
         self.unit_system.setCurrentText(current_settings.unit_system)
         self.server_table.set_servers(current_settings.servers)
         self.custom_units.set_units(current_settings.custom_units)
@@ -57,15 +61,21 @@ class SettingsDialog(QtWidgets.QDialog, Ui_settings):
         tiles = self.map_tiles_edit.toPlainText()
         if not tiles:
             tiles = None
+        cookie = self.cookie_edit.text()
+        if not cookie:
+            cookie = None
         return settings.Settings(
             tiles=tiles,
             unit_system=self.unit_system.currentText(),
             servers=self.server_table.get_servers(),
             custom_units=self.custom_units.units_dict(),
+            cookie=cookie,
         )
 
     def exec(self, current_settings, page):
-        self.settings_tabs.setCurrentIndex(("General", "Units", "Servers").index(page))
+        self.settings_tabs.setCurrentIndex(
+            ("General", "Units", "Servers", "Sync").index(page)
+        )
         self.load_from_settings(current_settings)
         result = super().exec()
         if not result:

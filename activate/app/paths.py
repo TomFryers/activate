@@ -10,6 +10,7 @@ DATA = (
 ACTIVITIES = DATA / "activities"
 TRACKS = DATA / "originals"
 PHOTOS = DATA / "photos"
+SYNC_STATE = DATA / "sync_state.json.gz"
 
 # Location for configuration files
 SETTINGS = (
