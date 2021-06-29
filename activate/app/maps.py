@@ -75,7 +75,6 @@ class Map(pyqtlet.MapWidget):
         self.map.runJavaScript(f"{self.map.jsName}.attributionControl.setPrefix('');")
         self.moved = False
 
-
     def fit_bounds(self, bounds):
         if self.moved:
             Js(self.map).flyToBounds(
