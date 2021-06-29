@@ -35,9 +35,10 @@ def progress(parent, iterable, text, length=None, cancel_text="Cancel"):
         length = len(iterable)
     dialog = QtWidgets.QProgressDialog(text, cancel_text, 0, length, parent)
     dialog.setWindowModality(Qt.WindowModal)
-    dialog.setMinimumDuration(2)
+    dialog.setMinimumDuration(0)
     for done, value in enumerate(iterable):
         dialog.setValue(done)
+        QtWidgets.qApp.processEvents()
         if dialog.wasCanceled():
             return
         yield value

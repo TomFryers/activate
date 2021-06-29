@@ -135,6 +135,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         dialog.setWindowModality(Qt.WindowModal)
         dialog.setMinimumDuration(0)
         dialog.forceShow()
+        QtWidgets.qApp.processEvents()
         sync.sync_state.ensure_loaded()
         new_activities = sync.sync_state.sync(
             {"Strava": self.settings.cookie}, self.activities
@@ -428,7 +429,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             self,
         )
         dialog.setWindowModality(Qt.WindowModal)
-        dialog.setMinimumDuration(2)
+        dialog.setMinimumDuration(0)
         dialog.forceShow()
         for i, server in enumerate(self.settings.servers):
             dialog.setLabelText(f"Getting activity list from {server.name}")
