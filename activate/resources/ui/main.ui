@@ -275,6 +275,9 @@
    <property name="text">
     <string>Sync</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
   </action>
  </widget>
  <customwidgets>
