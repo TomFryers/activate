@@ -58,6 +58,7 @@ class CircleMarker(L.circleMarker):
 class Map(pyqtlet.MapWidget):
     def __init__(self, parent, settings):
         super().__init__()
+        self._page.profile().setHttpUserAgent("Activate")
         self.settings = settings
         size_policy = self.sizePolicy()
         size_policy.setRetainSizeWhenHidden(True)
