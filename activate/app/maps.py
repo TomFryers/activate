@@ -56,27 +56,29 @@ class CircleMarker(L.circleMarker):
 
 
 class Map(pyqtlet.MapWidget):
-    def __init__(self, parent, tiles):
+    def __init__(self, parent, settings):
         super().__init__()
+        self.settings = settings
         size_policy = self.sizePolicy()
         size_policy.setRetainSizeWhenHidden(True)
         self.setSizePolicy(size_policy)
         self.setContextMenuPolicy(Qt.NoContextMenu)
         self.map = L.map(self)
-        if tiles is None:
+        if settings.tiles is None:
             L.tileLayer(
                 "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
                 {"attribution": "&copy; OpenStreetMap contributors"},
             ).addTo(self.map)
         else:
-            L.tileLayer(tiles, {"attribution": ""}).addTo(self.map)
+            L.tileLayer(settings.tiles, {"attribution": ""}).addTo(self.map)
 
         self.map.runJavaScript(f"{self.map.jsName}.attributionControl.setPrefix('');")
         self.moved = False
 
+
     def fit_bounds(self, bounds):
         if self.moved:
-            Js(self.map).flyToBounds(bounds)
+            Js(self.map).flyToBounds(bounds, {"duration": self.settings.map_speed})
         else:
             Js(self.map).fitBounds(bounds)
             self.moved = True

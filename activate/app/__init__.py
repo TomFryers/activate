@@ -41,7 +41,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         # Create a global map widget to be used everywhere. This is
         # necessary because pyqtlet doesn't support multiple L.map
         # instances.
-        self.map_widget = maps.MapWidget(self, self.settings.tiles)
+        self.map_widget = maps.MapWidget(self, self.settings)
 
         self.activity_summary.setup(self.unit_system, self.map_widget)
         self.social_activity_summary.setup(self.unit_system, self.map_widget)
@@ -74,7 +74,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
     def edit_settings(self, tab):
         settings_window = activate.app.dialogs.settings.SettingsDialog()
-        self.settings = settings_window.exec(self.settings, tab)
+        self.settings.copy_from(settings_window.exec(self.settings, tab))
 
     def edit_general_settings(self):
         self.edit_settings("General")

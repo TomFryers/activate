@@ -52,6 +52,7 @@ class SettingsDialog(QtWidgets.QDialog, Ui_settings):
         self.cookie_edit.setText(
             current_settings.cookie if current_settings.cookie is not None else ""
         )
+        self.map_speed_edit.setValue(current_settings.map_speed)
         self.unit_system.setCurrentText(current_settings.unit_system)
         self.server_table.set_servers(current_settings.servers)
         self.custom_units.set_units(current_settings.custom_units)
@@ -66,6 +67,7 @@ class SettingsDialog(QtWidgets.QDialog, Ui_settings):
             cookie = None
         return settings.Settings(
             tiles=tiles,
+            map_speed=self.map_speed_edit.value(),
             unit_system=self.unit_system.currentText(),
             servers=self.server_table.get_servers(),
             custom_units=self.custom_units.units_dict(),

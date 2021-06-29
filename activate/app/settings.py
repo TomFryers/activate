@@ -8,6 +8,7 @@ from activate.app import connect, paths
 
 DEFAULTS = {
     "tiles": None,
+    "map_speed": 1.0,
     "unit_system": units.DEFAULT,
     "servers": [],
     "custom_units": {},
@@ -30,6 +31,7 @@ class Settings:
     """A settings configuration."""
 
     tiles: Optional[str]
+    map_speed: float
     unit_system: str
     custom_units: dict
     servers: list
@@ -38,3 +40,7 @@ class Settings:
     def save(self):
         """Save settings to a configuration file."""
         serialise.dump(dataclasses.asdict(self), paths.SETTINGS, readable=True)
+
+    def copy_from(self, other):
+        for field in dataclasses.fields(self):
+            setattr(self, field.name, getattr(other, field.name))
