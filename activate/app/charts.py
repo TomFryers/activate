@@ -467,7 +467,6 @@ class TimePeriodLineChart(LineChart):
         if direction == Qt.Horizontal:
             minimum = datetime.fromtimestamp(minimum)
             maximum = datetime.fromtimestamp(maximum)
-            # self.period_axis.setFormat(axis_format(maximum - minimum))
             self.period_axis.update_labels(minimum, maximum)
         super().update_axis(direction, ticks, minimum, maximum)
 

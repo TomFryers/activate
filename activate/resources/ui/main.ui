@@ -241,11 +241,6 @@
     <string>Add Photos</string>
    </property>
   </action>
-  <action name="actionAdd">
-   <property name="text">
-    <string>Add</string>
-   </property>
-  </action>
   <action name="action_servers">
    <property name="text">
     <string>Servers</string>
