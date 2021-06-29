@@ -78,7 +78,12 @@ class Map(pyqtlet.MapWidget):
 
     def fit_bounds(self, bounds):
         if self.moved:
-            Js(self.map).flyToBounds(bounds, {"duration": self.settings.map_speed})
+            Js(self.map).flyToBounds(
+                bounds,
+                {"duration": self.settings.map_speed}
+                if self.settings.map_speed > 0
+                else {},
+            )
         else:
             Js(self.map).fitBounds(bounds)
             self.moved = True

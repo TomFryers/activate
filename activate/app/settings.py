@@ -8,7 +8,7 @@ from activate.app import connect, paths
 
 DEFAULTS = {
     "tiles": None,
-    "map_speed": 1.0,
+    "map_speed": 0.0,
     "unit_system": units.DEFAULT,
     "servers": [],
     "custom_units": {},
