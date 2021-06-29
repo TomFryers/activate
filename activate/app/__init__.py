@@ -36,7 +36,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         paths.ensure_all_present()
 
         self.settings = settings.load_settings()
-        self.main_tabs.setTabVisible(2, bool(self.settings.servers))
+        self.hide_unused_things()
 
         # Create a global map widget to be used everywhere. This is
         # necessary because pyqtlet doesn't support multiple L.map
@@ -72,9 +72,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
         self.main_tab_switch(0)
 
+    def hide_unused_things(self):
+        self.main_tabs.setTabVisible(2, bool(self.settings.servers))
+        self.action_sync.setVisible(bool(self.settings.cookie))
+
     def edit_settings(self, tab):
         settings_window = activate.app.dialogs.settings.SettingsDialog()
         self.settings.copy_from(settings_window.exec(self.settings, tab))
+        self.hide_unused_things()
 
     def edit_general_settings(self):
         self.edit_settings("General")
@@ -84,8 +89,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
     def edit_server_settings(self):
         self.edit_settings("Servers")
-
-        self.main_tabs.setTabVisible(2, bool(self.settings.servers))
 
     def edit_sync_settings(self):
         self.edit_settings("Sync")
