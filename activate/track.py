@@ -1,8 +1,10 @@
 """Contains the Track class and functions for handling tracks."""
 import math
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import lru_cache
+from itertools import tee
 
 from dtw import dtw
 
@@ -42,6 +44,13 @@ def lerp(value1, value2, ratio):
     lerp(x, y, 1) = y
     """
     return value1 + ratio * (value2 - value1)
+
+
+def pairs(iterator):
+    """Return pairs of adjacent items."""
+    firsts, seconds = tee(iterator, 2)
+    next(seconds)
+    return zip(firsts, seconds)
 
 
 def infer_nones(data):
@@ -137,8 +146,9 @@ class Track:
     def __init__(self, fields):
         self.fields = fields
         for essential in ("lat", "lon"):
-            if essential in self.fields and set(self[essential]) != {None}:
-                infer_nones(self[essential])
+            if essential in self.fields:
+                with suppress(ValueError):
+                    infer_nones(self[essential])
 
         if "time" in self.fields:
             infer_nones(self["time"])
@@ -191,9 +201,7 @@ class Track:
     @property
     @lru_cache(128)
     def temporal_resolution(self):
-        return min(
-            self["time"][i] - self["time"][i - 1] for i in range(1, len(self))
-        ).total_seconds()
+        return min(y - x for x, y in pairs(self["time"])).total_seconds()
 
     @property
     @lru_cache(128)
@@ -213,17 +221,16 @@ class Track:
                     None if None in relevant else relevant[1] - relevant[0]
                 )
         else:
-            self.fields["dist_to_last"] += [
-                dist(self.xyz[point], self.xyz[point - 1])
-                for point in range(1, len(self))
-            ]
+            self.fields["dist_to_last"] += [dist(*x) for x in pairs(self.xyz)]
 
     def calculate_climb_desc(self):
         self.fields["climb"] = [None]
         self.fields["desc"] = [None]
         for height_change in self["height_change"][1:]:
             # Not using max in order to have integers instead of floats,
-            # since max(0, 0.0) (0.0 is common in tracks) is 0.0.
+            # since max(0, 0.0) is 0.0. It's common to have a height
+            # difference of 0.0 in tracks, because altimeters are not
+            # very sensitive.
             self.fields["climb"].append(0 if height_change <= 0 else height_change)
             self.fields["desc"].append(0 if height_change >= 0 else -height_change)
 
@@ -261,11 +268,7 @@ class Track:
 
     def calculate_height_change(self):
         """Calculate differences in elevation between adjacent points."""
-        self.fields["height_change"] = [None]
-        last = self["ele"][0]
-        for current in self["ele"][1:]:
-            self.fields["height_change"].append(current - last)
-            last = current
+        self.fields["height_change"] = [None] + [y - x for x, y in pairs(self["ele"])]
 
     def calculate_vertical_speed(self):
         """Calculate vertical speed at each point."""
