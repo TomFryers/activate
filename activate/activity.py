@@ -1,5 +1,8 @@
 import shutil
-from uuid import uuid4
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional
+from uuid import UUID, uuid4
 
 from activate import serialise
 from activate import track as track_
@@ -15,7 +18,22 @@ def none_default(value, default):
     return default if value is None else value
 
 
+@dataclass(init=False)
 class Activity:
+    name: str
+    sport: str
+    track: track_.Track
+    original_name: str
+    flags: dict
+    effort_level: int
+    start_time: datetime
+    distance: float
+    activity_id: UUID
+    description: str
+    photos: list
+    server: Optional[str]
+    username: Optional[str]
+
     def __init__(
         self,
         name,
