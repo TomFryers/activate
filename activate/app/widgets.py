@@ -2,6 +2,7 @@ import collections
 from datetime import timedelta
 
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
 
 from activate import activity_types, times
 from activate import units as units_
@@ -10,6 +11,19 @@ from activate.app import checklist
 UNIVERSAL_FLAGS = ("Commute", "Indoor")
 TYPE_FLAGS = collections.defaultdict(tuple)
 TYPE_FLAGS.update(activity_types.FLAGS)
+
+EFFORT_LEVELS = (
+    "None",
+    "Very easy",
+    "Easy",
+    "Quite easy",
+    "Moderate",
+    "Quite hard",
+    "Hard",
+    "Very hard",
+    "Extreme",
+    "Maximum",
+)
 
 
 class ActivityFlagEdit(checklist.CheckList):
@@ -45,6 +59,33 @@ class DurationEdit(QtWidgets.QFormLayout):
         self.seconds_widget.setValue(seconds)
 
 
+class EffortEdit(QtWidgets.QVBoxLayout):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.slider = QtWidgets.QSlider(Qt.Horizontal, self.parent())
+        self.slider.setMaximum(9)
+        self.slider.valueChanged.connect(self.set_label)
+        self.slider.sliderPressed.connect(self.set_label)
+        self.addWidget(self.slider)
+        self.label = QtWidgets.QLabel("Unspecified")
+        self.addWidget(self.label)
+
+    def set_label(self):
+        self.label.setText(EFFORT_LEVELS[self.slider.value()])
+
+    def value(self):
+        if self.label.text() == "Unspecified":
+            return None
+        return self.slider.value()
+
+    def set_value(self, value):
+        if value is None:
+            self.slider.setValue(0)
+            self.label.setText("Unspecified")
+        else:
+            self.slider.setValue(value)
+
+
 WIDGET_VALUES = {
     QtWidgets.QLineEdit: lambda w: w.text(),
     QtWidgets.QPlainTextEdit: lambda w: w.toPlainText(),
@@ -59,6 +100,7 @@ WIDGET_VALUES = {
     QtWidgets.QKeySequenceEdit: lambda w: w.keySequence(),
     checklist.CheckList: lambda w: w.states,
     DurationEdit: lambda w: w.value(),
+    EffortEdit: lambda w: w.value(),
 }
 
 WIDGET_SETTERS = {
@@ -75,6 +117,7 @@ WIDGET_SETTERS = {
     QtWidgets.QKeySequenceEdit: lambda w, v: w.setKeySequence(v),
     checklist.CheckList: lambda w, v: setattr(w, "state", v),
     DurationEdit: lambda w, v: w.set_value(v),
+    EffortEdit: lambda w, v: w.set_value(v),
 }
 
 

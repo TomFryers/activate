@@ -23,6 +23,7 @@ class Activity:
         track,
         original_name,
         flags=None,
+        effort_level=None,
         start_time=None,
         distance=None,
         activity_id=None,
@@ -41,6 +42,7 @@ class Activity:
         self.server = server
         self.username = username
         self.flags = none_default(flags, {})
+        self.effort_level = effort_level
         self.start_time = none_default(start_time, self.track.start_time)
         self.distance = none_default(distance, self.track.length)
         self.activity_id = none_default(activity_id, uuid4())
@@ -98,6 +100,7 @@ class Activity:
             self.name,
             self.sport,
             self.flags,
+            self.effort_level,
             self.start_time,
             self.distance,
             self.track.elapsed_time,
@@ -115,6 +118,7 @@ class Activity:
             "track": self.track.save_data,
             "original_name": self.original_name,
             "flags": self.flags,
+            "effort_level": self.effort_level,
             "start_time": self.start_time,
             "distance": self.distance,
             "activity_id": self.activity_id,

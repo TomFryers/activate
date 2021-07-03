@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets
 from activate import activity_types
 from activate.app import paths
 from activate.app.dialogs import FormDialog
-from activate.app.widgets import ActivityFlagEdit, DurationEdit, Form
+from activate.app.widgets import ActivityFlagEdit, DurationEdit, EffortEdit, Form
 
 DELETE_ACTIVITY = 222  # 0xDE[lete]
 
@@ -21,6 +21,7 @@ class ManualActivityDialog(FormDialog):
             "Duration": DurationEdit(),
             "Ascent": QtWidgets.QDoubleSpinBox(),
             "Flags": ActivityFlagEdit(),
+            "Effort": EffortEdit(),
             "Description": QtWidgets.QPlainTextEdit(),
         }
         layout["Type"].currentTextChanged.connect(layout["Flags"].change_options)
@@ -41,6 +42,7 @@ class EditActivityDialog(FormDialog):
             "Name": QtWidgets.QLineEdit(),
             "Type": QtWidgets.QComboBox(),
             "Flags": ActivityFlagEdit(),
+            "Effort": EffortEdit(),
             "Description": QtWidgets.QPlainTextEdit(),
         }
         layout["Type"].currentTextChanged.connect(layout["Flags"].change_options)
@@ -61,6 +63,7 @@ class EditActivityDialog(FormDialog):
         self.activity.sport = data["Type"]
         self.activity.description = data["Description"]
         self.activity.flags = data["Flags"]
+        self.activity.effort_level = data["Effort"]
         self.activity.save(paths.ACTIVITIES)
 
     def handle_delete_button(self):
@@ -80,6 +83,7 @@ class EditActivityDialog(FormDialog):
                 "Name": self.activity.name,
                 "Type": self.activity.sport,
                 "Flags": self.activity.flags,
+                "Effort": self.activity.effort_level,
                 "Description": self.activity.description,
             }
         )
@@ -114,6 +118,7 @@ class EditManualActivityDialog(EditActivityDialog, ManualActivityDialog):
                 "Duration": self.activity.track.elapsed_time,
                 "Ascent": self.activity.track.ascent,
                 "Flags": self.activity.flags,
+                "Effort": self.activity.effort_level,
                 "Description": self.activity.description,
             },
         )

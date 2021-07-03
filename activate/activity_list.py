@@ -31,6 +31,7 @@ class UnloadedActivity:
     name: str
     sport: str
     flags: dict
+    effort_level: Optional[int]
     start_time: datetime.datetime
     distance: float
     duration: float
