@@ -1,5 +1,6 @@
 import sys
 import time
+from contextlib import suppress
 from pathlib import Path
 
 import pkg_resources
@@ -28,6 +29,17 @@ SYNC_WAIT_DIVISIONS = 100
 SYNC_DELAY = 2
 
 
+def get_unsynced_edited():
+    try:
+        return set(serialise.load(paths.UNSYNCED_EDITED))
+    except FileNotFoundError:
+        return set()
+
+
+def save_unsynced_edited(data):
+    serialise.dump(list(data), paths.UNSYNCED_EDITED)
+
+
 class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
     def __init__(self, activities, *args, **kwargs):
         self.activities = activities
@@ -37,6 +49,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
 
         self.settings = settings.load_settings()
         self.hide_unused_things()
+        self.unsynced_edited_activities = get_unsynced_edited()
 
         # Create a global map widget to be used everywhere. This is
         # necessary because pyqtlet doesn't support multiple L.map
@@ -318,11 +331,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         if self.activity.sport != previous_sport:
             self.summary.update_activity_types_list()
 
-        for server in self.settings.servers:
-            try:
-                server.upload_activity(self.activity)
-            except connect.requests.RequestException:
-                continue
+        self.unsynced_edited_activities.add(self.activity.activity_id)
+        save_unsynced_edited(self.unsynced_edited_activities)
 
     def add_photos(self):
         """Open the Add Photos dialog."""
@@ -468,17 +478,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                     )
                 )
             dialog.setValue(round(SYNC_PROGRESS_STEPS * (i + 2 / 3)))
+            own_ids |= self.unsynced_edited_activities
             if not own_ids:
                 continue
             dialog.setLabelText(f"Uploading activities to {server.name}")
             for j, missing_id in enumerate(own_ids):
                 try:
                     server.upload_activity(self.activities.get_activity(missing_id))
+                    with suppress(KeyError):
+                        self.unsynced_edited_activities.remove(missing_id)
                 except connect.requests.RequestException:
                     break
                 dialog.setValue(
                     round(SYNC_PROGRESS_STEPS * (i + (2 + (1 + j) / len(own_ids)) / 3))
                 )
+        save_unsynced_edited(self.unsynced_edited_activities)
         dialog.setValue(SYNC_PROGRESS_STEPS * len(self.settings.servers))
 
     def social_tab_update(self):

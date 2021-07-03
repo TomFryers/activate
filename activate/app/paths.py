@@ -11,6 +11,7 @@ ACTIVITIES = DATA / "activities"
 TRACKS = DATA / "originals"
 PHOTOS = DATA / "photos"
 SYNC_STATE = DATA / "sync_state.json.gz"
+UNSYNCED_EDITED = DATA / "unsynced_edited.json"
 
 # Location for configuration files
 SETTINGS = (
