@@ -58,6 +58,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             (self.action_import, "document-open"),
             (self.action_add_manual, "document-new"),
             (self.action_edit, "document-edit"),
+            (self.action_match, "document-equal"),
             (self.action_analyse, "view-statistics"),
             (self.action_add_photos, "insert-image"),
             (self.action_general, "settings-configure"),
