@@ -123,6 +123,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
                     ),
                     "[manual]",
                     data["Flags"],
+                    data["Effort"],
                     data["Start Time"],
                     data["Distance"] * 1000,
                     description=data["Description"],

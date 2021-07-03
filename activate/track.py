@@ -1,7 +1,7 @@
 """Contains the Track class and functions for handling tracks."""
 import math
 from contextlib import suppress
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from functools import lru_cache
 from itertools import tee
@@ -125,6 +125,12 @@ class ManualTrack:
         if field == "speed":
             return self.length / self.elapsed_time.total_seconds()
         raise AttributeError(f"{self.__class__.__qualname__} has no average {field}")
+
+    @property
+    def save_data(self):
+        result = asdict(self)
+        result["manual"] = True
+        return result
 
     def __contains__(self, _):
         return False

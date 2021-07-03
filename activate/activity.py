@@ -53,7 +53,11 @@ class Activity:
         self.name = name
         self.sport = sport
         if isinstance(track, dict):
-            self.track = track_.Track(track)
+            if "manual" in track:
+                del track["manual"]
+                self.track = track_.ManualTrack(**track)
+            else:
+                self.track = track_.Track(track)
         else:
             self.track = track
         self.original_name = original_name
@@ -72,15 +76,18 @@ class Activity:
         result = {}
         result["Distance"] = DimensionValue(self.distance, "distance")
         result["Elapsed Time"] = DimensionValue(self.track.elapsed_time, "time")
-        if self.track.moving_time < self.track.elapsed_time:
+        if not self.track.manual and self.track.moving_time < self.track.elapsed_time:
             result["Moving Time"] = DimensionValue(self.track.moving_time, "time")
         if self.track.has_altitude_data:
             result["Ascent"] = DimensionValue(self.track.ascent, "altitude")
             result["Descent"] = DimensionValue(self.track.descent, "altitude")
         average_speed = self.track.average("speed")
         if average_speed > 0:
-            average_speed_moving = self.track.average_speed_moving
-            if average_speed_moving / average_speed < 1.01:
+            if not self.track.manual:
+                average_speed_moving = self.track.average_speed_moving
+                if average_speed_moving / average_speed < 1.01:
+                    average_speed_moving = None
+            else:
                 average_speed_moving = None
             result["Average Speed"] = DimensionValue(average_speed, "speed")
             if average_speed_moving is not None:
