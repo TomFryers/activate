@@ -4,6 +4,7 @@ CREATE TABLE activities (
     name TEXT NOT NULL,
     sport TEXT NOT NULL,
     flags DICT NOT NULL,
+    effort_level INT,
     start_time TIMESTAMP NOT NULL,
     distance REAL,
     duration TIMEDELTA NOT NULL,

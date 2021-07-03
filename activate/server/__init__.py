@@ -157,6 +157,7 @@ def upload():
             "name": new_activity.name,
             "sport": new_activity.sport,
             "flags": new_activity.flags,
+            "effort_level": new_activity.effort_level,
             "start_time": new_activity.start_time,
             "distance": new_activity.distance,
             "duration": new_activity.track.elapsed_time,
