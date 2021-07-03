@@ -306,7 +306,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
             to_delete = self.activity
             for row in range(len(self.activities)):
                 item = self.activity_list_table.item(row, 0)
-                if self.activities.get_activity(item.activity_id) is to_delete:
+                if item.activity_id == to_delete.activity_id:
                     self.activity_list_table.removeRow(row)
                     break
             self.activities.remove(to_delete.activity_id)
@@ -315,10 +315,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         self.activity_list_table.setSortingEnabled(False)
         for row in range(len(self.activities)):
             if (
-                self.activities.get_activity(
-                    self.activity_list_table.item(row, 0).activity_id
-                )
-                == self.activity
+                self.activity_list_table.item(row, 0).activity_id
+                == self.activity.activity_id
             ):
                 self.activity_list_table.set_id_row(
                     self.activity.activity_id,
