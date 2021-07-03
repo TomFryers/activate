@@ -115,7 +115,7 @@ WIDGET_SETTERS = {
     QtWidgets.QDateEdit: lambda w, v: w.setDate(v),
     QtWidgets.QAbstractSlider: lambda w, v: w.setValue(v),
     QtWidgets.QKeySequenceEdit: lambda w, v: w.setKeySequence(v),
-    checklist.CheckList: lambda w, v: setattr(w, "state", v),
+    checklist.CheckList: lambda w, v: setattr(w, "states", v),
     DurationEdit: lambda w, v: w.set_value(v),
     EffortEdit: lambda w, v: w.set_value(v),
 }
