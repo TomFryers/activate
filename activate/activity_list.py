@@ -96,6 +96,9 @@ class ActivityList(list):
         """
         serialise.dump(self.serialised(), self.path / LIST_FILENAME, gz=True)
 
+    def save_activity(self, activity_id):
+        self.get_activity(activity_id).save(self.path / ACTIVITIES_DIR_NAME)
+
     def add_activity(self, new_activity):
         """
         Add a new activity.

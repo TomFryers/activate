@@ -40,6 +40,10 @@ def sport(data):
 def update_local(activity, data):
     activity.name = data["name"]
     activity.sport = sport(data)
+    activity.flags["Commute"] = data["commute"]
+    activity.flags["Race"] = data["workout_type"] in {1, 11}
+    activity.flags["Long Run"] = data["workout_type"] == 2
+    activity.flags["Workout"] = data["workout_type"] in {3, 12}
     activity.description = (
         data["description"] if data["description"] is not None else ""
     )
@@ -75,7 +79,10 @@ def sync_new(cookie, activities, sync_list):
 
         elif strava_id not in remote_activities:
             continue
+        activity = activities.get_activity(activity.activity_id)
         update_local(activity, remote_activities[strava_id])
+        activities.update(activity.activity_id)
+        activities.save_activity(activity.activity_id)
         del remote_activities[strava_id]
 
     yield len(remote_activities)
