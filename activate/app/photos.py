@@ -69,7 +69,7 @@ class Gallery(QtWidgets.QWidget):
         self.empty()
         row_height = 120
         self.photos = [
-            QtGui.QPixmap(f).scaledToHeight(row_height, Qt.SmoothTransformation)
+            QtGui.QPixmap(str(f)).scaledToHeight(row_height, Qt.SmoothTransformation)
             for f in filenames
         ]
         row = QtWidgets.QWidget(self)
@@ -197,7 +197,7 @@ class PhotoViewer(QtWidgets.QDialog):
         """Display a new photo.."""
         photo = self.photos[self.current_index]
         if not isinstance(photo, QtGui.QPixmap):
-            photo = QtGui.QPixmap(photo)
+            photo = QtGui.QPixmap(str(photo))
             photo = photo.scaled(
                 self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation
             )
