@@ -59,6 +59,9 @@ def update_local(activity, data):
     activity.name = data["name"]
     activity.sport = sport(data)
     activity.flags["Commute"] = data["commute"]
+    activity.flags["Indoor"] = data["trainer"]
+    if activity.sport == "Run":
+        activity.flags["Treadmill"] = data["trainer"]
     activity.flags["Race"] = data["workout_type"] in {1, 11}
     activity.flags["Long Run"] = data["workout_type"] == 2
     activity.flags["Workout"] = data["workout_type"] in {3, 12}
