@@ -7,3 +7,4 @@ fitparse
 requests
 flask
 dtw-python
+beautfulsoup4

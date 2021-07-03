@@ -12,13 +12,27 @@ from activate.app.sync import strava
 FILENAME = re.compile(r'filename="(.*)"')
 
 
-def import_from_response(response):
-    response.headers["Content-Disposition"]
-    filename = next(FILENAME.finditer(response.headers["Content-Disposition"])).group(1)
-    filename = files.encode_name(filename, paths.TRACKS)
+def download_response(response, path):
+    try:
+        filename = next(
+            FILENAME.finditer(response.headers["Content-Disposition"])
+        ).group(1)
+    except KeyError:
+        filename = response.url.split("/")[-1]
+    filename = files.encode_name(filename, path)
     with open(filename, "wb") as f:
         response.raw.decode_content = True
         shutil.copyfileobj(response.raw, f)
+    return filename
+
+
+def add_photo_from_response(response, activity):
+    filename = download_response(response, paths.PHOTOS)
+    activity.photos.append(filename)
+
+
+def import_from_response(response):
+    filename = download_response(response, paths.TRACKS)
     activity = load_activity.load(filename)
     activity["filename"] = filename
     return activity

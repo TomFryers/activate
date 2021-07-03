@@ -1,16 +1,25 @@
 """Sync activities with other services."""
 
 import json
+import re
 from datetime import datetime
 
 import requests
+from bs4 import BeautifulSoup
 
 import activate.activity
 from activate.app import load_activity, sync
 
+EFFORT_LEVEL_RE = re.compile(r"perceivedExertion&quot;:(9)\.0,")
+
 
 def strava_url(page: str) -> str:
     return f"https://www.strava.com/{page}"
+
+
+def get_strava_html(page: str, cookie: str) -> str:
+    response = requests.get(strava_url(page), cookies={"_strava4_session": cookie})
+    return response.text
 
 
 def list_activities(cookie: str) -> dict:
@@ -31,6 +40,15 @@ def get_activity_data(strava_activity_id: int, cookie: str) -> requests.models.R
         stream=True,
     )
     return activity_file
+
+
+def get_edit_page_data(strava_activity_id: int, cookie: str) -> tuple:
+    html = get_strava_html(f"activities/{strava_activity_id}/edit", cookie)
+    photo_urls = [
+        i.img["src"] for i in BeautifulSoup(html).find_all("div", "image-wrap")
+    ]
+    effort_level = int(EFFORT_LEVEL_RE.search(html).group(1)) - 1
+    return photo_urls, effort_level
 
 
 def sport(data):
@@ -92,5 +110,10 @@ def sync_new(cookie, activities, sync_list):
             **sync.import_from_response(get_activity_data(strava_activity_id, cookie))
         )
         update_local(activity, data)
+        photo_urls, effort_level = get_edit_page_data(strava_activity_id, cookie)
+        activity.effort_level = effort_level
+        for url in photo_urls:
+            sync.add_photo_from_response(requests.get(url, stream=True), activity)
+
         sync_list.add("Strava", activity.activity_id, strava_activity_id)
         yield activity
