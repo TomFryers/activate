@@ -55,6 +55,26 @@ class CheckList(QtWidgets.QListWidget):
             if item in new_states:
                 self.set_check_state(index, new_states[item])
 
+    @property
+    def num_states(self):
+        return {
+            row.text(): {Unchecked: 0, PartiallyChecked: 0.5, Checked: 1}[
+                row.checkState()
+            ]
+            for row in self
+        }
+
+    @num_states.setter
+    def num_states(self, new_states):
+        for index, item in enumerate(self.row_names):
+            if item in new_states:
+                if new_states[item] == 0:
+                    self.set_check_state(index, Unchecked)
+                elif new_states[item] == 0.5:
+                    self.set_check_state(index, PartiallyChecked)
+                elif new_states[item] == 1:
+                    self.set_check_state(index, Checked)
+
     def get_row(self, row):
         """Get a row from a string, index or row."""
         if isinstance(row, str):

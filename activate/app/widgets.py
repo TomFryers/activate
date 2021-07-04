@@ -98,7 +98,7 @@ WIDGET_VALUES = {
     QtWidgets.QDateEdit: lambda w: w.date().toPyDate(),
     QtWidgets.QAbstractSlider: lambda w: w.value(),
     QtWidgets.QKeySequenceEdit: lambda w: w.keySequence(),
-    checklist.CheckList: lambda w: w.states,
+    checklist.CheckList: lambda w: w.num_states,
     DurationEdit: lambda w: w.value(),
     EffortEdit: lambda w: w.value(),
 }
@@ -115,7 +115,7 @@ WIDGET_SETTERS = {
     QtWidgets.QDateEdit: lambda w, v: w.setDate(v),
     QtWidgets.QAbstractSlider: lambda w, v: w.setValue(v),
     QtWidgets.QKeySequenceEdit: lambda w, v: w.setKeySequence(v),
-    checklist.CheckList: lambda w, v: setattr(w, "states", v),
+    checklist.CheckList: lambda w, v: setattr(w, "num_states", v),
     DurationEdit: lambda w, v: w.set_value(v),
     EffortEdit: lambda w, v: w.set_value(v),
 }
