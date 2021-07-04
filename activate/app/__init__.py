@@ -25,8 +25,11 @@ from activate.app import activity_view, connect, maps, paths, settings, sync, wi
 from activate.app.ui.main import Ui_main_window
 
 SYNC_PROGRESS_STEPS = 1000
+
 SYNC_WAIT_DIVISIONS = 100
 SYNC_DELAY = 2
+GET_TICKS = round(0.3 * SYNC_WAIT_DIVISIONS)
+ADD_TICKS = round(0.05 * SYNC_WAIT_DIVISIONS)
 
 
 def get_unsynced_edited():
@@ -162,8 +165,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         if new_activity_count == 0:
             dialog.reset()
             return
-        dialog.setMaximum(new_activity_count * SYNC_WAIT_DIVISIONS)
-        for progress in range(1, SYNC_WAIT_DIVISIONS):
+        dialog.setMaximum(
+            new_activity_count * SYNC_WAIT_DIVISIONS + GET_TICKS + ADD_TICKS
+        )
+        for progress in range(GET_TICKS, SYNC_WAIT_DIVISIONS):
             dialog.setValue(progress)
             time.sleep(SYNC_DELAY / SYNC_WAIT_DIVISIONS)
             if dialog.wasCanceled():
@@ -172,19 +177,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main_window):
         done = False
         self.activity_list_table.setSortingEnabled(False)
         for index, new_activity in enumerate(new_activities):
-            dialog.setLabelText(f"Syncing {new_activity.name}")
-            progress += 1
+            progress += GET_TICKS
             dialog.setValue(progress)
+            dialog.setLabelText(f"Syncing {new_activity.name}")
             self.add_activity(new_activity)
+            progress += ADD_TICKS
+            dialog.setValue(progress)
             if index < new_activity_count - 1:
-                for i in range(SYNC_WAIT_DIVISIONS - 1):
-                    progress += 1
+                for progress in range(progress, (index + 2) * SYNC_WAIT_DIVISIONS):
                     dialog.setValue(progress)
                     time.sleep(SYNC_DELAY / SYNC_WAIT_DIVISIONS)
                     if dialog.wasCanceled():
                         done = True
             if done:
                 break
+        else:
+            dialog.setValue(progress + 1)
         sync.sync_state.write()
 
         self.activity_list_table.setCurrentCell(0, 0)
