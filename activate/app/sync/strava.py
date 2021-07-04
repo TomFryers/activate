@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import activate.activity
 from activate.app import load_activity, sync
 
-EFFORT_LEVEL_RE = re.compile(r"perceivedExertion&quot;:(9)\.0,")
+EFFORT_LEVEL_RE = re.compile(r"perceivedExertion&quot;:(\d+)\.0,")
 
 
 def strava_url(page: str) -> str:
@@ -47,7 +47,10 @@ def get_edit_page_data(strava_activity_id: int, cookie: str) -> tuple:
     photo_urls = [
         i.img["src"] for i in BeautifulSoup(html).find_all("div", "image-wrap")
     ]
-    effort_level = int(EFFORT_LEVEL_RE.search(html).group(1)) - 1
+    effort_level = EFFORT_LEVEL_RE.search(html)
+    if effort_level is not None:
+        effort_level = int(effort_level.group(1)) - 1
+
     return photo_urls, effort_level
 
 
