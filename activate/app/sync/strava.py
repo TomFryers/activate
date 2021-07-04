@@ -45,7 +45,8 @@ def get_activity_data(strava_activity_id: int, cookie: str) -> requests.models.R
 def get_edit_page_data(strava_activity_id: int, cookie: str) -> tuple:
     html = get_strava_html(f"activities/{strava_activity_id}/edit", cookie)
     photo_urls = [
-        i.img["src"] for i in BeautifulSoup(html).find_all("div", "image-wrap")
+        i.img["src"]
+        for i in BeautifulSoup(html, "html.parser").find_all("div", "image-wrap")
     ]
     effort_level = EFFORT_LEVEL_RE.search(html)
     if effort_level is not None:
