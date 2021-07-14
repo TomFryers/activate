@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 import pyqtlet
 from PyQt5.QtCore import Qt
 from pyqtlet import L
@@ -101,9 +103,15 @@ class MapWidget(Map):
         self.highlight_section = self.add_route_line(self.highlight_colour)
         self.mode = None
 
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        with suppress(AttributeError):
+            self.fit_bounds(self.bounds)
+
     def show_route(self, route: list):
         """Display a list of points on the map."""
-        self.fit_bounds(get_bounds(route))
+        self.bounds = get_bounds(route)
+        self.fit_bounds(self.bounds)
         if self.mode != "route":
             self.clear_route_lines()
             self.route_lines = [self.add_route_line()]
@@ -119,7 +127,8 @@ class MapWidget(Map):
         if not routes:
             return
         colour = ACTIVATE_COLOUR + hex(min(round(1000 / (len(routes) ** 0.5)), 255))[2:]
-        self.fit_bounds(get_bounds(*routes))
+        self.bounds = get_bounds(*routes)
+        self.fit_bounds(self.bounds)
         self.start_icon.removeFrom(self.map)
         self.finish_icon.removeFrom(self.map)
         self.clear_route_lines()
