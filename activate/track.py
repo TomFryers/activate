@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from functools import lru_cache
 from itertools import tee
+import bisect
 
 from dtw import dtw
 
@@ -309,8 +310,9 @@ class Track:
     def __len__(self):
         return len(next(iter(self.fields.values())))
 
+    @lru_cache(128)
     def without_nones(self, field):
-        return (v for v in self[field] if v is not None)
+        return [v for v in self[field] if v is not None]
 
     @lru_cache(128)
     def average(self, field):
@@ -435,17 +437,17 @@ class Track:
         return totals
 
     def lat_lng_from_distance(self, distance):
-        point0 = 0
-        for point1, dist1 in enumerate(self["dist"]):
-            if dist1 is None:
-                continue
-            if dist1 > distance:
-                break
-            point0 = point1
-        else:
+        distances = self.without_nones("dist")
+        point0 = bisect.bisect(distances, distance)
+        try:
+            point1 = next(
+                i for i, d in enumerate_from(distances, point0) if d > distance
+            )
+        except StopIteration:
             return None
-
-        dist0 = self["dist"][point0]
+        point0 -= 1
+        dist0 = distances[point0]
+        dist1 = distances[point1]
         lat0 = self["lat"][point0]
         lon0 = self["lon"][point0]
         if dist0 == dist1:
