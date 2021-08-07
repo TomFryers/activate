@@ -4,7 +4,7 @@ import requests
 
 from activate import serialise
 
-TIMEOUT = 4
+TIMEOUT = 10
 
 
 @dataclass
