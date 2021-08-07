@@ -1,5 +1,6 @@
 from contextlib import suppress
 
+from PyQt5 import QtWidgets
 import pyqtlet
 from PyQt5.QtCore import Qt
 from pyqtlet import L
@@ -105,6 +106,7 @@ class MapWidget(Map):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
+        QtWidgets.qApp.processEvents()
         with suppress(AttributeError):
             self.fit_bounds(self.bounds)
 
