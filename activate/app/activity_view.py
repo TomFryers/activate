@@ -188,7 +188,7 @@ class ActivityView(QtWidgets.QWidget, Ui_activity_view):
         self.map_widget.remove_marker()
         section = self.fastest_indices[row]
         self.map_widget.show_highlight(
-            self.activity.track.lat_lon_list[section[0] : section[1]]
+            self.activity.track.lat_lon_list[section[0] : section[1] + 1]
         )
 
     def show_stat_point(self, stat, _):

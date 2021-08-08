@@ -350,6 +350,7 @@ class Track:
             if dist is None or dist < min_dist:
                 continue
             if dist >= max_dist:
+                track.append([lat, lon])
                 return track
             track.append([lat, lon])
         return track
