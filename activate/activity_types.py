@@ -24,9 +24,12 @@ SPECIAL_DISTANCES = {
         units.MILE.decode(10): "10 mile",
         20000: "20 km",
         MARATHON / 2: "half marathon",
+        25000: "25 km",
+        30000: "30 km",
         MARATHON: "marathon",
         50000: "50 km",
         100000: "100 km",
+        200000: "200 km",
     },
     "Ride": {
         100: "100 m",
@@ -73,6 +76,7 @@ SPECIAL_DISTANCES = {
         units.MILE.decode(2): "2 mile",
         5000: "5 km",
         10000: "10 km",
+        20000: "20 km",
     },
     "Walk": {
         50: "50 m",
